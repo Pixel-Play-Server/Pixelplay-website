@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página No Encontrada | PixelPlay.gg</title>
+    <meta name="description" content="La página que buscas no existe en PixelPlay.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #101c14;
+            --glass-surface: rgba(18, 32, 24, 0.55);
+            --primary-color: #2ecc71;
+            --primary-color-light: #4be08c;
+            --text-color: #e1f7e6;
+            --text-color-secondary: #a8c8b3;
+            --stroke-color: rgba(46, 204, 113, 0.22);
+            --border-radius: 12px;
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 15% 25%, var(--primary-color-light) 0%, transparent 20%),
+                radial-gradient(circle at 85% 75%, #2752c1 0%, transparent 25%);
+            filter: blur(120px);
+            opacity: 0.3;
+            animation: animate-glow 15s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes animate-glow {
+            0% { transform: rotate(0deg) scale(1.0); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1.0); }
+        }
+
+        .error-container {
+            background: var(--glass-surface);
+            border: 1px solid var(--stroke-color);
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 3rem;
+            max-width: 500px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .error-404 {
+            font-size: 6rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 50px rgba(46, 204, 113, 0.3);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .error-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .error-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: var(--text-color-secondary);
+        }
+
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+            border: none;
+            border-radius: var(--border-radius);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4);
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .error-404 {
+                font-size: 4rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-404">404</div>
+        
+        <div class="logo">Pixel<span>Play</span></div>
+        
+        <h1 class="error-title">Página No Encontrada</h1>
+        
+        <p class="error-description">
+            La página que buscas no existe o ha sido movida. 
+            Regresa al inicio para continuar navegando.
+        </p>
+        
+        <a href="https://pixelplay.gg/" class="home-btn">
+            <i data-lucide="home"></i>
+            Ir al Inicio
+        </a>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
