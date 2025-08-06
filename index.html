@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantenimiento - PixelPlay.gg</title>
+    <meta name="description" content="PixelPlay se encuentra en mantenimiento. Volveremos pronto.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #101c14;
+            --glass-surface: rgba(18, 32, 24, 0.55);
+            --primary-color: #2ecc71;
+            --primary-color-light: #4be08c;
+            --text-color: #e1f7e6;
+            --text-color-secondary: #a8c8b3;
+            --stroke-color: rgba(46, 204, 113, 0.22);
+            --border-radius: 12px;
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 15% 25%, var(--primary-color-light) 0%, transparent 20%),
+                radial-gradient(circle at 85% 75%, #2752c1 0%, transparent 25%);
+            filter: blur(120px);
+            opacity: 0.3;
+            animation: animate-glow 15s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes animate-glow {
+            0% { transform: rotate(0deg) scale(1.0); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1.0); }
+        }
+
+        .maintenance-container {
+            background: var(--glass-surface);
+            border: 1px solid var(--stroke-color);
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 3rem;
+            max-width: 500px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .maintenance-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .maintenance-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color-light);
+        }
+
+        .maintenance-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-color-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .eta-text {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .maintenance-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .maintenance-icon {
+                font-size: 3rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .maintenance-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-container">
+        <div class="maintenance-icon">🔧</div>
+        
+        <div class="logo">Pixel<span>Play</span></div>
+        
+        <h1 class="maintenance-title">En Mantenimiento</h1>
+        
+        <p class="maintenance-description">
+            Estamos trabajando para mejorar tu experiencia. 
+            Volveremos pronto con nuevas actualizaciones.
+        </p>
+        
+        <div class="eta-text">
+            Tiempo estimado: 2-3 horas
+        </div>
+    </div>
+</body>
+</html>
