@@ -58,77 +58,100 @@
     </footer>
 
     <!-- Scripts -->
-    <script>
-        lucide.createIcons();
+<script>
+    lucide.createIcons();
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const downloadContent = document.querySelector('.download-content');
-            const os = getOS();
-            const isMobileDevice = isMobile();
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadContent = document.querySelector('.download-content');
+        const os = getOS();
+        const isMobileDevice = isMobile();
 
-            if (os === 'Mac OS' || os === 'Linux' || isMobileDevice) {
-                let platform = 'desconocido';
-                if (os !== 'Unknown' && os !== 'Windows') {
-                    platform = os;
-                } else if (isMobileDevice) {
-                    platform = 'móvil';
-                }
-                
-                downloadContent.innerHTML = `
-                    <h2>Plataforma no compatible</h2>
-                    <p>Actualmente, nuestro launcher no es compatible con <strong>${platform}</strong>.</p>
-                    <p>Sin embargo, puedes unirte a nuestro servidor instalando el modpack manualmente.</p>
-                    <a href="https://pixelplay.gg/modpack" class="download-btn" style="text-decoration: none; margin-top: 1rem; display: inline-block;">
-                        <i data-lucide="package"></i>
-                        Ver Modpack
-                    </a>
-                `;
-                lucide.createIcons(); // Re-render icons
-            } else if (os === 'Windows') {
-                const downloadBtn = document.getElementById('downloadBtn');
-                const downloadInfo = document.getElementById('download-info');
-                
+        if (os === 'Mac OS' || os === 'Linux' || isMobileDevice) {
+            let platform = 'desconocido';
+            if (os !== 'Unknown' && os !== 'Windows') {
+                platform = os;
+            } else if (isMobileDevice) {
+                platform = 'móvil';
+            }
+            
+            downloadContent.innerHTML = `
+                <h2>Plataforma no compatible</h2>
+                <p>Actualmente, nuestro launcher no es compatible con <strong>${platform}</strong>.</p>
+                <p>Sin embargo, puedes unirte a nuestro servidor instalando el modpack manualmente.</p>
+                <a href="https://pixelplay.gg/modpack" class="download-btn" style="text-decoration: none; margin-top: 1rem; display: inline-block;">
+                    <i data-lucide="package"></i>
+                    Ver Modpack
+                </a>
+            `;
+            lucide.createIcons(); // Re-render icons
+        } else if (os === 'Windows') {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const downloadInfo = document.getElementById('download-info');
 
-                downloadBtn.onclick = function() {
-                    // This part can be configured by the user.
-                    let downloadUrl = 'https://github.com/Pixel-Play-Server/Pixelplay-website/releases/download/launcher-release/pixelplay-launcher.exe'; // Default download URL
-                    let fileName = 'pixelplay-launcher.exe';
+            downloadBtn.onclick = async function() {
+                let downloadUrl = 'https://github.com/Pixel-Play-Server/Pixelplay-website/releases/download/launcher-release/pixelplay-launcher.exe'; // Default download URL
+                let fileName = 'pixelplay-launcher.exe';
+                downloadBtn.disabled = true;
+                downloadInfo.textContent = `Iniciando descarga de ${fileName}...`;
 
-                    downloadInfo.textContent = `Iniciando descarga de ${fileName}...`;
+                try {
+                    // Intenta usar fetch para comprobar que el archivo existe
+                    const response = await fetch(downloadUrl, { method: 'HEAD' });
+                    if (!response.ok) throw new Error('No se pudo iniciar la descarga.');
                     
+                    // Crea el enlace y simula el click
                     const link = document.createElement('a');
                     link.href = downloadUrl;
                     link.download = fileName;
                     document.body.appendChild(link);
-                    // link.click(); // This would start the actual download
+                    link.click();
                     document.body.removeChild(link);
-                };
-            } else {
-                 downloadContent.innerHTML = `
-                    <h2>Plataforma no compatible</h2>
-                    <p>No hemos podido detectar tu sistema operativo. Si usas Windows, por favor, recarga la página.</p>
-                    <p>Si usas otro sistema, puedes unirte a nuestro servidor instalando el modpack manualmente.</p>
-                    <a href="https://pixelplay.gg/modpack" class="download-btn" style="text-decoration: none; margin-top: 1rem; display: inline-block;">
-                        <i data-lucide="package"></i>
-                        Ver Modpack
-                    </a>
-                `;
-                lucide.createIcons();
-            }
-        });
 
-        function isMobile() {
-            const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-            return regex.test(navigator.userAgent);
+                    downloadInfo.textContent = `La descarga debería comenzar automáticamente. Si no es así, haz clic aquí: `;
+                    const manualLink = document.createElement('a');
+                    manualLink.href = downloadUrl;
+                    manualLink.textContent = 'Descargar manualmente';
+                    manualLink.style.color = "#00aaff";
+                    manualLink.style.textDecoration = "underline";
+                    downloadInfo.appendChild(manualLink);
+                } catch (err) {
+                    downloadInfo.textContent = 'Hubo un error al iniciar la descarga. ';
+                    const fallback = document.createElement('a');
+                    fallback.href = downloadUrl;
+                    fallback.textContent = 'Haz clic aquí para intentar descargar manualmente.';
+                    fallback.style.color = "#00aaff";
+                    fallback.style.textDecoration = "underline";
+                    downloadInfo.appendChild(fallback);
+                } finally {
+                    setTimeout(() => { downloadBtn.disabled = false; }, 3000);
+                }
+            };
+        } else {
+            downloadContent.innerHTML = `
+                <h2>Plataforma no compatible</h2>
+                <p>No hemos podido detectar tu sistema operativo. Si usas Windows, por favor, recarga la página.</p>
+                <p>Si usas otro sistema, puedes unirte a nuestro servidor instalando el modpack manualmente.</p>
+                <a href="https://pixelplay.gg/modpack" class="download-btn" style="text-decoration: none; margin-top: 1rem; display: inline-block;">
+                    <i data-lucide="package"></i>
+                    Ver Modpack
+                </a>
+            `;
+            lucide.createIcons();
         }
+    });
 
-        function getOS() {
-            const userAgent = window.navigator.userAgent;
-            if (userAgent.indexOf("Win") != -1) return "Windows";
-            if (userAgent.indexOf("Mac") != -1) return "Mac OS";
-            if (userAgent.indexOf("Linux") != -1) return "Linux";
-            return "Unknown";
-        }
-    </script>
+    function isMobile() {
+        const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+        return regex.test(navigator.userAgent);
+    }
+
+    function getOS() {
+        const userAgent = window.navigator.userAgent;
+        if (userAgent.indexOf("Win") != -1) return "Windows";
+        if (userAgent.indexOf("Mac") != -1) return "Mac OS";
+        if (userAgent.indexOf("Linux") != -1) return "Linux";
+        return "Unknown";
+    }
+</script>
 </body>
 </html>
