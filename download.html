@@ -73,7 +73,7 @@
             } else if (isMobileDevice) {
                 platform = 'móvil';
             }
-            
+
             downloadContent.innerHTML = `
                 <h2>Plataforma no compatible</h2>
                 <p>Actualmente, nuestro launcher no es compatible con <strong>${platform}</strong>.</p>
@@ -87,44 +87,21 @@
         } else if (os === 'Windows') {
             const downloadBtn = document.getElementById('downloadBtn');
             const downloadInfo = document.getElementById('download-info');
+            const downloadUrl = 'https://github.com/Pixel-Play-Server/Pixelplay-website/releases/download/launcher-release/pixelplay-launcher.exe';
+            const fileName = 'pixelplay-launcher.exe';
 
-            downloadBtn.onclick = async function() {
-                let downloadUrl = 'https://github.com/Pixel-Play-Server/Pixelplay-website/releases/download/launcher-release/pixelplay-launcher.exe'; // Default download URL
-                let fileName = 'pixelplay-launcher.exe';
-                downloadBtn.disabled = true;
-                downloadInfo.textContent = `Iniciando descarga de ${fileName}...`;
+            downloadBtn.onclick = function() {
+                downloadInfo.textContent = 'Iniciando descarga...';
 
-                try {
-                    // Intenta usar fetch para comprobar que el archivo existe
-                    const response = await fetch(downloadUrl, { method: 'HEAD' });
-                    if (!response.ok) throw new Error('No se pudo iniciar la descarga.');
-                    
-                    // Crea el enlace y simula el click
-                    const link = document.createElement('a');
-                    link.href = downloadUrl;
-                    link.download = fileName;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                // Crea y simula el click del enlace
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
 
-                    downloadInfo.textContent = `La descarga debería comenzar automáticamente. Si no es así, haz clic aquí: `;
-                    const manualLink = document.createElement('a');
-                    manualLink.href = downloadUrl;
-                    manualLink.textContent = 'Descargar manualmente';
-                    manualLink.style.color = "#00aaff";
-                    manualLink.style.textDecoration = "underline";
-                    downloadInfo.appendChild(manualLink);
-                } catch (err) {
-                    downloadInfo.textContent = 'Hubo un error al iniciar la descarga. ';
-                    const fallback = document.createElement('a');
-                    fallback.href = downloadUrl;
-                    fallback.textContent = 'Haz clic aquí para intentar descargar manualmente.';
-                    fallback.style.color = "#00aaff";
-                    fallback.style.textDecoration = "underline";
-                    downloadInfo.appendChild(fallback);
-                } finally {
-                    setTimeout(() => { downloadBtn.disabled = false; }, 3000);
-                }
+                downloadInfo.innerHTML = `Si la descarga no comienza, <a href="${downloadUrl}" style="color:#00aaff;text-decoration:underline;">haz clic aquí para descargar manualmente</a>.`;
             };
         } else {
             downloadContent.innerHTML = `
