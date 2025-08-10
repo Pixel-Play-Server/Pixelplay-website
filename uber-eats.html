@@ -296,17 +296,16 @@ let pollTimer = null;
 function formatCurrency(n){ return `$${Number(n||0).toFixed(2)}`; }
 function uid(){ return 'ORD-' + Date.now() + '-' + Math.floor(Math.random()*100000); }
 function showToast(msg){
-  const el = document.getElementById('toast');
-  if(!el) return;
+  const el = document.getElementById('toast'); if(!el) return;
   el.textContent = msg; el.style.display='block';
   setTimeout(()=>{ el.style.display='none'; }, 1800);
 }
 function setStatusButtonVisible(v){
-  const el = document.getElementById('statusBtn');
-  if(el) el.style.display = v ? 'inline-flex' : 'none';
+  const el = document.getElementById('statusBtn'); if(el) el.style.display = v ? 'inline-flex' : 'none';
 }
 
-// GViz JSONP helper
+/* ============ GViz robusto (2 métodos) ============ */
+// Método 1: JSONP con responseHandler
 function jsonpGviz(url){
   return new Promise((resolve,reject)=>{
     const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
@@ -315,17 +314,44 @@ function jsonpGviz(url){
       if(s&&s.parentNode) s.parentNode.removeChild(s); clearTimeout(to); };
     window[cb]=(payload)=>{ cleanup(); resolve(payload); };
     s.onerror=()=>{ cleanup(); reject(new Error('GViz JSONP error')); };
-    s.src = url + (url.includes('?')?'&':'?') + 'tqx=' + encodeURIComponent('responseHandler:'+cb) + '&_=' + Date.now();
+    s.src = url + (url.includes('?')?'&':'?')
+      + 'tqx=' + encodeURIComponent('responseHandler:'+cb) + '&_=' + Date.now();
     document.body.appendChild(s);
     const to=setTimeout(()=>{ cleanup(); reject(new Error('timeout')); }, 10000);
   });
 }
+// Método 2: Interceptar google.visualization.Query.setResponse
+function gvizSetResponse(url){
+  return new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    const prev = window.google && window.google.visualization && window.google.visualization.Query && window.google.visualization.Query.setResponse;
+    window.google = window.google || {};
+    window.google.visualization = window.google.visualization || {};
+    window.google.visualization.Query = window.google.visualization.Query || {};
+    let done=false;
+    window.google.visualization.Query.setResponse = function(payload){
+      if(done) return; done=true; cleanup(); resolve(payload);
+    };
+    function cleanup(){
+      if(prev) window.google.visualization.Query.setResponse = prev;
+      if(s && s.parentNode) s.parentNode.removeChild(s);
+      clearTimeout(to);
+    }
+    s.onerror=()=>{ cleanup(); reject(new Error('GViz script error')); };
+    s.src = url + (url.includes('?')?'&':'?') + 'tqx=' + encodeURIComponent('out:json') + '&_=' + Date.now();
+    document.body.appendChild(s);
+    const to=setTimeout(()=>{ cleanup(); reject(new Error('timeout')); }, 10000);
+  });
+}
+
 async function fetchFromGviz(){
   const base = `https://docs.google.com/spreadsheets/d/${GVIZ_SHEET_ID}/gviz/tq`;
   const url = `${base}?gid=${encodeURIComponent(GVIZ_GID)}&tq=${encodeURIComponent('select A,B,C,D,E,F,G')}`;
-  const data = await jsonpGviz(url);
+  let data=null;
+  try { data = await jsonpGviz(url); } catch(_) {}
+  if(!data){ data = await gvizSetResponse(url); }
   if(!data || !data.table || !Array.isArray(data.table.rows)) throw new Error('GViz sin datos');
-  const rows = data.table.rows.map(r=>{
+  return data.table.rows.map(r=>{
     const c = r.c || [];
     return {
       id: c[0]?.v ?? '',
@@ -337,8 +363,8 @@ async function fetchFromGviz(){
       customerName: c[6]?.v ?? ''
     };
   });
-  return rows;
 }
+/* ================================================== */
 
 function openMenu(){ const m=document.getElementById('menuModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden'; } }
 function closeMenu(){ const m=document.getElementById('menuModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; } }
@@ -355,7 +381,6 @@ function addToCart(name, price){
   const ex = cart.find(i=>i.name===name);
   if(ex){ ex.quantity++; } else { cart.push({name,price,quantity:1}); }
   updateCartCount();
-
   const btn = event?.target;
   if(btn){
     const t = btn.textContent;
@@ -365,10 +390,8 @@ function addToCart(name, price){
 }
 function updateCartCount(){
   const total = cart.reduce((s,i)=>s+i.quantity,0);
-  const cc = document.getElementById('cartCount');
-  if(!cc) return;
-  cc.textContent = total;
-  cc.style.display = total>0 ? 'flex' : 'none';
+  const cc = document.getElementById('cartCount'); if(!cc) return;
+  cc.textContent = total; cc.style.display = total>0 ? 'flex' : 'none';
 }
 function updateCartDisplay(){
   const container = document.getElementById('cartItems');
@@ -410,8 +433,7 @@ function changeQuantity(name,delta){
   if(!it) return;
   it.quantity += delta;
   if(it.quantity<=0) cart = cart.filter(i=>i.name!==name);
-  updateCartCount();
-  updateCartDisplay();
+  updateCartCount(); updateCartDisplay();
 }
 
 async function checkout(){
@@ -423,13 +445,9 @@ async function checkout(){
   const total = cart.reduce((s,i)=>s+i.price*i.quantity,0);
   const orderId = uid();
   const order = {
-    id:orderId,
-    timestamp: new Date().toISOString(),
-    restaurant: "Leon's BBQ",
+    id:orderId, timestamp: new Date().toISOString(), restaurant: "Leon's BBQ",
     items: cart.map(i=>({name:i.name, price:i.price, quantity:i.quantity})),
-    total: Number(total.toFixed(2)),
-    status:'Recibido',
-    customerName: name
+    total: Number(total.toFixed(2)), status:'Recibido', customerName: name
   };
 
   currentOrder = order;
@@ -440,16 +458,13 @@ async function checkout(){
     const body = new URLSearchParams();
     body.append('payload', JSON.stringify(order));
     await fetch(APPSCRIPT_URL, { method:'POST', body, cache:'no-cache', mode:'no-cors' });
-  }catch(e){ /* silencioso */ }
+  }catch(_){}
 
   const sum = document.getElementById('paymentSummary');
   if(sum) sum.textContent = `Pedido ${order.id} confirmado para ${name}. Total: ${formatCurrency(order.total)}. ¡Gracias!`;
   openPaymentModal();
 
-  cart = [];
-  updateCartCount();
-  closeCart();
-  startAutoRefresh();
+  cart = []; updateCartCount(); closeCart(); startAutoRefresh();
 }
 
 function openPaymentModal(){ const m=document.getElementById('paymentModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden'; } }
@@ -458,8 +473,7 @@ function openStatusModal(){ renderStatusBody(); const m=document.getElementById(
 function closeStatusModal(){ const m=document.getElementById('statusModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; } }
 
 function renderStatusBody(latest){
-  const c = document.getElementById('statusBody');
-  if(!c) return;
+  const c = document.getElementById('statusBody'); if(!c) return;
   if(!currentOrder){ c.innerHTML='<p>No tienes un pedido en curso.</p>'; return; }
   const st = latest?.status || currentOrder.status || 'Recibido';
   const itemsText = (currentOrder.items||[]).map(i=>`${i.quantity}x ${i.name} (${formatCurrency(i.price)})`).join('; ');
@@ -486,21 +500,14 @@ async function pollOrderStatus(){
         localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
         showToast(`Estado actualizado: ${row.status}`);
       }
-      if(document.getElementById('statusModal')?.style.display==='block'){
-        renderStatusBody(row);
-      }
+      if(document.getElementById('statusModal')?.style.display==='block'){ renderStatusBody(row); }
     }
-  }catch(_){ /* silencioso */ }
+  }catch(_){}
 }
-function startAutoRefresh(){
-  if(pollTimer) clearInterval(pollTimer);
-  pollTimer = setInterval(pollOrderStatus, 2000);
-}
+function startAutoRefresh(){ if(pollTimer) clearInterval(pollTimer); pollTimer = setInterval(pollOrderStatus, 2000); }
 
 // eventos
-document.addEventListener('keydown', (e)=>{
-  if(e.key==='Escape'){ closeMenu(); closeCart(); closePaymentModal(); closeStatusModal(); }
-});
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeMenu(); closeCart(); closePaymentModal(); closeStatusModal(); } });
 document.getElementById('menuModal')?.addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closeMenu(); });
 document.getElementById('cartModal')?.addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closeCart(); });
 document.getElementById('paymentModal')?.addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closePaymentModal(); });
@@ -509,8 +516,7 @@ document.getElementById('statusModal')?.addEventListener('click',(e)=>{ if(e.tar
 document.querySelector('.search-input')?.addEventListener('input', (e)=>{
   const q = e.target.value.toLowerCase();
   document.querySelectorAll('.restaurant-card').forEach(card=>{
-    const nameEl = card.querySelector('.restaurant-name');
-    if(!nameEl) return;
+    const nameEl = card.querySelector('.restaurant-name'); if(!nameEl) return;
     card.style.display = nameEl.textContent.toLowerCase().includes(q) ? 'block' : 'none';
   });
 });
@@ -519,13 +525,8 @@ document.querySelector('.search-input')?.addEventListener('input', (e)=>{
 (function init(){
   try{
     const saved = localStorage.getItem('currentOrder');
-    if(saved){
-      currentOrder = JSON.parse(saved);
-      setStatusButtonVisible(true);
-      startAutoRefresh();
-    }else{
-      setStatusButtonVisible(false);
-    }
+    if(saved){ currentOrder = JSON.parse(saved); setStatusButtonVisible(true); startAutoRefresh(); }
+    else { setStatusButtonVisible(false); }
   }catch(_){ setStatusButtonVisible(false); }
 })();
 </script>
