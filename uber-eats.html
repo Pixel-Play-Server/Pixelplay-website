@@ -285,233 +285,249 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    // URL del Web App (GAS)
-    const SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwSUvM8mMofBxnsPy8bPUVsVeGrKli1sY5e1NEadLR0VrxE1cq5gPhlMPtXb6_ZvpAIog/exec';
+const APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSUvM8mMofBxnsPy8bPUVsVeGrKli1sY5e1NEadLR0VrxE1cq5gPhlMPtXb6_ZvpAIog/exec';
+const GVIZ_SHEET_ID = '1y78r564-YWA2haXgtQ9iSZI-m8_h_bw-rMeibqpcXdY';
+const GVIZ_GID = '883931380';
 
-    let cart = [];
-    let currentOrder = null;
-    let pollTimer = null;
+let cart = [];
+let currentOrder = null;
+let pollTimer = null;
 
-    function formatCurrency(n){ return `$${Number(n||0).toFixed(2)}`; }
-    function uid(){ return 'ORD-' + Date.now() + '-' + Math.floor(Math.random()*100000); }
-    function isSheetConfigured(){ return true; }
+function formatCurrency(n){ return `$${Number(n||0).toFixed(2)}`; }
+function uid(){ return 'ORD-' + Date.now() + '-' + Math.floor(Math.random()*100000); }
+function showToast(msg){
+  const el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = msg; el.style.display='block';
+  setTimeout(()=>{ el.style.display='none'; }, 1800);
+}
+function setStatusButtonVisible(v){
+  const el = document.getElementById('statusBtn');
+  if(el) el.style.display = v ? 'inline-flex' : 'none';
+}
 
-    function showToast(msg){
-        const el = document.getElementById('toast');
-        el.textContent = msg; el.style.display='block';
-        setTimeout(()=>{ el.style.display='none'; },2000);
+// GViz JSONP helper
+function jsonpGviz(url){
+  return new Promise((resolve,reject)=>{
+    const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+    const s=document.createElement('script');
+    const cleanup=()=>{ try{delete window[cb]}catch(_){};
+      if(s&&s.parentNode) s.parentNode.removeChild(s); clearTimeout(to); };
+    window[cb]=(payload)=>{ cleanup(); resolve(payload); };
+    s.onerror=()=>{ cleanup(); reject(new Error('GViz JSONP error')); };
+    s.src = url + (url.includes('?')?'&':'?') + 'tqx=' + encodeURIComponent('responseHandler:'+cb) + '&_=' + Date.now();
+    document.body.appendChild(s);
+    const to=setTimeout(()=>{ cleanup(); reject(new Error('timeout')); }, 10000);
+  });
+}
+async function fetchFromGviz(){
+  const base = `https://docs.google.com/spreadsheets/d/${GVIZ_SHEET_ID}/gviz/tq`;
+  const url = `${base}?gid=${encodeURIComponent(GVIZ_GID)}&tq=${encodeURIComponent('select A,B,C,D,E,F,G')}`;
+  const data = await jsonpGviz(url);
+  if(!data || !data.table || !Array.isArray(data.table.rows)) throw new Error('GViz sin datos');
+  const rows = data.table.rows.map(r=>{
+    const c = r.c || [];
+    return {
+      id: c[0]?.v ?? '',
+      timestamp: c[1]?.v ?? '',
+      restaurant: c[2]?.v ?? '',
+      items: c[3]?.v ?? '',
+      total: Number(c[4]?.v ?? 0),
+      status: c[5]?.v ?? '',
+      customerName: c[6]?.v ?? ''
+    };
+  });
+  return rows;
+}
+
+function openMenu(){ const m=document.getElementById('menuModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden'; } }
+function closeMenu(){ const m=document.getElementById('menuModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; } }
+function openCart(){
+  const m=document.getElementById('cartModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden'; }
+  const savedName = localStorage.getItem('customerName') || '';
+  const input = document.getElementById('customerNameInput');
+  if(input && !input.value) input.value = savedName;
+  updateCartDisplay();
+}
+function closeCart(){ const m=document.getElementById('cartModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; } }
+
+function addToCart(name, price){
+  const ex = cart.find(i=>i.name===name);
+  if(ex){ ex.quantity++; } else { cart.push({name,price,quantity:1}); }
+  updateCartCount();
+
+  const btn = event?.target;
+  if(btn){
+    const t = btn.textContent;
+    btn.textContent='Agregado'; btn.style.background='#06c755';
+    setTimeout(()=>{ btn.textContent=t; btn.style.background='#000'; },1000);
+  }
+}
+function updateCartCount(){
+  const total = cart.reduce((s,i)=>s+i.quantity,0);
+  const cc = document.getElementById('cartCount');
+  if(!cc) return;
+  cc.textContent = total;
+  cc.style.display = total>0 ? 'flex' : 'none';
+}
+function updateCartDisplay(){
+  const container = document.getElementById('cartItems');
+  const cartTotal = document.getElementById('cartTotal');
+  const totalEl = document.getElementById('totalAmount');
+  if(!container || !cartTotal || !totalEl) return;
+
+  if(cart.length===0){
+    container.innerHTML = `
+      <div class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+        <p class="empty-cart-text">Tu carrito está vacío</p>
+        <p class="empty-cart-subtext">Agrega platillos de Leon's BBQ para comenzar</p>
+      </div>`;
+    cartTotal.style.display='none';
+    return;
+  }
+  let total=0;
+  container.innerHTML = cart.map(item=>{
+    total += item.price*item.quantity;
+    return `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">${formatCurrency(item.price)}</div>
+        </div>
+        <div class="quantity-controls">
+          <button class="qty-btn" onclick="changeQuantity('${item.name}',-1)">−</button>
+          <span class="qty-number">${item.quantity}</span>
+          <button class="qty-btn" onclick="changeQuantity('${item.name}',1)">+</button>
+        </div>
+      </div>`;
+  }).join('');
+  totalEl.textContent = formatCurrency(total);
+  cartTotal.style.display='block';
+}
+function changeQuantity(name,delta){
+  const it = cart.find(i=>i.name===name);
+  if(!it) return;
+  it.quantity += delta;
+  if(it.quantity<=0) cart = cart.filter(i=>i.name!==name);
+  updateCartCount();
+  updateCartDisplay();
+}
+
+async function checkout(){
+  if(cart.length===0) return;
+  const name = (document.getElementById('customerNameInput')?.value || '').trim();
+  if(!name){ alert('Por favor ingresa tu nombre'); return; }
+  localStorage.setItem('customerName', name);
+
+  const total = cart.reduce((s,i)=>s+i.price*i.quantity,0);
+  const orderId = uid();
+  const order = {
+    id:orderId,
+    timestamp: new Date().toISOString(),
+    restaurant: "Leon's BBQ",
+    items: cart.map(i=>({name:i.name, price:i.price, quantity:i.quantity})),
+    total: Number(total.toFixed(2)),
+    status:'Recibido',
+    customerName: name
+  };
+
+  currentOrder = order;
+  localStorage.setItem('currentOrder', JSON.stringify(order));
+  setStatusButtonVisible(true);
+
+  try{
+    const body = new URLSearchParams();
+    body.append('payload', JSON.stringify(order));
+    await fetch(APPSCRIPT_URL, { method:'POST', body, cache:'no-cache', mode:'no-cors' });
+  }catch(e){ /* silencioso */ }
+
+  const sum = document.getElementById('paymentSummary');
+  if(sum) sum.textContent = `Pedido ${order.id} confirmado para ${name}. Total: ${formatCurrency(order.total)}. ¡Gracias!`;
+  openPaymentModal();
+
+  cart = [];
+  updateCartCount();
+  closeCart();
+  startAutoRefresh();
+}
+
+function openPaymentModal(){ const m=document.getElementById('paymentModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden'; } }
+function closePaymentModal(){ const m=document.getElementById('paymentModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; } }
+function openStatusModal(){ renderStatusBody(); const m=document.getElementById('statusModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden'; } }
+function closeStatusModal(){ const m=document.getElementById('statusModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; } }
+
+function renderStatusBody(latest){
+  const c = document.getElementById('statusBody');
+  if(!c) return;
+  if(!currentOrder){ c.innerHTML='<p>No tienes un pedido en curso.</p>'; return; }
+  const st = latest?.status || currentOrder.status || 'Recibido';
+  const itemsText = (currentOrder.items||[]).map(i=>`${i.quantity}x ${i.name} (${formatCurrency(i.price)})`).join('; ');
+  c.innerHTML = `
+    <div style="display:grid; gap:8px;">
+      <div><strong>ID:</strong> ${currentOrder.id}</div>
+      <div><strong>Nombre:</strong> ${currentOrder.customerName||'-'}</div>
+      <div><strong>Restaurante:</strong> ${currentOrder.restaurant}</div>
+      <div><strong>Items:</strong> ${itemsText||'-'}</div>
+      <div><strong>Total:</strong> ${formatCurrency(currentOrder.total)}</div>
+      <div><strong>Estado:</strong> ${st}</div>
+      <div style="font-size:12px; color:#666;"><em>Se actualiza cada 2s.</em></div>
+    </div>`;
+}
+
+async function pollOrderStatus(){
+  if(!currentOrder) return;
+  try{
+    const rows = await fetchFromGviz();
+    const row = rows.find(r => String(r.id) === String(currentOrder.id));
+    if(row && row.status){
+      if(row.status !== currentOrder.status){
+        currentOrder.status = row.status;
+        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+        showToast(`Estado actualizado: ${row.status}`);
+      }
+      if(document.getElementById('statusModal')?.style.display==='block'){
+        renderStatusBody(row);
+      }
     }
-    function setStatusButtonVisible(v){
-        document.getElementById('statusBtn').style.display = v ? 'inline-flex' : 'none';
+  }catch(_){ /* silencioso */ }
+}
+function startAutoRefresh(){
+  if(pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(pollOrderStatus, 2000);
+}
+
+// eventos
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape'){ closeMenu(); closeCart(); closePaymentModal(); closeStatusModal(); }
+});
+document.getElementById('menuModal')?.addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closeMenu(); });
+document.getElementById('cartModal')?.addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closeCart(); });
+document.getElementById('paymentModal')?.addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closePaymentModal(); });
+document.getElementById('statusModal')?.addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closeStatusModal(); });
+
+document.querySelector('.search-input')?.addEventListener('input', (e)=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('.restaurant-card').forEach(card=>{
+    const nameEl = card.querySelector('.restaurant-name');
+    if(!nameEl) return;
+    card.style.display = nameEl.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+  });
+});
+
+// init
+(function init(){
+  try{
+    const saved = localStorage.getItem('currentOrder');
+    if(saved){
+      currentOrder = JSON.parse(saved);
+      setStatusButtonVisible(true);
+      startAutoRefresh();
+    }else{
+      setStatusButtonVisible(false);
     }
-
-    // JSONP helper para GET sin CORS
-    function jsonp(url){
-        return new Promise((resolve,reject)=>{
-            const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
-            const s=document.createElement('script');
-            const clean=()=>{
-                try{ delete window[cb]; }catch(_){}
-                if(s && s.parentNode) s.parentNode.removeChild(s);
-                clearTimeout(to);
-            };
-            window[cb]=(data)=>{ clean(); resolve(data); };
-            s.onerror=()=>{ clean(); reject(new Error('JSONP error')); };
-            s.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb + '&_=' + Date.now();
-            document.body.appendChild(s);
-            const to=setTimeout(()=>{ clean(); reject(new Error('timeout')); }, 8000);
-        });
-    }
-
-    function openMenu(){ document.getElementById('menuModal').style.display='block'; document.body.style.overflow='hidden'; }
-    function closeMenu(){ document.getElementById('menuModal').style.display='none'; document.body.style.overflow='auto'; }
-    function openCart(){
-        document.getElementById('cartModal').style.display='block';
-        document.body.style.overflow='hidden';
-        const savedName = localStorage.getItem('customerName') || '';
-        const input = document.getElementById('customerNameInput');
-        if (input && !input.value) input.value = savedName;
-        updateCartDisplay();
-    }
-    function closeCart(){ document.getElementById('cartModal').style.display='none'; document.body.style.overflow='auto'; }
-
-    function addToCart(name, price){
-        const ex = cart.find(i=>i.name===name);
-        if(ex){ ex.quantity++; } else { cart.push({name,price,quantity:1}); }
-        updateCartCount();
-
-        const btn = event.target;
-        const t = btn.textContent;
-        btn.textContent='Agregado'; btn.style.background='#06c755';
-        setTimeout(()=>{ btn.textContent=t; btn.style.background='#000'; },1000);
-    }
-    function updateCartCount(){
-        const total = cart.reduce((s,i)=>s+i.quantity,0);
-        const cc = document.getElementById('cartCount');
-        cc.textContent = total;
-        cc.style.display = total>0 ? 'flex' : 'none';
-    }
-    function updateCartDisplay(){
-        const container = document.getElementById('cartItems');
-        const cartTotal = document.getElementById('cartTotal');
-        const totalEl = document.getElementById('totalAmount');
-        if(cart.length===0){
-            container.innerHTML = `
-                <div class="empty-cart">
-                    <div class="empty-cart-icon">🛒</div>
-                    <p class="empty-cart-text">Tu carrito está vacío</p>
-                    <p class="empty-cart-subtext">Agrega platillos de Leon's BBQ para comenzar</p>
-                </div>
-            `;
-            cartTotal.style.display='none';
-            return;
-        }
-        let total=0;
-        container.innerHTML = cart.map(item=>{
-            total += item.price*item.quantity;
-            return `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">${formatCurrency(item.price)}</div>
-                    </div>
-                    <div class="quantity-controls">
-                        <button class="qty-btn" onclick="changeQuantity('${item.name}',-1)">−</button>
-                        <span class="qty-number">${item.quantity}</span>
-                        <button class="qty-btn" onclick="changeQuantity('${item.name}',1)">+</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        totalEl.textContent = formatCurrency(total);
-        cartTotal.style.display='block';
-    }
-    function changeQuantity(name,delta){
-        const it = cart.find(i=>i.name===name);
-        if(!it) return;
-        it.quantity += delta;
-        if(it.quantity<=0) cart = cart.filter(i=>i.name!==name);
-        updateCartCount();
-        updateCartDisplay();
-    }
-
-    async function checkout(){
-        if(cart.length===0) return;
-        const name = (document.getElementById('customerNameInput')?.value || '').trim();
-        if(!name){ alert('Por favor ingresa tu nombre'); return; }
-        localStorage.setItem('customerName', name);
-
-        const total = cart.reduce((s,i)=>s+i.price*i.quantity,0);
-        const orderId = uid();
-        const order = {
-            id:orderId,
-            timestamp: new Date().toISOString(),
-            restaurant: "Leon's BBQ",
-            items: cart.map(i=>({name:i.name, price:i.price, quantity:i.quantity})),
-            total: Number(total.toFixed(2)),
-            status:'Recibido',
-            customerName: name
-        };
-
-        currentOrder = order;
-        localStorage.setItem('currentOrder', JSON.stringify(order));
-        setStatusButtonVisible(true);
-
-        try{
-            const body = new URLSearchParams();
-            body.append('payload', JSON.stringify(order));
-            // no leemos la respuesta para evitar CORS
-            await fetch(SHEET_WEBAPP_URL, { method:'POST', body, cache:'no-cache', mode:'no-cors' });
-        }catch(e){ console.warn('Error enviando a Sheets', e); }
-
-        document.getElementById('paymentSummary').textContent =
-            `Pedido ${order.id} confirmado para ${name}. Total: ${formatCurrency(order.total)}. ¡Gracias!`;
-        openPaymentModal();
-
-        cart = [];
-        updateCartCount();
-        closeCart();
-        startAutoRefresh();
-    }
-
-    function openPaymentModal(){ document.getElementById('paymentModal').style.display='block'; document.body.style.overflow='hidden'; }
-    function closePaymentModal(){ document.getElementById('paymentModal').style.display='none'; document.body.style.overflow='auto'; }
-    function openStatusModal(){ renderStatusBody(); document.getElementById('statusModal').style.display='block'; document.body.style.overflow='hidden'; }
-    function closeStatusModal(){ document.getElementById('statusModal').style.display='none'; document.body.style.overflow='auto'; }
-
-    function renderStatusBody(latest){
-        const c = document.getElementById('statusBody');
-        if(!currentOrder){ c.innerHTML='<p>No tienes un pedido en curso.</p>'; return; }
-        const st = latest?.status || currentOrder.status || 'Recibido';
-        const itemsText = (currentOrder.items||[]).map(i=>`${i.quantity}x ${i.name} (${formatCurrency(i.price)})`).join('; ');
-        c.innerHTML = `
-            <div style="display:grid; gap:8px;">
-                <div><strong>ID:</strong> ${currentOrder.id}</div>
-                <div><strong>Nombre:</strong> ${currentOrder.customerName||'-'}</div>
-                <div><strong>Restaurante:</strong> ${currentOrder.restaurant}</div>
-                <div><strong>Items:</strong> ${itemsText||'-'}</div>
-                <div><strong>Total:</strong> ${formatCurrency(currentOrder.total)}</div>
-                <div><strong>Estado:</strong> ${st}</div>
-                <div style="font-size:12px; color:#666;"><em>Se actualiza cada 2s.</em></div>
-            </div>
-        `;
-    }
-
-    async function fetchOrderStatus(id){
-        try{
-            const data = await jsonp(`${SHEET_WEBAPP_URL}?id=${encodeURIComponent(id)}`);
-            if(data && data.ok) return data;
-        }catch(_){}
-        return null;
-    }
-    async function pollOrderStatus(){
-        if(!currentOrder) return;
-        const data = await fetchOrderStatus(currentOrder.id);
-        if(data && data.status){
-            if(data.status !== currentOrder.status){
-                currentOrder.status = data.status;
-                localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
-                showToast(`Estado actualizado: ${data.status}`);
-            }
-            if(document.getElementById('statusModal').style.display==='block'){
-                renderStatusBody(data);
-            }
-        }
-    }
-    function startAutoRefresh(){
-        if(pollTimer) clearInterval(pollTimer);
-        pollTimer = setInterval(pollOrderStatus, 2000);
-    }
-
-    document.addEventListener('keydown', (e)=>{
-        if(e.key==='Escape'){ closeMenu(); closeCart(); closePaymentModal(); closeStatusModal(); }
-    });
-    document.getElementById('menuModal').addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closeMenu(); });
-    document.getElementById('cartModal').addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closeCart(); });
-    document.getElementById('paymentModal').addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closePaymentModal(); });
-    document.getElementById('statusModal').addEventListener('click',(e)=>{ if(e.target===e.currentTarget) closeStatusModal(); });
-
-    document.querySelector('.search-input').addEventListener('input', (e)=>{
-        const q = e.target.value.toLowerCase();
-        document.querySelectorAll('.restaurant-card').forEach(card=>{
-            const nameEl = card.querySelector('.restaurant-name');
-            if(!nameEl) return;
-            card.style.display = nameEl.textContent.toLowerCase().includes(q) ? 'block' : 'none';
-        });
-    });
-
-    (function init(){
-        try{
-            const saved = localStorage.getItem('currentOrder');
-            if(saved){
-                currentOrder = JSON.parse(saved);
-                setStatusButtonVisible(true);
-                startAutoRefresh();
-            }else{
-                setStatusButtonVisible(false);
-            }
-        }catch(_){ setStatusButtonVisible(false); }
-    })();
+  }catch(_){ setStatusButtonVisible(false); }
+})();
 </script>
 </body>
 </html>
