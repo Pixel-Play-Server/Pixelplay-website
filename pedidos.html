@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pedidos — Panel</title>
+<style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f6f6f6;color:#000;line-height:1.4}
+    .header{background:#000;padding:16px 24px;position:sticky;top:0;z-index:100}
+    .header-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .logo{color:#fff;font-weight:900;font-size:20px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{background:#276ef1;color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+    .btn:hover{background:#1747a6}
+    .link{background:#111}
+    .link:hover{background:#333}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    .filters{display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:16px}
+    .input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px}
+    .table-wrap{background:#fff;border:1px solid #eee;border-radius:12px;overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:800px}
+    th,td{padding:12px;border-bottom:1px solid #f0f0f0;text-align:left;vertical-align:top}
+    th{background:#fafafa;font-weight:700}
+    .status{font-weight:700}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px}
+    .s-Recibido{background:#e8f5e9;color:#1b5e20}
+    .s-Preparando{background:#fff8e1;color:#8d6e00}
+    .s-En\ camino{background:#e3f2fd;color:#0d47a1}
+    .s-Entregado{background:#e8eaf6;color:#1a237e}
+    .s-Cancelado{background:#ffebee;color:#b71c1c}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:8px;display:none;z-index:2000}
+    @media (max-width:768px){ .filters{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<header class="header">
+    <div class="header-content">
+        <div class="logo">Panel de pedidos</div>
+        <div class="actions">
+            <a class="btn link" href="index.html">Volver</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="filters">
+        <input id="nameFilter" class="input" placeholder="Filtrar por nombre (cliente)" />
+        <button class="btn" onclick="forceRefresh()">Actualizar</button>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Restaurante</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Cuándo</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwSUvM8mMofBxnsPy8bPUVsVeGrKli1sY5e1NEadLR0VrxE1cq5gPhlMPtXb6_ZvpAIog/exec';
+
+let allOrders = [];
+let timer = null;
+
+function showToast(msg){
+    const el = document.getElementById('toast');
+    el.textContent = msg; el.style.display='block';
+    setTimeout(()=>{ el.style.display='none'; },1500);
+}
+
+function jsonp(url){
+    return new Promise((resolve,reject)=>{
+        const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+        const s=document.createElement('script');
+        const clean=()=>{ try{delete window[cb]}catch(_){};
+            if(s&&s.parentNode) s.parentNode.removeChild(s); clearTimeout(to); };
+        window[cb]=(data)=>{ clean(); resolve(data); };
+        s.onerror=()=>{ clean(); reject(new Error('JSONP error')); };
+        s.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb + '&_=' + Date.now();
+        document.body.appendChild(s);
+        const to=setTimeout(()=>{ clean(); reject(new Error('timeout')); }, 8000);
+    });
+}
+
+function formatCurrency(n){ return `$${Number(n||0).toFixed(2)}`; }
+function fmtDate(d){ try{ return new Date(d).toLocaleString(); }catch(_){ return String(d||''); } }
+
+async function loadOrders(){
+    try{
+        const data = await jsonp(SHEET_WEBAPP_URL);
+        if(data && data.ok){
+            allOrders = (data.rows||[]).slice().reverse(); // más recientes arriba
+            render();
+        }
+    }catch(e){ /* silencioso */ }
+}
+
+function render(){
+    const q = (document.getElementById('nameFilter').value||'').toLowerCase().trim();
+    const rows = allOrders.filter(r=>{
+        if(!q) return true;
+        return String(r.customerName||'').toLowerCase().includes(q);
+    });
+
+    const statusOptions = ['Recibido','Preparando','En camino','Entregado','Cancelado'];
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = rows.map(r=>{
+        const st = String(r.status||'');
+        const badgeClass = 's-'+st.replace(' ','\\ ');
+        return `
+        <tr>
+            <td>${r.id||''}</td>
+            <td>${r.customerName||'-'}</td>
+            <td>${r.restaurant||''}</td>
+            <td style="min-width:220px">${r.items||''}</td>
+            <td>${formatCurrency(r.total)}</td>
+            <td>
+                <span class="badge ${badgeClass}" style="margin-right:8px">${st||'-'}</span>
+                <select onchange="updateStatus('${r.id}', this.value)">
+                    ${statusOptions.map(opt=>`<option value="${opt}" ${opt===st?'selected':''}>${opt}</option>`).join('')}
+                </select>
+            </td>
+            <td>${fmtDate(r.timestamp)}</td>
+        </tr>`;
+    }).join('');
+}
+
+function updateStatus(id, status){
+    const body = new URLSearchParams();
+    body.append('action','update');
+    body.append('id', id);
+    body.append('status', status);
+    fetch(SHEET_WEBAPP_URL, { method:'POST', body, cache:'no-cache', mode:'no-cors' }).catch(()=>{});
+    showToast('Estado actualizado');
+    // Se reflejará en el próximo polling
+}
+
+function start(){
+    if(timer) clearInterval(timer);
+    timer = setInterval(loadOrders, 2000);
+    loadOrders();
+}
+
+function forceRefresh(){ loadOrders(); }
+
+document.getElementById('nameFilter').addEventListener('input', render);
+
+start();
+</script>
+</body>
+</html>
