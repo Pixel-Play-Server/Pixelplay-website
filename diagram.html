@@ -1,500 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagram Builder</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagram Builder (Fixed)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8f9fa;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: #2c3e50;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: #2c3e50;
+    }
 
-        .header {
-            background: white;
-            padding: 16px 24px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
+    .header {
+      background: white;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
 
-        .logo {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
+    .logo {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
 
-        .toolbar {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
 
-        .tool-btn {
-            padding: 8px 12px;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            background: white;
-            color: #6c757d;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.15s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .tool-btn {
+      padding: 8px 12px;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      background: white;
+      color: #6c757d;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .tool-btn:hover {
-            border-color: #adb5bd;
-            color: #495057;
-        }
+    .tool-btn:hover {
+      border-color: #adb5bd;
+      color: #495057;
+    }
 
-        .tool-btn.active {
-            background: #2c3e50;
-            color: white;
-            border-color: #2c3e50;
-        }
+    .tool-btn.active {
+      background: #2c3e50;
+      color: white;
+      border-color: #2c3e50;
+    }
 
-        .icon {
-            width: 14px;
-            height: 14px;
-            stroke: currentColor;
-            stroke-width: 2;
-            fill: none;
-        }
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
 
-        .canvas-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
+    .canvas {
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      background-image: radial-gradient(circle, #737373 0.8px, transparent 0.8px);
+      background-size: 16px 16px;
+      position: relative;
+    }
 
-        .canvas {
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            background-image: 
-                radial-gradient(circle, #737373 0.8px, transparent 0.8px);
-            background-size: 16px 16px;
-            position: relative;
-            cursor: default;
-        }
+    .shape {
+      position: absolute;
+      border: 2px solid #2c3e50;
+      background: white;
+      border-radius: 4px;
+      cursor: move;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: #2c3e50;
+      min-width: 80px;
+      min-height: 40px;
+      padding: 8px 12px;
+      text-align: center;
+    }
 
-        .shape {
-            position: absolute;
-            border: 2px solid #2c3e50;
-            background: white;
-            border-radius: 4px;
-            cursor: move;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 500;
-            color: #2c3e50;
-            transition: all 0.15s ease;
-            min-width: 80px;
-            min-height: 40px;
-            padding: 8px 12px;
-            word-wrap: break-word;
-            text-align: center;
-        }
+    .shape.circle {
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+    }
 
-        .shape:hover {
-            border-color: #495057;
-        }
+    .shape.diamond {
+      width: 80px;
+      height: 80px;
+      transform: rotate(45deg);
+    }
 
-        .shape.selected {
-            border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-        }
+    .shape.diamond span {
+      transform: rotate(-45deg);
+    }
 
-        .shape.circle {
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-        }
+    .connection-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-        .shape.diamond {
-            transform: rotate(45deg);
-            border-radius: 4px;
-        }
+    .delete-btn {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #dc3545;
+      border: 2px solid white;
+      color: white;
+      font-size: 10px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
 
-        .shape.diamond span {
-            transform: rotate(-45deg);
-        }
+    .shape.selected .delete-btn {
+      display: flex;
+    }
 
-        .connection-svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #dc3545;
-            border: 2px solid white;
-            color: white;
-            font-size: 10px;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-
-        .shape.selected .delete-btn {
-            display: flex;
-        }
-
-        .status {
-            position: fixed;
-            bottom: 16px;
-            left: 16px;
-            background: white;
-            border: 1px solid #dee2e6;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #6c757d;
-        }
-    </style>
+    .status {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      background: white;
+      border: 1px solid #dee2e6;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #6c757d;
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">Diagram Builder</div>
-        <div class="toolbar">
-            <button class="tool-btn active" data-tool="select">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
-                </svg>
-                Select
-            </button>
-            <button class="tool-btn" data-tool="rectangle">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <rect width="18" height="11" x="3" y="6.5" rx="2" ry="2"/>
-                </svg>
-                Rectangle
-            </button>
-            <button class="tool-btn" data-tool="circle">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="8"/>
-                </svg>
-                Circle
-            </button>
-            <button class="tool-btn" data-tool="diamond">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <rect width="12" height="12" x="6" y="6" transform="rotate(45 12 12)" rx="2" ry="2"/>
-                </svg>
-                Diamond
-            </button>
-            <button class="tool-btn" data-tool="connect">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                </svg>
-                Connect
-            </button>
-            <button class="tool-btn" data-tool="clear">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M3 6h18"/>
-                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                </svg>
-                Clear
-            </button>
-        </div>
+  <div class="header">
+    <div class="logo">Diagram Builder</div>
+    <div class="toolbar">
+      <button class="tool-btn active" data-tool="rectangle">Rectangle</button>
+      <button class="tool-btn" data-tool="circle">Circle</button>
+      <button class="tool-btn" data-tool="diamond">Diamond</button>
+      <button class="tool-btn" data-tool="connect">Connect</button>
+      <button class="tool-btn" data-tool="clear">Clear</button>
     </div>
+  </div>
 
-    <div class="canvas-container">
-        <div class="canvas" id="canvas">
-            <svg class="connection-svg" id="connectionSvg">
-                <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
-                    </marker>
-                </defs>
-            </svg>
-        </div>
+  <div class="canvas-container">
+    <div class="canvas" id="canvas">
+      <svg class="connection-svg" id="connectionSvg">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"></polygon>
+          </marker>
+        </defs>
+      </svg>
     </div>
+  </div>
 
-    <div class="status" id="status">
-        Click tools to create shapes • Drag to move • Click connect and then two shapes to link them
-    </div>
+  <div class="status" id="status">Click to create rectangles</div>
 
-    <script>
-class DiagramBuilder {
-    constructor() {
+  <script>
+    class DiagramBuilder {
+      constructor() {
         this.canvas = document.getElementById('canvas');
         this.svg = document.getElementById('connectionSvg');
         this.status = document.getElementById('status');
-        this.currentTool = 'rectangle'; // default tool
+        this.currentTool = 'rectangle';
         this.shapes = [];
         this.connections = [];
-        this.selectedShape = null;
-        this.connectingFrom = null;
-        this.dragData = null;
         this.shapeIdCounter = 0;
-        
-        this.initEventListeners();
-        this.updateStatus();
-    }
+        this.dragData = null;
 
-    initEventListeners() {
-        // Tool selection
+        this.initListeners();
+        this.updateStatus();
+      }
+
+      initListeners() {
         document.querySelectorAll('.tool-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.selectTool(e.target.closest('.tool-btn').dataset.tool));
+          btn.addEventListener('click', () => this.selectTool(btn.dataset.tool));
         });
 
-        // Canvas events
         this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
-
-        // Global mouse events for dragging
         document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-        document.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+        document.addEventListener('mouseup', () => this.handleMouseUp());
+      }
 
-        // Prevent context menu
-        this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-    }
-
-    selectTool(tool) {
-        if (tool === 'clear') {
-            this.clearCanvas();
-            return;
-        }
-        
+      selectTool(tool) {
+        if (tool === 'clear') return this.clearCanvas();
         this.currentTool = tool;
-        this.connectingFrom = null;
-        this.selectedShape = null;
-        
-        // Update UI
-        document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
         document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
-        document.querySelectorAll('.shape').forEach(shape => shape.classList.remove('selected'));
-        
-        // Update cursor
-        this.canvas.style.cursor = tool === 'select' ? 'default' : 'crosshair';
-        
         this.updateStatus();
-    }
+      }
 
-    handleCanvasClick(e) {
-        // Accept clicks only on empty space (canvas OR the svg grid)
+      handleCanvasClick(e) {
         if (e.target !== this.canvas && e.target !== this.svg) return;
-
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+        if (['rectangle','circle','diamond'].includes(this.currentTool)) this.createShape(this.currentTool, x, y);
+      }
 
-        switch (this.currentTool) {
-            case 'rectangle':
-                this.createShape('rectangle', x, y);
-                break;
-            case 'circle':
-                this.createShape('circle', x, y);
-                break;
-            case 'diamond':
-                this.createShape('diamond', x, y);
-                break;
-        }
-    }
-
-    createShape(type, x, y) {
-        const defaultText = type === 'rectangle' ? 'Process' : type === 'circle' ? 'Start' : 'Decision';
-        const userText = prompt(`Enter text for ${type}:`, defaultText);
-
-        if (userText === null) {
-            this.selectTool('select');
-            return;
-        }
-
+      createShape(type, x, y) {
         const shape = document.createElement('div');
-        const id = `shape-${this.shapeIdCounter++}`;
-        shape.id = id;
         shape.className = `shape ${type}`;
-        shape.style.left = `${x - 40}px`;
-        shape.style.top = `${y - 20}px`;
+        shape.style.left = (x-40)+"px";
+        shape.style.top = (y-20)+"px";
 
-        const text = document.createElement('span');
-        text.textContent = userText || defaultText;
-        text.contentEditable = true;
-        text.addEventListener('blur', () => this.updateConnections());
-        text.addEventListener('click', (e) => e.stopPropagation());
-        shape.appendChild(text);
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.innerHTML = '×';
-        deleteBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.deleteShape(shape);
-        });
-        shape.appendChild(deleteBtn);
-
-        shape.addEventListener('click', (e) => this.handleShapeClick(e, shape));
-        shape.addEventListener('mousedown', (e) => this.handleShapeMouseDown(e, shape));
+        const span = document.createElement('span');
+        span.textContent = type;
+        shape.appendChild(span);
 
         this.canvas.appendChild(shape);
-        this.shapes.push({ element: shape, id, type });
+        this.shapes.push(shape);
+      }
 
-        this.selectTool('select');
-    }
-
-    handleShapeClick(e, shape) {
-        e.stopPropagation();
-        
-        if (this.currentTool === 'connect') {
-            if (!this.connectingFrom) {
-                this.connectingFrom = shape;
-                shape.style.borderColor = '#007bff';
-                this.updateStatus('Click another shape to connect');
-            } else if (this.connectingFrom !== shape) {
-                this.createConnection(this.connectingFrom, shape);
-                this.connectingFrom.style.borderColor = '#2c3e50';
-                this.connectingFrom = null;
-                this.updateStatus();
-            }
-        } else if (this.currentTool === 'select') {
-            this.selectShape(shape);
-        }
-    }
-
-    selectShape(shape) {
-        document.querySelectorAll('.shape').forEach(s => s.classList.remove('selected'));
-        shape.classList.add('selected');
-        this.selectedShape = shape;
-    }
-
-    handleShapeMouseDown(e, shape) {
-        if (this.currentTool !== 'select') return;
-        if (e.target.contentEditable === 'true') return;
-        
-        const shapeRect = shape.getBoundingClientRect();
-        const canvasRect = this.canvas.getBoundingClientRect();
-        
-        this.dragData = {
-            shape: shape,
-            offsetX: e.clientX - shapeRect.left,
-            offsetY: e.clientY - shapeRect.top
-        };
-        
-        this.canvas.style.cursor = 'grabbing';
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    handleMouseMove(e) {
+      handleMouseMove(e) {
         if (!this.dragData) return;
-        
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left - this.dragData.offsetX;
         const y = e.clientY - rect.top - this.dragData.offsetY;
-        
-        this.dragData.shape.style.left = `${Math.max(0, Math.min(x, rect.width - this.dragData.shape.offsetWidth))}px`;
-        this.dragData.shape.style.top = `${Math.max(0, Math.min(y, rect.height - this.dragData.shape.offsetHeight))}px`;
-        
-        this.updateConnections();
+        this.dragData.shape.style.left = x + 'px';
+        this.dragData.shape.style.top = y + 'px';
+      }
+
+      handleMouseUp() {
+        this.dragData = null;
+      }
+
+      clearCanvas() {
+        this.canvas.querySelectorAll('.shape').forEach(s => s.remove());
+      }
+
+      updateStatus() {
+        this.status.textContent = `Tool: ${this.currentTool}`;
+      }
     }
 
-    handleMouseUp(e) {
-        if (this.dragData) {
-            this.dragData = null;
-            this.canvas.style.cursor = this.currentTool === 'select' ? 'default' : 'crosshair';
-        }
-    }
-
-    createConnection(from, to) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('stroke', '#2c3e50');
-        line.setAttribute('stroke-width', '2');
-        line.setAttribute('marker-end', 'url(#arrowhead)');
-        
-        this.svg.appendChild(line);
-        this.connections.push({ line, from, to });
-        this.updateConnections();
-    }
-
-    updateConnections() {
-        this.connections.forEach(({ line, from, to }) => {
-            const fromRect = from.getBoundingClientRect();
-            const toRect = to.getBoundingClientRect();
-            const canvasRect = this.canvas.getBoundingClientRect();
-            
-            const fromCenterX = fromRect.left - canvasRect.left + fromRect.width / 2;
-            const fromCenterY = fromRect.top - canvasRect.top + fromRect.height / 2;
-            const toCenterX = toRect.left - canvasRect.left + toRect.width / 2;
-            const toCenterY = toRect.top - canvasRect.top + toRect.height / 2;
-            
-            line.setAttribute('x1', fromCenterX);
-            line.setAttribute('y1', fromCenterY);
-            line.setAttribute('x2', toCenterX);
-            line.setAttribute('y2', toCenterY);
-        });
-    }
-
-    deleteShape(shape) {
-        this.connections = this.connections.filter(({ line, from, to }) => {
-            if (from === shape || to === shape) {
-                line.remove();
-                return false;
-            }
-            return true;
-        });
-        
-        this.shapes = this.shapes.filter(s => s.element !== shape);
-        shape.remove();
-        
-        if (this.selectedShape === shape) {
-            this.selectedShape = null;
-        }
-    }
-
-    clearCanvas() {
-        this.shapes.forEach(({ element }) => element.remove());
-        this.connections.forEach(({ line }) => line.remove());
-        this.shapes = [];
-        this.connections = [];
-        this.selectedShape = null;
-        this.connectingFrom = null;
-    }
-
-    updateStatus(message) {
-        const messages = {
-            select: 'Click shapes to select • Drag to move',
-            rectangle: 'Click to create rectangles',
-            circle: 'Click to create circles', 
-            diamond: 'Click to create diamonds',
-            connect: 'Click two shapes to connect them'
-        };
-        
-        this.status.textContent = message || messages[this.currentTool] || '';
-    }
-}
-
-// Initialize the diagram builder
-new DiagramBuilder();
-</script>
-
+    new DiagramBuilder();
+  </script>
 </body>
 </html>
