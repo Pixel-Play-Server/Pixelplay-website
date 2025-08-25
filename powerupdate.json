@@ -1,7 +1,7 @@
 {
   "current_script": [
         {
-      "script": "https://raw.githubusercontent.com/PixelPlayServer/.well-known/refs/heads/main/launcher/pstester.ps1",
+      "script": "https://raw.githubusercontent.com/Pixel-Play-Server/Pixelplay-website/refs/heads/main/launcher/pstester.ps1",
       "version": "2.3.2"
     }
   ]
