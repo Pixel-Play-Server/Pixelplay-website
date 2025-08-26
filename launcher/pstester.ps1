@@ -22,8 +22,19 @@ function Ensure-Tls12 {
 }
 
 function Resolve-Paths {
-    $scriptPath = $MyInvocation.MyCommand.Path
-    $scriptDir = Split-Path -Parent $scriptPath                              # .../resources/app/downloads
+    # Resolver directorio del script de forma robusta
+    $scriptDir = $null
+    try { if ($PSScriptRoot) { $scriptDir = $PSScriptRoot } } catch {}
+    if (-not $scriptDir) {
+        $scriptPath = $null
+        try { $scriptPath = $PSCommandPath } catch {}
+        if (-not $scriptPath) { try { $scriptPath = $MyInvocation.MyCommand.Path } catch {} }
+        if (-not $scriptPath -or -not (Test-Path -LiteralPath $scriptPath)) { $scriptPath = (Get-Location).Path }
+        $scriptDir = Split-Path -Parent $scriptPath
+        if (-not $scriptDir) { $scriptDir = (Get-Location).Path }
+    }
+
+    # Derivar rutas relativas al directorio del script
     $appDir    = Resolve-Path (Join-Path $scriptDir '..') | ForEach-Object { $_.Path }        # .../resources/app
     $resources = Resolve-Path (Join-Path $appDir '..') | ForEach-Object { $_.Path }           # .../resources
     $install   = Resolve-Path (Join-Path $resources '..') | ForEach-Object { $_.Path }        # .../Pixelplay Launcher (instalación)
