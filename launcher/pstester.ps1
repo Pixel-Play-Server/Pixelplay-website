@@ -172,7 +172,60 @@ function Download-GDriveLargeFile($url, $destFile) {
     }
 
     if (-not $downloadSucceeded) {
+        Write-Host 'No se pudo descargar automáticamente. Intentando asistencia manual...' -ForegroundColor DarkYellow
+        $manualUrl = Prompt-ForDriveDownloadUrl -initialUrl $initialUrl
+        if ($manualUrl) {
+            try { Remove-Item -LiteralPath $destFile -Force -ErrorAction SilentlyContinue } catch {}
+            Invoke-DownloadWithProgress -Url $manualUrl -Destination $destFile -Headers $headers
+            $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
+        }
+    }
+
+    if (-not $downloadSucceeded) {
         throw 'La descarga desde Google Drive no devolvió un archivo ZIP válido. Es posible que Google haya respondido con una página HTML de advertencia.'
+    }
+}
+
+function Prompt-ForDriveDownloadUrl {
+    param([Parameter(Mandatory=$true)][string]$initialUrl)
+    try {
+        Add-Type -AssemblyName System.Windows.Forms | Out-Null
+        Add-Type -AssemblyName System.Drawing | Out-Null
+
+        $form = New-Object System.Windows.Forms.Form
+        $form.Text = 'Confirmación de descarga - Google Drive'
+        $form.Width = 600; $form.Height = 220
+        $form.StartPosition = 'CenterScreen'
+
+        $label = New-Object System.Windows.Forms.Label
+        $label.AutoSize = $true
+        $label.Text = '1) Clic en "Abrir página" y en la web pulsa "Descargar de todos modos". 2) Copia la dirección del enlace final de descarga y pégala aquí:'
+        $label.Top = 10; $label.Left = 10; $label.Width = 560
+        $form.Controls.Add($label)
+
+        $text = New-Object System.Windows.Forms.TextBox
+        $text.Left = 10; $text.Top = 60; $text.Width = 560
+        $form.Controls.Add($text)
+
+        $btnOpen = New-Object System.Windows.Forms.Button
+        $btnOpen.Text = 'Abrir página'; $btnOpen.Left = 10; $btnOpen.Top = 100; $btnOpen.Width = 120
+        $btnOpen.Add_Click({ Start-Process $initialUrl })
+        $form.Controls.Add($btnOpen)
+
+        $btnOk = New-Object System.Windows.Forms.Button
+        $btnOk.Text = 'Continuar'; $btnOk.Left = 450; $btnOk.Top = 100; $btnOk.Width = 120
+        $btnOk.Add_Click({ $form.DialogResult = [System.Windows.Forms.DialogResult]::OK; $form.Close() })
+        $form.AcceptButton = $btnOk
+        $form.Controls.Add($btnOk)
+
+        if ($form.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return $null }
+        $u = $text.Text.Trim()
+        if (-not $u) { return $null }
+        try { $uri = [uri]$u } catch { return $null }
+        if ($uri.Host -notlike '*googleusercontent.com' -and $uri.Host -notlike '*drive.google.com' -and $uri.Host -notlike '*drive.usercontent.google.com') { return $null }
+        return $u
+    } catch {
+        return $null
     }
 }
 
