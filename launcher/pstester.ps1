@@ -65,12 +65,20 @@ Write-Host "Mostrando progreso en vivo. No cierre esta ventana...`n" -Foreground
 # Esperar a que el archivo exista
 while (-not (Test-Path -LiteralPath $LogPath)) { Start-Sleep -Milliseconds 200 }
 
-# Mostrar contenido en vivo
-Get-Content -LiteralPath $LogPath -Wait
-'@
-    if (-not (Test-Path -LiteralPath $viewerPath)) {
-        Set-Content -LiteralPath $viewerPath -Value $content -Encoding UTF8 -Force
+# Leer contenido en vivo y dibujar barra de progreso si se emiten marcas
+Get-Content -LiteralPath $LogPath -Wait | ForEach-Object {
+    $line = $_
+    if ($line -match '^\[PROGRESS_DOWNLOAD\]\s+(\d{1,3})$') {
+        $p = [int]$Matches[1]
+        if ($p -lt 0) { $p = 0 } elseif ($p -gt 100) { $p = 100 }
+        Write-Progress -Activity 'Descargando actualización' -Status ("$p%") -PercentComplete $p
+    } else {
+        Write-Host $line
     }
+}
+'@
+    # Siempre sobreescribir para garantizar versión actualizada del visor
+    Set-Content -LiteralPath $viewerPath -Value $content -Encoding UTF8 -Force
     return $viewerPath
 }
 
@@ -104,10 +112,10 @@ function Download-Package($url, $destFile) {
     $wc.add_DownloadProgressChanged({ param($s,$e)
         if ($e.TotalBytesToReceive -gt 0) {
             $pct = [int]$e.ProgressPercentage
-            if ($pct -ne $progress) { $progress = $pct; Write-Progress -Activity "Descargando actualización" -Status "$pct%" -PercentComplete $pct }
+            if ($pct -ne $progress) { $progress = $pct; Write-Progress -Activity "Descargando actualización" -Status "$pct%" -PercentComplete $pct; Add-Content -LiteralPath $script:LogPath -Value ("[PROGRESS_DOWNLOAD] {0}" -f $pct) }
         }
     })
-    $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualización" -Completed })
+    $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualización" -Completed; Add-Content -LiteralPath $script:LogPath -Value "[PROGRESS_DOWNLOAD] 100" })
     $wc.DownloadFileAsync([uri]$url, $destFile)
     while ($wc.IsBusy) { Start-Sleep -Milliseconds 200 }
 }
@@ -144,7 +152,7 @@ function Download-GDriveLargeFile($url, $destFile) {
     if ($formAction -and $formParams.ContainsKey('id')) {
         try {
             $qs = ($formParams.GetEnumerator() | ForEach-Object { "{0}={1}" -f [uri]::EscapeDataString($_.Key), [uri]::EscapeDataString([string]$_.Value) }) -join '&'
-            if ($formAction -notmatch '^https?://') { $formAction = "https://drive.usercontent.google.com/download" }
+            if ($formAction -notmatch '^https?://') { $formAction = "https://drive.usercontent.google.com/download" } else { $formAction = $formAction }
             $finalUrl = "$formAction?$qs"
             Write-Host "Descargando desde formulario confirmado..." -ForegroundColor White
             Invoke-WebRequest -Uri $finalUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
@@ -169,17 +177,54 @@ function Download-GDriveLargeFile($url, $destFile) {
     }
 
     if (-not $downloadSucceeded) {
-        # 3) Intento alternativo directo a drive.usercontent.google.com
+        # 3) Intento alternativo directo a drive.usercontent.google.com con progreso y cabeceras
         Write-Host 'El archivo descargado no parece ser un ZIP válido, reintentando con endpoint alternativo...' -ForegroundColor DarkYellow
         $confirmVal = if ($formParams.ContainsKey('confirm')) { $formParams['confirm'] } elseif ($token) { $token } else { '' }
         $altUrl = if ($confirmVal) { "https://drive.usercontent.google.com/download?id=$fileId&export=download&confirm=$confirmVal" } else { "https://drive.usercontent.google.com/download?id=$fileId&export=download" }
         try { Remove-Item -LiteralPath $destFile -Force -ErrorAction SilentlyContinue } catch {}
-        Invoke-WebRequest -Uri $altUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
+        Invoke-DownloadWithProgress -Url $altUrl -Destination $destFile -Headers $headers
         $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
     }
 
     if (-not $downloadSucceeded) {
         throw 'La descarga desde Google Drive no devolvió un archivo ZIP válido. Es posible que Google haya respondido con una página HTML de advertencia.'
+    }
+}
+
+function Invoke-DownloadWithProgress {
+    param(
+        [Parameter(Mandatory=$true)] [string]$Url,
+        [Parameter(Mandatory=$true)] [string]$Destination,
+        [hashtable]$Headers
+    )
+    try {
+        $request = [System.Net.HttpWebRequest]::Create($Url)
+        $request.Method = 'GET'
+        if ($Headers) { foreach ($k in $Headers.Keys) { if ($k -ieq 'User-Agent') { $request.UserAgent = [string]$Headers[$k] } else { $request.Headers[[string]$k] = [string]$Headers[$k] } } }
+        $response = $request.GetResponse()
+        $total = $response.ContentLength
+        $stream = $response.GetResponseStream()
+        $fs = New-Object System.IO.FileStream($Destination, [System.IO.FileMode]::Create)
+        $buffer = New-Object byte[] 65536
+        $read = 0
+        $downloaded = 0
+        $lastPct = -1
+        while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+            $fs.Write($buffer, 0, $read)
+            $downloaded += $read
+            if ($total -gt 0) {
+                $pct = [int]([math]::Floor(($downloaded * 100.0) / $total))
+                if ($pct -ne $lastPct) {
+                    $lastPct = $pct
+                    Write-Progress -Activity 'Descargando actualización' -Status ("$pct%") -PercentComplete $pct
+                    if ($script:LogPath) { Add-Content -LiteralPath $script:LogPath -Value ("[PROGRESS_DOWNLOAD] {0}" -f $pct) }
+                }
+            }
+        }
+        $fs.Close(); $stream.Close(); $response.Close()
+        if ($script:LogPath) { Add-Content -LiteralPath $script:LogPath -Value "[PROGRESS_DOWNLOAD] 100" }
+    } catch {
+        throw $_
     }
 }
 
@@ -279,6 +324,7 @@ try {
     $logPath = Join-Path $logDir "update_$timestamp.log"
     Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
     try { Start-Transcript -LiteralPath $logPath -Force | Out-Null } catch {}
+    $script:LogPath = $logPath
 
     # Si no se pasó PackageUrl, intentar autodetectar desde powerupdate.json
     if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
