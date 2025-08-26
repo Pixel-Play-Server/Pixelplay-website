@@ -112,10 +112,10 @@ function Download-Package($url, $destFile) {
     $wc.add_DownloadProgressChanged({ param($s,$e)
         if ($e.TotalBytesToReceive -gt 0) {
             $pct = [int]$e.ProgressPercentage
-            if ($pct -ne $progress) { $progress = $pct; Write-Progress -Activity "Descargando actualización" -Status "$pct%" -PercentComplete $pct; Add-Content -LiteralPath $script:LogPath -Value ("[PROGRESS_DOWNLOAD] {0}" -f $pct) }
+            if ($pct -ne $progress) { $progress = $pct; Write-Progress -Activity "Descargando actualización" -Status "$pct%" -PercentComplete $pct; Write-Host ("[PROGRESS_DOWNLOAD] {0}" -f $pct) }
         }
     })
-    $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualización" -Completed; Add-Content -LiteralPath $script:LogPath -Value "[PROGRESS_DOWNLOAD] 100" })
+    $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualización" -Completed; Write-Host "[PROGRESS_DOWNLOAD] 100" })
     $wc.DownloadFileAsync([uri]$url, $destFile)
     while ($wc.IsBusy) { Start-Sleep -Milliseconds 200 }
 }
@@ -139,26 +139,7 @@ function Download-GDriveLargeFile($url, $destFile) {
     $resp1 = Invoke-WebRequest -Uri $initialUrl -WebSession $session -UseBasicParsing -Headers $headers
     $content = $resp1.Content
 
-    # 1) Intentar parsear el formulario "Download anyway"
-    $formAction = $null; $formParams = @{}
-    try {
-        if ($content -match 'form[^>]+id=\"download-form\"[\s\S]*?action=\"([^\"]+)\"') { $formAction = $Matches[1] }
-        $matches = [System.Text.RegularExpressions.Regex]::Matches($content, '<input[^>]+type=\"hidden\"[^>]+name=\"([^\"]+)\"[^>]+value=\"([^\"]*)\"', 'IgnoreCase')
-        foreach ($m in $matches) { $n = $m.Groups[1].Value; $v = $m.Groups[2].Value; if ($n) { $formParams[$n] = $v } }
-    } catch {}
-
     $downloadSucceeded = $false
-
-    if ($formAction -and $formParams.ContainsKey('id')) {
-        try {
-            $qs = ($formParams.GetEnumerator() | ForEach-Object { "{0}={1}" -f [uri]::EscapeDataString($_.Key), [uri]::EscapeDataString([string]$_.Value) }) -join '&'
-            if ($formAction -notmatch '^https?://') { $formAction = "https://drive.usercontent.google.com/download" } else { $formAction = $formAction }
-            $finalUrl = "$formAction?$qs"
-            Write-Host "Descargando desde formulario confirmado..." -ForegroundColor White
-            Invoke-WebRequest -Uri $finalUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
-            $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
-        } catch {}
-    }
 
     if (-not $downloadSucceeded) {
         # 2) Intento con confirm token en uc?export (regex/cookies)
@@ -179,7 +160,7 @@ function Download-GDriveLargeFile($url, $destFile) {
     if (-not $downloadSucceeded) {
         # 3) Intento alternativo directo a drive.usercontent.google.com con progreso y cabeceras
         Write-Host 'El archivo descargado no parece ser un ZIP válido, reintentando con endpoint alternativo...' -ForegroundColor DarkYellow
-        $confirmVal = if ($formParams.ContainsKey('confirm')) { $formParams['confirm'] } elseif ($token) { $token } else { '' }
+        $confirmVal = if ($token) { $token } else { '' }
         $altUrl = if ($confirmVal) { "https://drive.usercontent.google.com/download?id=$fileId&export=download&confirm=$confirmVal" } else { "https://drive.usercontent.google.com/download?id=$fileId&export=download" }
         try { Remove-Item -LiteralPath $destFile -Force -ErrorAction SilentlyContinue } catch {}
         Invoke-DownloadWithProgress -Url $altUrl -Destination $destFile -Headers $headers
