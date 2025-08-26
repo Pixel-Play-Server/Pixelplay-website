@@ -127,10 +127,12 @@ function Download-GDriveLargeFile($url, $destFile) {
     if (-not $fileId) { throw 'No se pudo extraer el ID de archivo de Google Drive.' }
 
     $initialUrl = "https://drive.google.com/uc?export=download&id=$fileId"
-    $resp1 = Invoke-WebRequest -Uri $initialUrl -WebSession $session -UseBasicParsing
+    $headers = @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36' }
+    $resp1 = Invoke-WebRequest -Uri $initialUrl -WebSession $session -UseBasicParsing -Headers $headers
     $content = $resp1.Content
     $token = $null
     if ($content -match 'confirm=([0-9A-Za-z_\-]+)') { $token = $Matches[1] }
+    if (-not $token -and $content -match 'href=\"/uc\?export=download&confirm=([0-9A-Za-z_\-]+)&id=') { $token = $Matches[1] }
     if (-not $token) {
         $cookies = $session.Cookies.GetCookies('https://drive.google.com')
         foreach ($c in $cookies) { if ($c.Name -like 'download_warning*') { $token = $c.Value; break } }
@@ -139,9 +141,22 @@ function Download-GDriveLargeFile($url, $destFile) {
 
     $downloadUrl = if ($token) { "https://drive.google.com/uc?export=download&confirm=$token&id=$fileId" } else { $initialUrl }
     Write-Host "Descargando desde URL confirmada..." -ForegroundColor White
-    Invoke-WebRequest -Uri $downloadUrl -WebSession $session -OutFile $destFile -UseBasicParsing
+    Invoke-WebRequest -Uri $downloadUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
+
     if (-not (Test-Path -LiteralPath $destFile) -or (Get-Item -LiteralPath $destFile).Length -eq 0) {
         throw 'La descarga desde Google Drive falló o devolvió un archivo vacío.'
+    }
+
+    if (-not (Test-IsZip -file $destFile)) {
+        Write-Host 'El archivo descargado no parece ser un ZIP válido, reintentando con endpoint alternativo...' -ForegroundColor DarkYellow
+        # Intento alternativo directo a drive.usercontent.google.com
+        $altUrl = if ($token) { "https://drive.usercontent.google.com/download?id=$fileId&export=download&confirm=$token" } else { "https://drive.usercontent.google.com/download?id=$fileId&export=download" }
+        try { Remove-Item -LiteralPath $destFile -Force -ErrorAction SilentlyContinue } catch {}
+        Invoke-WebRequest -Uri $altUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
+    }
+
+    if (-not (Test-IsZip -file $destFile)) {
+        throw 'La descarga desde Google Drive no devolvió un archivo ZIP válido. Es posible que Google haya respondido con una página HTML de advertencia.'
     }
 }
 
@@ -152,6 +167,22 @@ function Verify-Checksum($file, $expectedSha256) {
     if ($hash.Hash.ToLower() -ne $expectedSha256.ToLower()) { throw "Checksum inválido. Esperado: $expectedSha256, Obtenido: $($hash.Hash)" }
     Write-Host "Checksum OK" -ForegroundColor Green
     $true
+}
+
+function Test-IsZip($file) {
+    try {
+        if (-not (Test-Path -LiteralPath $file)) { return $false }
+        $fi = [System.IO.File]::OpenRead($file)
+        try {
+            $sig = New-Object byte[] 4
+            [void]$fi.Read($sig, 0, 4)
+            $fi.Close()
+            # 'PK\x03\x04' firma ZIP
+            return ($sig[0] -eq 0x50 -and $sig[1] -eq 0x4B -and $sig[2] -eq 0x03 -and $sig[3] -eq 0x04)
+        } finally {
+            if ($fi) { $fi.Dispose() }
+        }
+    } catch { return $false }
 }
 
 function Get-UpdateInfo {
@@ -260,6 +291,9 @@ try {
     Verify-Checksum -file $zipPath -expectedSha256 $Sha256 | Out-Null
 
     # Extraer paquete
+    if (-not (Test-IsZip -file $zipPath)) {
+        throw 'El archivo descargado no es un ZIP válido. Aborting extracción.'
+    }
     Write-Host "Extrayendo paquete..." -ForegroundColor White
     Expand-Archive -LiteralPath $zipPath -DestinationPath $extractDir -Force
 
