@@ -130,32 +130,55 @@ function Download-GDriveLargeFile($url, $destFile) {
     $headers = @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36' }
     $resp1 = Invoke-WebRequest -Uri $initialUrl -WebSession $session -UseBasicParsing -Headers $headers
     $content = $resp1.Content
-    $token = $null
-    if ($content -match 'confirm=([0-9A-Za-z_\-]+)') { $token = $Matches[1] }
-    if (-not $token -and $content -match 'href=\"/uc\?export=download&confirm=([0-9A-Za-z_\-]+)&id=') { $token = $Matches[1] }
-    if (-not $token) {
-        $cookies = $session.Cookies.GetCookies('https://drive.google.com')
-        foreach ($c in $cookies) { if ($c.Name -like 'download_warning*') { $token = $c.Value; break } }
+
+    # 1) Intentar parsear el formulario "Download anyway"
+    $formAction = $null; $formParams = @{}
+    try {
+        if ($content -match 'form[^>]+id=\"download-form\"[\s\S]*?action=\"([^\"]+)\"') { $formAction = $Matches[1] }
+        $matches = [System.Text.RegularExpressions.Regex]::Matches($content, '<input[^>]+type=\"hidden\"[^>]+name=\"([^\"]+)\"[^>]+value=\"([^\"]*)\"', 'IgnoreCase')
+        foreach ($m in $matches) { $n = $m.Groups[1].Value; $v = $m.Groups[2].Value; if ($n) { $formParams[$n] = $v } }
+    } catch {}
+
+    $downloadSucceeded = $false
+
+    if ($formAction -and $formParams.ContainsKey('id')) {
+        try {
+            $qs = ($formParams.GetEnumerator() | ForEach-Object { "{0}={1}" -f [uri]::EscapeDataString($_.Key), [uri]::EscapeDataString([string]$_.Value) }) -join '&'
+            if ($formAction -notmatch '^https?://') { $formAction = "https://drive.usercontent.google.com/download" }
+            $finalUrl = "$formAction?$qs"
+            Write-Host "Descargando desde formulario confirmado..." -ForegroundColor White
+            Invoke-WebRequest -Uri $finalUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
+            $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
+        } catch {}
     }
-    if (-not $token) { Write-Host 'No se encontró token de confirmación; intentando descargar igualmente...' -ForegroundColor DarkYellow }
 
-    $downloadUrl = if ($token) { "https://drive.google.com/uc?export=download&confirm=$token&id=$fileId" } else { $initialUrl }
-    Write-Host "Descargando desde URL confirmada..." -ForegroundColor White
-    Invoke-WebRequest -Uri $downloadUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
-
-    if (-not (Test-Path -LiteralPath $destFile) -or (Get-Item -LiteralPath $destFile).Length -eq 0) {
-        throw 'La descarga desde Google Drive falló o devolvió un archivo vacío.'
+    if (-not $downloadSucceeded) {
+        # 2) Intento con confirm token en uc?export (regex/cookies)
+        $token = $null
+        if ($content -match 'confirm=([0-9A-Za-z_\-]+)') { $token = $Matches[1] }
+        if (-not $token -and $content -match 'href=\"/uc\?export=download&confirm=([0-9A-Za-z_\-]+)&id=') { $token = $Matches[1] }
+        if (-not $token) { $cookies = $session.Cookies.GetCookies('https://drive.google.com'); foreach ($c in $cookies) { if ($c.Name -like 'download_warning*') { $token = $c.Value; break } } }
+        if (-not $token -and $formParams.ContainsKey('confirm')) { $token = $formParams['confirm'] }
+        $downloadUrl = if ($token) { "https://drive.google.com/uc?export=download&confirm=$token&id=$fileId" } else { $initialUrl }
+        if (-not $token) { Write-Host 'No se encontró token de confirmación; intentando descargar igualmente...' -ForegroundColor DarkYellow }
+        Write-Host "Descargando desde URL confirmada..." -ForegroundColor White
+        try {
+            Invoke-WebRequest -Uri $downloadUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
+            $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
+        } catch {}
     }
 
-    if (-not (Test-IsZip -file $destFile)) {
+    if (-not $downloadSucceeded) {
+        # 3) Intento alternativo directo a drive.usercontent.google.com
         Write-Host 'El archivo descargado no parece ser un ZIP válido, reintentando con endpoint alternativo...' -ForegroundColor DarkYellow
-        # Intento alternativo directo a drive.usercontent.google.com
-        $altUrl = if ($token) { "https://drive.usercontent.google.com/download?id=$fileId&export=download&confirm=$token" } else { "https://drive.usercontent.google.com/download?id=$fileId&export=download" }
+        $confirmVal = if ($formParams.ContainsKey('confirm')) { $formParams['confirm'] } elseif ($token) { $token } else { '' }
+        $altUrl = if ($confirmVal) { "https://drive.usercontent.google.com/download?id=$fileId&export=download&confirm=$confirmVal" } else { "https://drive.usercontent.google.com/download?id=$fileId&export=download" }
         try { Remove-Item -LiteralPath $destFile -Force -ErrorAction SilentlyContinue } catch {}
         Invoke-WebRequest -Uri $altUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
+        $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
     }
 
-    if (-not (Test-IsZip -file $destFile)) {
+    if (-not $downloadSucceeded) {
         throw 'La descarga desde Google Drive no devolvió un archivo ZIP válido. Es posible que Google haya respondido con una página HTML de advertencia.'
     }
 }
