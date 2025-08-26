@@ -11,6 +11,9 @@ $DefaultSha256 = "CE824B6D4F3B01BBC15DEFDCA839607F127495399C2C031690BD54C446793A
 # Nota: No asignamos $Sha256 automáticamente para evitar falsos negativos
 # con paquetes nuevos. Si se desea forzar, pase -Sha256 explícitamente.
 
+# URL de paquete por defecto (fallback), alojado en Google Drive
+$DefaultPackageUrl = "https://drive.google.com/uc?id=13TTpOILM84CMn5_LZd6r3zZA-bNKcC_C"
+
 function Write-Section($text) {
     Write-Host "`n=====================================" -ForegroundColor Cyan
     Write-Host " $text" -ForegroundColor Yellow
@@ -233,8 +236,14 @@ try {
         }
     }
 
+    # Fallback adicional: variable de entorno y valor por defecto
+    if ([string]::IsNullOrWhiteSpace($PackageUrl)) { $envUrl = [Environment]::GetEnvironmentVariable('PIXELPLAY_PACKAGE_URL','Process'); if ($envUrl) { $PackageUrl = $envUrl } }
+    if ([string]::IsNullOrWhiteSpace($PackageUrl)) { $envUrl = [Environment]::GetEnvironmentVariable('PIXELPLAY_PACKAGE_URL','User'); if ($envUrl) { $PackageUrl = $envUrl } }
+    if ([string]::IsNullOrWhiteSpace($PackageUrl)) { $envUrl = [Environment]::GetEnvironmentVariable('PIXELPLAY_PACKAGE_URL','Machine'); if ($envUrl) { $PackageUrl = $envUrl } }
+    if ([string]::IsNullOrWhiteSpace($PackageUrl)) { $PackageUrl = $DefaultPackageUrl }
+
     if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
-        throw 'No se pudo determinar la URL del paquete. Proporcione -PackageUrl o asegúrese de que powerupdate.json incluya el enlace del paquete.'
+        throw 'No se pudo determinar la URL del paquete. Proporcione -PackageUrl, configure PIXELPLAY_PACKAGE_URL o asegúrese de que powerupdate.json incluya el enlace del paquete.'
     }
 
     if (-not $SkipKill) { Kill-Launcher }
