@@ -1,5 +1,5 @@
 param(
-    [Parameter(Mandatory = $true)] [string]$PackageUrl,
+    [string]$PackageUrl = "",
     [string]$Sha256 = "",
     [switch]$SkipKill
 )
@@ -8,9 +8,8 @@ $ErrorActionPreference = 'Stop'
 
 # SHA256 por defecto embebido (se utiliza si no se pasa -Sha256)
 $DefaultSha256 = "CE824B6D4F3B01BBC15DEFDCA839607F127495399C2C031690BD54C446793A72"
-if ([string]::IsNullOrWhiteSpace($Sha256)) {
-    $Sha256 = $DefaultSha256
-}
+# Nota: No asignamos $Sha256 automáticamente para evitar falsos negativos
+# con paquetes nuevos. Si se desea forzar, pase -Sha256 explícitamente.
 
 function Write-Section($text) {
     Write-Host "`n=====================================" -ForegroundColor Cyan
@@ -63,8 +62,8 @@ Get-Content -LiteralPath $LogPath -Wait
 
 function Start-Viewer($downloadsDir, $logPath) {
     $viewer = Ensure-ViewerScript -downloadsDir $downloadsDir
-    $args = "-NoProfile -ExecutionPolicy Bypass -NoExit -File `"$viewer`" -LogPath `"$logPath`" -Title `"PixelPlay Updater`""
-    Start-Process -FilePath "powershell.exe" -ArgumentList $args -WindowStyle Normal | Out-Null
+    $viewerArgs = "-NoProfile -ExecutionPolicy Bypass -NoExit -File `"$viewer`" -LogPath `"$logPath`" -Title `"PixelPlay Updater`""
+    Start-Process -FilePath "powershell.exe" -ArgumentList $viewerArgs -WindowStyle Normal | Out-Null
 }
 
 function Kill-Launcher {
@@ -141,6 +140,40 @@ function Verify-Checksum($file, $expectedSha256) {
     $true
 }
 
+function Get-UpdateInfo {
+    param(
+        [string]$InfoUrl = "https://pixelplay.gg/powerupdate.json"
+    )
+    try {
+        Write-Host "Obteniendo información de actualización desde:" $InfoUrl -ForegroundColor White
+        Ensure-Tls12
+        $data = Invoke-RestMethod -Uri $InfoUrl -UseBasicParsing
+    } catch {
+        Write-Host "No se pudo obtener powerupdate.json: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        return $null
+    }
+
+    $pkgUrl = $null
+    $pkgSha = $null
+
+    try { if ($data.current_package -is [System.Array] -and $data.current_package.Count -gt 0) { $pkgUrl = $data.current_package[0].url; $pkgSha = $data.current_package[0].sha256 } } catch {}
+    if (-not $pkgUrl) { try { $pkgUrl = $data.current_package.url; if (-not $pkgSha) { $pkgSha = $data.current_package.sha256 } } catch {} }
+    if (-not $pkgUrl) { try { $pkgUrl = $data.package.url; if (-not $pkgSha) { $pkgSha = $data.package.sha256 } } catch {} }
+    if (-not $pkgUrl) { try { $pkgUrl = $data.packageUrl; if (-not $pkgSha) { $pkgSha = $data.sha256 } } catch {} }
+    if (-not $pkgUrl) { try { $pkgUrl = $data.current_script[0].package.url; if (-not $pkgSha) { $pkgSha = $data.current_script[0].package.sha256 } } catch {} }
+    if (-not $pkgUrl) { try { $pkgUrl = $data.current_script[0].packageUrl; if (-not $pkgSha) { $pkgSha = $data.current_script[0].sha256 } } catch {} }
+    if (-not $pkgUrl) { try { $pkgUrl = $data.current_script[0].zipUrl } catch {} }
+
+    if ($pkgUrl) {
+        Write-Host "Paquete detectado:" $pkgUrl -ForegroundColor DarkGray
+        if ($pkgSha) { Write-Host "SHA256 detectado en metadata." -ForegroundColor DarkGray }
+        return [pscustomobject]@{ Url = $pkgUrl; Sha256 = $pkgSha }
+    }
+
+    Write-Host "No se encontró URL de paquete en powerupdate.json" -ForegroundColor DarkYellow
+    return $null
+}
+
 function Replace-AppContent($extractedRoot, $appDir) {
     Write-Host "Preparando reemplazo de archivos..." -ForegroundColor White
     # Preservar carpeta downloads
@@ -160,8 +193,8 @@ function Replace-AppContent($extractedRoot, $appDir) {
 
 try {
     Write-Section 'PIXELPLAY UPDATER'
-    if (-not $PackageUrl) { throw 'Debe especificar -PackageUrl con la URL del ZIP del root (resources/app) actualizado.' }
 
+    # Resolver rutas y preparar visor de estado y logging lo antes posible
     $paths = Resolve-Paths
     $downloadsDir = $paths.ScriptDir
     $appDir = $paths.AppDir
@@ -171,19 +204,31 @@ try {
     Write-Host "Descargas:" $downloadsDir -ForegroundColor DarkGray
     Write-Host "Executable:" $exePath -ForegroundColor DarkGray
 
-    if (-not $SkipKill) { Kill-Launcher }
-
-    # Preparar rutas temporales
+    # Preparar rutas temporales y logging
     $timestamp = Get-Date -Format 'yyyyMMddHHmmss'
-    # Preparar logging y visor
     $logDir = Join-Path $downloadsDir 'logs'
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
     $logPath = Join-Path $logDir "update_$timestamp.log"
-    # Lanzar visor en nueva ventana
     Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
-    # Iniciar transcripción para que el visor muestre el progreso
     try { Start-Transcript -LiteralPath $logPath -Force | Out-Null } catch {}
 
+    # Si no se pasó PackageUrl, intentar autodetectar desde powerupdate.json
+    if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
+        Write-Host 'No se proporcionó -PackageUrl, intentando autodetectar...' -ForegroundColor DarkYellow
+        $info = Get-UpdateInfo
+        if ($info -and $info.Url) {
+            $PackageUrl = $info.Url
+            if ([string]::IsNullOrWhiteSpace($Sha256) -and $info.Sha256) { $Sha256 = $info.Sha256 }
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
+        throw 'No se pudo determinar la URL del paquete. Proporcione -PackageUrl o asegúrese de que powerupdate.json incluya el enlace del paquete.'
+    }
+
+    if (-not $SkipKill) { Kill-Launcher }
+
+    # Preparar rutas temporales de trabajo
     $zipPath = Join-Path $downloadsDir "update_$timestamp.zip"
     $extractDir = Join-Path $downloadsDir "update_temp_$timestamp"
     New-Item -ItemType Directory -Path $extractDir -Force | Out-Null
