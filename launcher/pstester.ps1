@@ -142,17 +142,21 @@ function Download-GDriveLargeFile($url, $destFile) {
     $downloadSucceeded = $false
 
     if (-not $downloadSucceeded) {
-        # 2) Intento con confirm token en uc?export (regex/cookies)
+        # Intento con confirm token en uc?export (regex/cookies)
         $token = $null
-        if ($content -match 'confirm=([0-9A-Za-z_\-]+)') { $token = $Matches[1] }
-        if (-not $token -and $content -match 'href=\"/uc\?export=download&confirm=([0-9A-Za-z_\-]+)&id=') { $token = $Matches[1] }
-        if (-not $token) { $cookies = $session.Cookies.GetCookies('https://drive.google.com'); foreach ($c in $cookies) { if ($c.Name -like 'download_warning*') { $token = $c.Value; break } } }
-        if (-not $token -and $formParams.ContainsKey('confirm')) { $token = $formParams['confirm'] }
+        if ($content -and $content -match 'confirm=([0-9A-Za-z_\-]+)') { $token = $Matches[1] }
+        if (-not $token -and $content -and $content -match 'href=\"/uc\?export=download&confirm=([0-9A-Za-z_\-]+)&id=') { $token = $Matches[1] }
+        try {
+            if (-not $token) {
+                $cookies = $session.Cookies.GetCookies('https://drive.google.com')
+                foreach ($c in $cookies) { if ($c.Name -like 'download_warning*') { $token = $c.Value; break } }
+            }
+        } catch {}
         $downloadUrl = if ($token) { "https://drive.google.com/uc?export=download&confirm=$token&id=$fileId" } else { $initialUrl }
         if (-not $token) { Write-Host 'No se encontró token de confirmación; intentando descargar igualmente...' -ForegroundColor DarkYellow }
         Write-Host "Descargando desde URL confirmada..." -ForegroundColor White
         try {
-            Invoke-WebRequest -Uri $downloadUrl -WebSession $session -OutFile $destFile -UseBasicParsing -Headers $headers
+            Invoke-DownloadWithProgress -Url $downloadUrl -Destination $destFile -Headers $headers
             $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
         } catch {}
     }
@@ -198,12 +202,12 @@ function Invoke-DownloadWithProgress {
                 if ($pct -ne $lastPct) {
                     $lastPct = $pct
                     Write-Progress -Activity 'Descargando actualización' -Status ("$pct%") -PercentComplete $pct
-                    if ($script:LogPath) { Add-Content -LiteralPath $script:LogPath -Value ("[PROGRESS_DOWNLOAD] {0}" -f $pct) }
+                    Write-Host ("[PROGRESS_DOWNLOAD] {0}" -f $pct)
                 }
             }
         }
         $fs.Close(); $stream.Close(); $response.Close()
-        if ($script:LogPath) { Add-Content -LiteralPath $script:LogPath -Value "[PROGRESS_DOWNLOAD] 100" }
+        Write-Host "[PROGRESS_DOWNLOAD] 100"
     } catch {
         throw $_
     }
