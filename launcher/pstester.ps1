@@ -6,6 +6,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+${global:ProgressPreference} = 'SilentlyContinue'
 
 # SHA256 por defecto embebido (se utiliza si no se pasa -Sha256)
 $DefaultSha256 = "CE824B6D4F3B01BBC15DEFDCA839607F127495399C2C031690BD54C446793A72"
@@ -58,7 +59,7 @@ try {
     $Host.UI.RawUI.WindowTitle = $Title
 } catch {}
 
-# Ajustar codificación de salida para evitar caracteres extraños
+# Ajustar codificación y silenciar Write-Progress
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
 $ProgressPreference = 'SilentlyContinue'
 
@@ -70,7 +71,7 @@ Write-Host "Mostrando progreso en vivo. No cierre esta ventana...`n" -Foreground
 # Esperar a que el archivo exista
 while (-not (Test-Path -LiteralPath $LogPath)) { Start-Sleep -Milliseconds 200 }
 
-# Leer contenido en vivo y dibujar barra de progreso si se emiten marcas
+# Leer contenido en vivo y mostrar barra ASCII en lugar de Write-Progress (evita problemas de tuberías)
 try {
     Get-Content -LiteralPath $LogPath -Wait -ReadCount 1 | ForEach-Object {
         $line = $_
@@ -99,20 +100,17 @@ function Start-Viewer($downloadsDir, $logPath) {
     $pwsh = Join-Path $env:WINDIR 'System32/WindowsPowerShell/v1.0/powershell.exe'
     if (-not (Test-Path -LiteralPath $pwsh)) { $pwsh = 'powershell.exe' }
     try {
-        # Intento 1: lanzar directamente PowerShell en nueva ventana (ShellExecute) para evitar heredar pipes
+        # Intento 1: lanzar directamente PowerShell en nueva ventana (ShellExecute)
+        $args = @('-NoProfile','-NoLogo','-ExecutionPolicy','Bypass','-File', $viewer, '-LogPath', $logPath, '-Title', 'PixelPlay Updater')
+        Start-Process -FilePath $pwsh -ArgumentList $args -WorkingDirectory $downloadsDir -WindowStyle Normal -Verb Open | Out-Null
+    } catch {
         try {
-            $args = @('-NoProfile','-NoLogo','-ExecutionPolicy','Bypass','-File', $viewer, '-LogPath', $logPath, '-Title', 'PixelPlay Updater')
-            Start-Process -FilePath $pwsh -ArgumentList $args -WorkingDirectory $downloadsDir -WindowStyle Normal -Verb Open | Out-Null
-            return
-        } catch {
-            # Fallback: usar cmd /c start
+            # Fallback: usar cmd /c start con título de ventana
             $cmdArgs = ('/c start "PixelPlay Updater" "{0}" -NoProfile -NoLogo -ExecutionPolicy Bypass -File "{1}" -LogPath "{2}" -Title "PixelPlay Updater"' -f $pwsh, $viewer, $logPath)
             Start-Process -FilePath 'cmd.exe' -ArgumentList $cmdArgs -WorkingDirectory $downloadsDir -WindowStyle Hidden | Out-Null
-            return
+        } catch {
+            Write-Host ("[VISOR] No se pudo iniciar el visor: {0}" -f $_.Exception.Message) -ForegroundColor DarkYellow
         }
-    } catch {
-        Write-Host ("[VISOR] No se pudo iniciar el visor: {0}" -f $_.Exception.Message) -ForegroundColor DarkYellow
-        # Continuar sin visor
     }
 }
 
@@ -477,6 +475,5 @@ try {
     try { Stop-Transcript | Out-Null } catch {}
     exit 1
 }
-
 
 
