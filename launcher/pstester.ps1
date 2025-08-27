@@ -1,7 +1,8 @@
 param(
     [string]$PackageUrl = "",
     [string]$Sha256 = "",
-    [switch]$SkipKill
+    [switch]$SkipKill,
+    [switch]$NoViewer
 )
 
 $ErrorActionPreference = 'Stop'
@@ -57,6 +58,10 @@ try {
     $Host.UI.RawUI.WindowTitle = $Title
 } catch {}
 
+# Ajustar codificación de salida para evitar caracteres extraños
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
+$ProgressPreference = 'SilentlyContinue'
+
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "           PIXELPLAY UPDATER           " -ForegroundColor Yellow
 Write-Host "=====================================" -ForegroundColor Cyan
@@ -66,15 +71,22 @@ Write-Host "Mostrando progreso en vivo. No cierre esta ventana...`n" -Foreground
 while (-not (Test-Path -LiteralPath $LogPath)) { Start-Sleep -Milliseconds 200 }
 
 # Leer contenido en vivo y dibujar barra de progreso si se emiten marcas
-Get-Content -LiteralPath $LogPath -Wait | ForEach-Object {
-    $line = $_
-    if ($line -match '^\[PROGRESS_DOWNLOAD\]\s+(\d{1,3})$') {
-        $p = [int]$Matches[1]
-        if ($p -lt 0) { $p = 0 } elseif ($p -gt 100) { $p = 100 }
-        Write-Progress -Activity 'Descargando actualización' -Status ("$p%") -PercentComplete $p
-    } else {
-        Write-Host $line
+try {
+    Get-Content -LiteralPath $LogPath -Wait -ReadCount 1 | ForEach-Object {
+        $line = $_
+        if ($line -match '^\[PROGRESS_DOWNLOAD\]\s+(\d{1,3})$') {
+            $p = [int]$Matches[1]
+            if ($p -lt 0) { $p = 0 } elseif ($p -gt 100) { $p = 100 }
+            $barLen = 30
+            $filled = [int]([math]::Round(($p/100)*$barLen))
+            $bar = ('#' * $filled).PadRight($barLen, '-')
+            Write-Host ("[Descarga] [{0}] {1,3}%" -f $bar, $p)
+        } else {
+            Write-Host $line
+        }
     }
+} catch {
+    Write-Host "[VISOR] Error leyendo el log: $($_.Exception.Message)" -ForegroundColor DarkYellow
 }
 '@
     # Siempre sobreescribir para garantizar versión actualizada del visor
@@ -86,9 +98,22 @@ function Start-Viewer($downloadsDir, $logPath) {
     $viewer = Ensure-ViewerScript -downloadsDir $downloadsDir
     $pwsh = Join-Path $env:WINDIR 'System32/WindowsPowerShell/v1.0/powershell.exe'
     if (-not (Test-Path -LiteralPath $pwsh)) { $pwsh = 'powershell.exe' }
-    # Lanzar en una nueva consola independiente para evitar errores de tubería (0x800700e8)
-    $cmdArgs = ('/c start "PixelPlay Updater" "{0}" -NoProfile -NoLogo -ExecutionPolicy Bypass -File "{1}" -LogPath "{2}" -Title "PixelPlay Updater"' -f $pwsh, $viewer, $logPath)
-    Start-Process -FilePath 'cmd.exe' -ArgumentList $cmdArgs -WorkingDirectory $downloadsDir -WindowStyle Hidden | Out-Null
+    try {
+        # Intento 1: lanzar directamente PowerShell en nueva ventana (ShellExecute) para evitar heredar pipes
+        try {
+            $args = @('-NoProfile','-NoLogo','-ExecutionPolicy','Bypass','-File', $viewer, '-LogPath', $logPath, '-Title', 'PixelPlay Updater')
+            Start-Process -FilePath $pwsh -ArgumentList $args -WorkingDirectory $downloadsDir -WindowStyle Normal -Verb Open | Out-Null
+            return
+        } catch {
+            # Fallback: usar cmd /c start
+            $cmdArgs = ('/c start "PixelPlay Updater" "{0}" -NoProfile -NoLogo -ExecutionPolicy Bypass -File "{1}" -LogPath "{2}" -Title "PixelPlay Updater"' -f $pwsh, $viewer, $logPath)
+            Start-Process -FilePath 'cmd.exe' -ArgumentList $cmdArgs -WorkingDirectory $downloadsDir -WindowStyle Hidden | Out-Null
+            return
+        }
+    } catch {
+        Write-Host ("[VISOR] No se pudo iniciar el visor: {0}" -f $_.Exception.Message) -ForegroundColor DarkYellow
+        # Continuar sin visor
+    }
 }
 
 function Kill-Launcher {
@@ -373,7 +398,14 @@ try {
     $logDir = Join-Path $downloadsDir 'logs'
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
     $logPath = Join-Path $logDir "update_$timestamp.log"
-    Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
+    $envNoViewer = ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','Process') -eq '1') -or \
+                   ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','User') -eq '1') -or \
+                   ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','Machine') -eq '1')
+    if (-not ($NoViewer -or $envNoViewer)) {
+        Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
+    } else {
+        Write-Host '[VISOR] Deshabilitado por parámetro o variable de entorno.' -ForegroundColor DarkYellow
+    }
     try { Start-Transcript -LiteralPath $logPath -Force | Out-Null } catch {}
     $script:LogPath = $logPath
 
