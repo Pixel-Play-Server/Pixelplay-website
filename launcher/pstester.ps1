@@ -142,19 +142,31 @@ function Kill-Launcher {
         Safe-WriteHost "Desacoplamiento completado. Continuando..." "Green"
     }
     
-    $names = @('pixelplay launcher','Pixelplay Launcher','PixelplayLauncher','electron','electron.exe','node','node.exe','npm','npm.exe','conhost','conhost.exe')
-    foreach ($n in $names) {
-        Get-Process -Name $n -ErrorAction SilentlyContinue | ForEach-Object {
-            # No cerrar nuestro propio proceso
-            if ($_.Id -ne $PID) {
-                try { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue } catch {}
+    # En proceso independiente, simplificar el cierre para evitar colgones
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
+        Safe-WriteHost "Cierre simplificado en proceso independiente..." "DarkGray"
+        try { 
+            Get-Process -Name "*launcher*", "*electron*" -ErrorAction SilentlyContinue | 
+            Where-Object { $_.Id -ne $PID } | 
+            ForEach-Object { try { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue } catch {} }
+        } catch {}
+        Start-Sleep -Milliseconds 500
+    } else {
+        # Cierre normal en proceso principal
+        $names = @('pixelplay launcher','Pixelplay Launcher','PixelplayLauncher','electron','electron.exe','node','node.exe','npm','npm.exe','conhost','conhost.exe')
+        foreach ($n in $names) {
+            Get-Process -Name $n -ErrorAction SilentlyContinue | ForEach-Object {
+                # No cerrar nuestro propio proceso
+                if ($_.Id -ne $PID) {
+                    try { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue } catch {}
+                }
             }
         }
+        try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM electron.exe /T" -WindowStyle Hidden | Out-Null } catch {}
+        try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM pixelplay*.exe /T" -WindowStyle Hidden | Out-Null } catch {}
+        try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM node.exe /T" -WindowStyle Hidden | Out-Null } catch {}
+        Start-Sleep -Milliseconds 1500
     }
-    try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM electron.exe /T" -WindowStyle Hidden | Out-Null } catch {}
-    try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM pixelplay*.exe /T" -WindowStyle Hidden | Out-Null } catch {}
-    try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM node.exe /T" -WindowStyle Hidden | Out-Null } catch {}
-    Start-Sleep -Milliseconds 1500
 }
 
 function Download-Package($url, $destFile) {
