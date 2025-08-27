@@ -307,13 +307,13 @@ try {
         Start-Process -FilePath $exePath -WorkingDirectory (Split-Path -Parent $exePath)
         Write-Host 'PixelPlay lanzado.' -ForegroundColor Green
     } else {
-        Write-Host 'No se encontró el ejecutable en la ruta esperada:' -ForegroundColor Red
+        Write-Host 'No se encontro el ejecutable en la ruta esperada:' -ForegroundColor Red
         Write-Host $exePath -ForegroundColor DarkRed
     }
     try { Stop-Transcript | Out-Null } catch {}
     exit 0
 } catch {
-    Write-Host "❌ Error durante la actualización: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "Error durante la actualizacion: $($_.Exception.Message)" -ForegroundColor Red
     try { Stop-Transcript | Out-Null } catch {}
     exit 1
 }
