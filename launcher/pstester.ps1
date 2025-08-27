@@ -130,8 +130,9 @@ function Kill-Launcher {
     
     # Si estamos en un proceso independiente, esperar un poco para asegurar desacoplamiento
     if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
-        Safe-WriteHost "Esperando desacoplamiento del proceso padre..." "DarkGray"
-        Start-Sleep -Milliseconds 2000
+        Safe-WriteHost "Esperando desacoplamiento del proceso padre... (1 segundo)" "DarkGray"
+        Start-Sleep -Milliseconds 1000
+        Safe-WriteHost "Desacoplamiento completado. Continuando..." "Green"
     }
     
     $names = @('pixelplay launcher','Pixelplay Launcher','PixelplayLauncher','electron','electron.exe','node','node.exe','npm','npm.exe','conhost','conhost.exe')
@@ -389,12 +390,10 @@ try {
                    ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','User') -eq '1') -or `
                    ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','Machine') -eq '1')
     
-    # En proceso independiente, HABILITAR el visor para mostrar progreso en vivo
+    # En proceso independiente, NO usar visor adicional para evitar conflictos
     if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
-        Safe-WriteHost '[VISOR] Habilitado en proceso independiente para mostrar progreso en vivo.' "Green"
-        if (-not $NoViewer) {
-            Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
-        }
+        Safe-WriteHost '[VISOR] Deshabilitado en proceso independiente para evitar conflictos.' "Yellow"
+        Safe-WriteHost '[PROCESO] Esta ventana MOSTRARÁ el progreso directamente.' "Green"
     } elseif (-not ($NoViewer -or $envNoViewer)) {
         Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
     } else {
@@ -418,7 +417,11 @@ try {
         throw 'No se pudo determinar la URL del paquete. Proporcione -PackageUrl o defina correctamente $DefaultPackageUrl en el script.'
     }
 
-    if (-not $SkipKill) { Kill-Launcher }
+    if (-not $SkipKill) { 
+        Safe-WriteHost "=== INICIANDO CIERRE DE LAUNCHER ===" "Yellow"
+        Kill-Launcher 
+        Safe-WriteHost "=== CIERRE DE LAUNCHER COMPLETADO ===" "Green"
+    }
 
     # Preparar rutas temporales de trabajo
     $zipPath = Join-Path $downloadsDir "update_$timestamp.zip"
@@ -426,7 +429,9 @@ try {
     New-Item -ItemType Directory -Path $extractDir -Force | Out-Null
 
     # Descargar paquete
+    Safe-WriteHost "=== INICIANDO DESCARGA ===" "Yellow"
     Download-Package -url $PackageUrl -destFile $zipPath
+    Safe-WriteHost "=== DESCARGA COMPLETADA ===" "Green"
 
     # Verificar checksum si se pasó
     Verify-Checksum -file $zipPath -expectedSha256 $Sha256 | Out-Null
