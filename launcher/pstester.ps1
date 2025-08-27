@@ -173,17 +173,33 @@ function Download-Package($url, $destFile) {
     Safe-WriteHost "Descargando paquete desde: $url" "White"
     Ensure-Tls12
     
-    $wc = New-Object System.Net.WebClient
-    $progress = 0
-    $wc.add_DownloadProgressChanged({ param($s,$e)
-        if ($e.TotalBytesToReceive -gt 0) {
-            $pct = [int]$e.ProgressPercentage
-            if ($pct -ne $progress) { $progress = $pct; Write-Progress -Activity "Descargando actualizacion" -Status "$pct%" -PercentComplete $pct; Safe-WriteHost ("[PROGRESS_DOWNLOAD] {0}" -f $pct) "White" }
+    # En proceso independiente, usar método simple sin eventos para evitar problemas
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
+        Safe-WriteHost "Usando descarga simple para evitar conflictos de consola..." "DarkGray"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($url, $destFile)
+            Safe-WriteHost "Descarga completada exitosamente." "Green"
+        } catch {
+            Safe-WriteHost "Error en descarga simple: $($_.Exception.Message)" "Red"
+            throw
+        } finally {
+            if ($wc) { $wc.Dispose() }
         }
-    })
-    $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualizacion" -Completed; Safe-WriteHost "[PROGRESS_DOWNLOAD] 100" "White" })
-    $wc.DownloadFileAsync([uri]$url, $destFile)
-    while ($wc.IsBusy) { Start-Sleep -Milliseconds 200 }
+    } else {
+        # Método original con progreso para proceso principal
+        $wc = New-Object System.Net.WebClient
+        $progress = 0
+        $wc.add_DownloadProgressChanged({ param($s,$e)
+            if ($e.TotalBytesToReceive -gt 0) {
+                $pct = [int]$e.ProgressPercentage
+                if ($pct -ne $progress) { $progress = $pct; Write-Progress -Activity "Descargando actualizacion" -Status "$pct%" -PercentComplete $pct; Safe-WriteHost ("[PROGRESS_DOWNLOAD] {0}" -f $pct) "White" }
+            }
+        })
+        $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualizacion" -Completed; Safe-WriteHost "[PROGRESS_DOWNLOAD] 100" "White" })
+        $wc.DownloadFileAsync([uri]$url, $destFile)
+        while ($wc.IsBusy) { Start-Sleep -Milliseconds 200 }
+    }
 }
 
 function Verify-Checksum($file, $expectedSha256) {
