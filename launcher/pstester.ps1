@@ -84,8 +84,11 @@ Get-Content -LiteralPath $LogPath -Wait | ForEach-Object {
 
 function Start-Viewer($downloadsDir, $logPath) {
     $viewer = Ensure-ViewerScript -downloadsDir $downloadsDir
-    $viewerArgs = "-NoProfile -ExecutionPolicy Bypass -NoExit -File `"$viewer`" -LogPath `"$logPath`" -Title `"PixelPlay Updater`""
-    Start-Process -FilePath "powershell.exe" -ArgumentList $viewerArgs -WindowStyle Normal | Out-Null
+    $pwsh = Join-Path $env:WINDIR 'System32/WindowsPowerShell/v1.0/powershell.exe'
+    if (-not (Test-Path -LiteralPath $pwsh)) { $pwsh = 'powershell.exe' }
+    # Lanzar en una nueva consola independiente para evitar errores de tubería (0x800700e8)
+    $cmdArgs = ('/c start "PixelPlay Updater" "{0}" -NoProfile -NoLogo -ExecutionPolicy Bypass -File "{1}" -LogPath "{2}" -Title "PixelPlay Updater"' -f $pwsh, $viewer, $logPath)
+    Start-Process -FilePath 'cmd.exe' -ArgumentList $cmdArgs -WorkingDirectory $downloadsDir -WindowStyle Hidden | Out-Null
 }
 
 function Kill-Launcher {
