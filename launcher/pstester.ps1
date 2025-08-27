@@ -275,6 +275,13 @@ if ($needsDetachedProcess -and -not $env:PIXELPLAY_DETACHED_UPDATE) {
     
     # Preparar argumentos para el nuevo proceso
     $scriptPath = $MyInvocation.MyCommand.Path
+    if (-not $scriptPath) {
+        $scriptPath = Join-Path $downloadsDir 'update.ps1'
+    }
+    
+    Safe-WriteHost "Script path detectado: $scriptPath" "DarkGray"
+    Safe-WriteHost "Existe archivo: $(Test-Path -LiteralPath $scriptPath)" "DarkGray"
+    
     $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $scriptPath)
     
     # Pasar parámetros originales al nuevo proceso
@@ -287,16 +294,34 @@ if ($needsDetachedProcess -and -not $env:PIXELPLAY_DETACHED_UPDATE) {
     $env:PIXELPLAY_DETACHED_UPDATE = '1'
     
     try {
-        # Lanzar proceso independiente
-        $psi = New-Object System.Diagnostics.ProcessStartInfo
-        $psi.FileName = 'powershell.exe'
-        $psi.Arguments = $arguments -join ' '
-        $psi.UseShellExecute = $true
-        $psi.CreateNoWindow = $false
-        $psi.WindowStyle = 'Normal'
+        # Método directo y simple: Start-Process con variable de entorno
+        $env:PIXELPLAY_DETACHED_UPDATE = '1'
         
-        $newProcess = [System.Diagnostics.Process]::Start($psi)
-        Safe-WriteHost "Proceso independiente iniciado (PID: $($newProcess.Id)). Saliendo del proceso actual..." "Green"
+        # Preparar argumentos como string simple (SIN -NoViewer para mostrar visor)
+        $argString = "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`""
+        if ($PackageUrl) { $argString += " -PackageUrl `"$PackageUrl`"" }
+        if ($Sha256) { $argString += " -Sha256 `"$Sha256`"" }
+        if ($SkipKill) { $argString += " -SkipKill" }
+        # NO pasar -NoViewer para que se muestre el visor en vivo
+        
+        Safe-WriteHost "Argumentos del proceso: $argString" "DarkGray"
+        
+        # Crear proceso independiente CON VENTANA VISIBLE para mostrar progreso en vivo
+        $pinfo = New-Object System.Diagnostics.ProcessStartInfo
+        $pinfo.FileName = "powershell.exe"
+        $pinfo.Arguments = $argString
+        $pinfo.UseShellExecute = $true
+        $pinfo.WindowStyle = "Normal"  # VENTANA NORMAL VISIBLE
+        $pinfo.CreateNoWindow = $false # MOSTRAR VENTANA
+        
+        $newProcess = [System.Diagnostics.Process]::Start($pinfo)
+        
+        Safe-WriteHost "Proceso independiente iniciado (PID: $($newProcess.Id)) - VENTANA VISIBLE" "Green"
+        Safe-WriteHost "Deberías ver aparecer una nueva ventana de PowerShell con el progreso..." "Yellow"
+        Safe-WriteHost "Saliendo del proceso actual..." "Green"
+        
+        # Pequeña pausa para asegurar que el proceso se inicie
+        Start-Sleep -Milliseconds 1000
         
         # Salir inmediatamente del proceso actual
         exit 0
@@ -307,6 +332,14 @@ if ($needsDetachedProcess -and -not $env:PIXELPLAY_DETACHED_UPDATE) {
 }
 
 try {
+    # Debug: Mostrar información del proceso actual
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
+        Safe-WriteHost "=== PROCESO INDEPENDIENTE INICIADO ===" "Green"
+        Safe-WriteHost "PID: $PID" "DarkGray"
+        Safe-WriteHost "Proceso padre: $(try { (Get-WmiObject Win32_Process -Filter "ProcessId=$PID").ParentProcessId } catch { 'Desconocido' })" "DarkGray"
+        Safe-WriteHost "Directorio de trabajo: $(Get-Location)" "DarkGray"
+    }
+    
     Write-Section 'PIXELPLAY UPDATER'
 
     # Resolver rutas y preparar visor de estado y logging lo antes posible
@@ -322,17 +355,52 @@ try {
     # Preparar rutas temporales y logging
     $timestamp = Get-Date -Format 'yyyyMMddHHmmss'
     $logDir = Join-Path $downloadsDir 'logs'
-    New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+    
+    # Asegurar que el directorio de logs existe
+    try {
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+        Safe-WriteHost "Directorio de logs creado/verificado: $logDir" "DarkGray"
+    } catch {
+        Safe-WriteHost "Error creando directorio de logs: $($_.Exception.Message)" "Red"
+    }
+    
     $logPath = Join-Path $logDir "update_$timestamp.log"
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
+        $logPath = Join-Path $logDir "update_detached_$timestamp.log"
+        Safe-WriteHost "Archivo de log para proceso independiente: $logPath" "DarkGray"
+    }
+    
+    # Inicializar logging con manejo de errores robusto
+    try {
+        Start-Transcript -LiteralPath $logPath -Force | Out-Null
+        Safe-WriteHost "Transcripción iniciada en: $logPath" "DarkGray"
+    } catch {
+        Safe-WriteHost "Error iniciando transcripción: $($_.Exception.Message)" "Red"
+        # Crear archivo de log manualmente si Start-Transcript falla
+        try {
+            "Log iniciado: $(Get-Date)" | Out-File -FilePath $logPath -Encoding UTF8
+            Safe-WriteHost "Log manual creado: $logPath" "DarkGray"
+        } catch {
+            Safe-WriteHost "Error crítico: No se puede crear archivo de log" "Red"
+        }
+    }
+    
     $envNoViewer = ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','Process') -eq '1') -or `
                    ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','User') -eq '1') -or `
                    ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','Machine') -eq '1')
-    if (-not ($NoViewer -or $envNoViewer)) {
+    
+    # En proceso independiente, HABILITAR el visor para mostrar progreso en vivo
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
+        Safe-WriteHost '[VISOR] Habilitado en proceso independiente para mostrar progreso en vivo.' "Green"
+        if (-not $NoViewer) {
+            Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
+        }
+    } elseif (-not ($NoViewer -or $envNoViewer)) {
         Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
     } else {
         Safe-WriteHost '[VISOR] Deshabilitado por parametro o variable de entorno.' "DarkYellow"
     }
-    try { Start-Transcript -LiteralPath $logPath -Force | Out-Null } catch {}
+    
     $script:LogPath = $logPath
 
     # Si no se pasó PackageUrl, NO autodetectar desde powerupdate.json; usar URL embebida/env
@@ -394,12 +462,48 @@ try {
     try { Stop-Transcript | Out-Null } catch {}
     exit 0
 } catch {
+    $errorMsg = "Error durante la actualizacion: $($_.Exception.Message)"
+    $stackTrace = $_.ScriptStackTrace
+    
+    # Intentar escribir error usando múltiples métodos
     try {
-        Write-Output "Error durante la actualizacion: $($_.Exception.Message)"
+        Safe-WriteHost $errorMsg "Red"
     } catch {
-        # Fallback si incluso Write-Output falla
-        [Console]::WriteLine("Error durante la actualizacion: $($_.Exception.Message)")
+        try {
+            Write-Output $errorMsg
+        } catch {
+            # Fallback final
+            [Console]::WriteLine($errorMsg)
+        }
     }
+    
+    # Escribir error al log si existe
+    if ($script:LogPath -and (Test-Path -LiteralPath $script:LogPath)) {
+        try {
+            Add-Content -LiteralPath $script:LogPath -Value "`n=== ERROR ===`n$errorMsg`n$stackTrace`n============`n" -Encoding UTF8
+        } catch {}
+    }
+    
+    # Si estamos en proceso independiente, crear un archivo de error específico
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
+        try {
+            $timestamp = Get-Date -Format 'yyyyMMddHHmmss'
+            $errorFile = Join-Path $downloadsDir "logs\update_detached_error_$timestamp.log"
+            @"
+=== ERROR EN PROCESO INDEPENDIENTE ===
+Fecha: $(Get-Date)
+PID: $PID
+Error: $errorMsg
+Stack Trace:
+$stackTrace
+======================================
+"@ | Out-File -FilePath $errorFile -Encoding UTF8
+            Safe-WriteHost "Error guardado en: $errorFile" "Yellow"
+        } catch {
+            [Console]::WriteLine("No se pudo crear archivo de error")
+        }
+    }
+    
     try { Stop-Transcript | Out-Null } catch {}
     exit 1
 }
