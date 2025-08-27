@@ -295,7 +295,6 @@ function Replace-AppContent($extractedRoot, $appDir) {
     $items = Get-ChildItem -LiteralPath $extractedRoot -Force
     foreach ($it in $items) {
         if ($it.Name -ieq 'downloads') { continue }
-        if ($it.Name -ieq 'node_modules') { Safe-WriteHost "Saltando 'node_modules' para evitar bloqueos (se mantiene el actual)." "DarkGray"; continue }
         $dest = Join-Path $appDir $it.Name
         $attempts = 0
         $maxAttempts = 5
