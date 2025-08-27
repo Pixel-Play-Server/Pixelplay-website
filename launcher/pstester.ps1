@@ -128,11 +128,7 @@ function Kill-Launcher {
 function Download-Package($url, $destFile) {
     Write-Host "Descargando paquete desde:" $url -ForegroundColor White
     Ensure-Tls12
-    $uri = [uri]$url
-    if ($uri.Host -like '*drive.google.com') {
-        return Download-GDriveLargeFile -url $url -destFile $destFile
-    }
-
+    
     $wc = New-Object System.Net.WebClient
     $progress = 0
     $wc.add_DownloadProgressChanged({ param($s,$e)
@@ -144,152 +140,6 @@ function Download-Package($url, $destFile) {
     $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualización" -Completed; Write-Host "[PROGRESS_DOWNLOAD] 100" })
     $wc.DownloadFileAsync([uri]$url, $destFile)
     while ($wc.IsBusy) { Start-Sleep -Milliseconds 200 }
-}
-
-function Download-GDriveLargeFile($url, $destFile) {
-    Write-Host "Detección Google Drive: manejando token de confirmación..." -ForegroundColor DarkYellow
-    $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-    $fileId = $null
-    try {
-        $u = [uri]$url
-        $qs = [System.Web.HttpUtility]::ParseQueryString($u.Query)
-        if ($qs['id']) { $fileId = $qs['id'] }
-        if (-not $fileId) {
-            if ($u.AbsolutePath -match '/file/d/([^/]+)') { $fileId = $Matches[1] }
-        }
-    } catch {}
-    if (-not $fileId) { throw 'No se pudo extraer el ID de archivo de Google Drive.' }
-
-    $initialUrl = "https://drive.google.com/uc?export=download&id=$fileId"
-    $headers = @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36' }
-    $resp1 = Invoke-WebRequest -Uri $initialUrl -WebSession $session -UseBasicParsing -Headers $headers
-    $content = $resp1.Content
-
-    $downloadSucceeded = $false
-
-    if (-not $downloadSucceeded) {
-        # Intento con confirm token en uc?export (regex/cookies)
-        $token = $null
-        if ($content -and $content -match 'confirm=([0-9A-Za-z_\-]+)') { $token = $Matches[1] }
-        if (-not $token -and $content -and $content -match 'href=\"/uc\?export=download&confirm=([0-9A-Za-z_\-]+)&id=') { $token = $Matches[1] }
-        try {
-            if (-not $token) {
-                $cookies = $session.Cookies.GetCookies('https://drive.google.com')
-                foreach ($c in $cookies) { if ($c.Name -like 'download_warning*') { $token = $c.Value; break } }
-            }
-        } catch {}
-        $downloadUrl = if ($token) { "https://drive.google.com/uc?export=download&confirm=$token&id=$fileId" } else { $initialUrl }
-        if (-not $token) { Write-Host 'No se encontró token de confirmación; intentando descargar igualmente...' -ForegroundColor DarkYellow }
-        Write-Host "Descargando desde URL confirmada..." -ForegroundColor White
-        try {
-            Invoke-DownloadWithProgress -Url $downloadUrl -Destination $destFile -Headers $headers
-            $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
-        } catch {}
-    }
-
-    if (-not $downloadSucceeded) {
-        # 3) Intento alternativo directo a drive.usercontent.google.com con progreso y cabeceras
-        Write-Host 'El archivo descargado no parece ser un ZIP válido, reintentando con endpoint alternativo...' -ForegroundColor DarkYellow
-        $confirmVal = if ($token) { $token } else { '' }
-        $altUrl = if ($confirmVal) { "https://drive.usercontent.google.com/download?id=$fileId&export=download&confirm=$confirmVal" } else { "https://drive.usercontent.google.com/download?id=$fileId&export=download" }
-        try { Remove-Item -LiteralPath $destFile -Force -ErrorAction SilentlyContinue } catch {}
-        Invoke-DownloadWithProgress -Url $altUrl -Destination $destFile -Headers $headers
-        $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
-    }
-
-    if (-not $downloadSucceeded) {
-        Write-Host 'No se pudo descargar automáticamente. Intentando asistencia manual...' -ForegroundColor DarkYellow
-        $manualUrl = Prompt-ForDriveDownloadUrl -initialUrl $initialUrl
-        if ($manualUrl) {
-            try { Remove-Item -LiteralPath $destFile -Force -ErrorAction SilentlyContinue } catch {}
-            Invoke-DownloadWithProgress -Url $manualUrl -Destination $destFile -Headers $headers
-            $downloadSucceeded = (Test-Path -LiteralPath $destFile) -and ((Get-Item -LiteralPath $destFile).Length -gt 0) -and (Test-IsZip -file $destFile)
-        }
-    }
-
-    if (-not $downloadSucceeded) {
-        throw 'La descarga desde Google Drive no devolvió un archivo ZIP válido. Es posible que Google haya respondido con una página HTML de advertencia.'
-    }
-}
-
-function Prompt-ForDriveDownloadUrl {
-    param([Parameter(Mandatory=$true)][string]$initialUrl)
-    try {
-        Add-Type -AssemblyName System.Windows.Forms | Out-Null
-        Add-Type -AssemblyName System.Drawing | Out-Null
-
-        $form = New-Object System.Windows.Forms.Form
-        $form.Text = 'Confirmación de descarga - Google Drive'
-        $form.Width = 600; $form.Height = 220
-        $form.StartPosition = 'CenterScreen'
-
-        $label = New-Object System.Windows.Forms.Label
-        $label.AutoSize = $true
-        $label.Text = '1) Clic en "Abrir página" y en la web pulsa "Descargar de todos modos". 2) Copia la dirección del enlace final de descarga y pégala aquí:'
-        $label.Top = 10; $label.Left = 10; $label.Width = 560
-        $form.Controls.Add($label)
-
-        $text = New-Object System.Windows.Forms.TextBox
-        $text.Left = 10; $text.Top = 60; $text.Width = 560
-        $form.Controls.Add($text)
-
-        $btnOpen = New-Object System.Windows.Forms.Button
-        $btnOpen.Text = 'Abrir página'; $btnOpen.Left = 10; $btnOpen.Top = 100; $btnOpen.Width = 120
-        $btnOpen.Add_Click({ Start-Process $initialUrl })
-        $form.Controls.Add($btnOpen)
-
-        $btnOk = New-Object System.Windows.Forms.Button
-        $btnOk.Text = 'Continuar'; $btnOk.Left = 450; $btnOk.Top = 100; $btnOk.Width = 120
-        $btnOk.Add_Click({ $form.DialogResult = [System.Windows.Forms.DialogResult]::OK; $form.Close() })
-        $form.AcceptButton = $btnOk
-        $form.Controls.Add($btnOk)
-
-        if ($form.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return $null }
-        $u = $text.Text.Trim()
-        if (-not $u) { return $null }
-        try { $uri = [uri]$u } catch { return $null }
-        if ($uri.Host -notlike '*googleusercontent.com' -and $uri.Host -notlike '*drive.google.com' -and $uri.Host -notlike '*drive.usercontent.google.com') { return $null }
-        return $u
-    } catch {
-        return $null
-    }
-}
-
-function Invoke-DownloadWithProgress {
-    param(
-        [Parameter(Mandatory=$true)] [string]$Url,
-        [Parameter(Mandatory=$true)] [string]$Destination,
-        [hashtable]$Headers
-    )
-    try {
-        $request = [System.Net.HttpWebRequest]::Create($Url)
-        $request.Method = 'GET'
-        if ($Headers) { foreach ($k in $Headers.Keys) { if ($k -ieq 'User-Agent') { $request.UserAgent = [string]$Headers[$k] } else { $request.Headers[[string]$k] = [string]$Headers[$k] } } }
-        $response = $request.GetResponse()
-        $total = $response.ContentLength
-        $stream = $response.GetResponseStream()
-        $fs = New-Object System.IO.FileStream($Destination, [System.IO.FileMode]::Create)
-        $buffer = New-Object byte[] 65536
-        $read = 0
-        $downloaded = 0
-        $lastPct = -1
-        while (($read = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
-            $fs.Write($buffer, 0, $read)
-            $downloaded += $read
-            if ($total -gt 0) {
-                $pct = [int]([math]::Floor(($downloaded * 100.0) / $total))
-                if ($pct -ne $lastPct) {
-                    $lastPct = $pct
-                    Write-Progress -Activity 'Descargando actualización' -Status ("$pct%") -PercentComplete $pct
-                    Write-Host ("[PROGRESS_DOWNLOAD] {0}" -f $pct)
-                }
-            }
-        }
-        $fs.Close(); $stream.Close(); $response.Close()
-        Write-Host "[PROGRESS_DOWNLOAD] 100"
-    } catch {
-        throw $_
-    }
 }
 
 function Verify-Checksum($file, $expectedSha256) {
@@ -409,14 +259,14 @@ try {
         Write-Host 'No se proporcionó -PackageUrl, usando la URL por defecto embebida (o variables de entorno si existen)...' -ForegroundColor DarkYellow
     }
 
-    # Fallback adicional: variable de entorno y valor por defecto
-    if ([string]::IsNullOrWhiteSpace($PackageUrl)) { $envUrl = [Environment]::GetEnvironmentVariable('PIXELPLAY_PACKAGE_URL','Process'); if ($envUrl) { $PackageUrl = $envUrl } }
-    if ([string]::IsNullOrWhiteSpace($PackageUrl)) { $envUrl = [Environment]::GetEnvironmentVariable('PIXELPLAY_PACKAGE_URL','User'); if ($envUrl) { $PackageUrl = $envUrl } }
-    if ([string]::IsNullOrWhiteSpace($PackageUrl)) { $envUrl = [Environment]::GetEnvironmentVariable('PIXELPLAY_PACKAGE_URL','Machine'); if ($envUrl) { $PackageUrl = $envUrl } }
-    if ([string]::IsNullOrWhiteSpace($PackageUrl)) { $PackageUrl = $DefaultPackageUrl }
+    # Fallback: usar SIEMPRE la URL embebida del bucket cuando no se pasa -PackageUrl
+    if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
+        $PackageUrl = $DefaultPackageUrl
+        Write-Host "Usando paquete por defecto (bucket):" $PackageUrl -ForegroundColor White
+    }
 
     if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
-        throw 'No se pudo determinar la URL del paquete. Proporcione -PackageUrl, configure PIXELPLAY_PACKAGE_URL o asegúrese de que powerupdate.json incluya el enlace del paquete.'
+        throw 'No se pudo determinar la URL del paquete. Proporcione -PackageUrl o defina correctamente $DefaultPackageUrl en el script.'
     }
 
     if (-not $SkipKill) { Kill-Launcher }
@@ -467,5 +317,3 @@ try {
     try { Stop-Transcript | Out-Null } catch {}
     exit 1
 }
-
-
