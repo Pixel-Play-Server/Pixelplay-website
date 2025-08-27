@@ -393,8 +393,8 @@ try {
     $logDir = Join-Path $downloadsDir 'logs'
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
     $logPath = Join-Path $logDir "update_$timestamp.log"
-    $envNoViewer = ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','Process') -eq '1') -or \
-                   ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','User') -eq '1') -or \
+    $envNoViewer = ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','Process') -eq '1') -or `
+                   ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','User') -eq '1') -or `
                    ([Environment]::GetEnvironmentVariable('PIXELPLAY_NO_VIEWER','Machine') -eq '1')
     if (-not ($NoViewer -or $envNoViewer)) {
         Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
