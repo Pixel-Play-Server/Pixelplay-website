@@ -58,10 +58,7 @@ param(
 try {
     $Host.UI.RawUI.WindowTitle = $Title
 } catch {}
-
-# Ajustar codificación y silenciar Write-Progress
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
-$ProgressPreference = 'SilentlyContinue'
 
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "           PIXELPLAY UPDATER           " -ForegroundColor Yellow
@@ -71,23 +68,23 @@ Write-Host "Mostrando progreso en vivo. No cierre esta ventana...`n" -Foreground
 # Esperar a que el archivo exista
 while (-not (Test-Path -LiteralPath $LogPath)) { Start-Sleep -Milliseconds 200 }
 
-# Leer contenido en vivo y mostrar barra ASCII en lugar de Write-Progress (evita problemas de tuberías)
-try {
-    Get-Content -LiteralPath $LogPath -Wait -ReadCount 1 | ForEach-Object {
-        $line = $_
-        if ($line -match '^\[PROGRESS_DOWNLOAD\]\s+(\d{1,3})$') {
-            $p = [int]$Matches[1]
-            if ($p -lt 0) { $p = 0 } elseif ($p -gt 100) { $p = 100 }
+# Leer contenido en vivo y dibujar barra de progreso si se emiten marcas
+Get-Content -LiteralPath $LogPath -Wait | ForEach-Object {
+    $line = $_
+    if ($line -match '^\[PROGRESS_DOWNLOAD\]\s+(\d{1,3})$') {
+        $p = [int]$Matches[1]
+        if ($p -lt 0) { $p = 0 } elseif ($p -gt 100) { $p = 100 }
+        try {
+            Write-Progress -Activity 'Descargando actualización' -Status ("$p%") -PercentComplete $p
+        } catch {
             $barLen = 30
             $filled = [int]([math]::Round(($p/100)*$barLen))
             $bar = ('#' * $filled).PadRight($barLen, '-')
             Write-Host ("[Descarga] [{0}] {1,3}%" -f $bar, $p)
-        } else {
-            Write-Host $line
         }
+    } else {
+        Write-Host $line
     }
-} catch {
-    Write-Host "[VISOR] Error leyendo el log: $($_.Exception.Message)" -ForegroundColor DarkYellow
 }
 '@
     # Siempre sobreescribir para garantizar versión actualizada del visor
