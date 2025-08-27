@@ -127,16 +127,26 @@ function Start-Viewer($downloadsDir, $logPath) {
 
 function Kill-Launcher {
     Safe-WriteHost "Cerrando procesos de PixelPlay..." "White"
+    
+    # Si estamos en un proceso independiente, esperar un poco para asegurar desacoplamiento
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
+        Safe-WriteHost "Esperando desacoplamiento del proceso padre..." "DarkGray"
+        Start-Sleep -Milliseconds 2000
+    }
+    
     $names = @('pixelplay launcher','Pixelplay Launcher','PixelplayLauncher','electron','electron.exe','node','node.exe','npm','npm.exe','conhost','conhost.exe')
     foreach ($n in $names) {
         Get-Process -Name $n -ErrorAction SilentlyContinue | ForEach-Object {
-            try { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue } catch {}
+            # No cerrar nuestro propio proceso
+            if ($_.Id -ne $PID) {
+                try { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue } catch {}
+            }
         }
     }
     try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM electron.exe /T" -WindowStyle Hidden | Out-Null } catch {}
     try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM pixelplay*.exe /T" -WindowStyle Hidden | Out-Null } catch {}
     try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM node.exe /T" -WindowStyle Hidden | Out-Null } catch {}
-    Start-Sleep -Milliseconds 1200
+    Start-Sleep -Milliseconds 1500
 }
 
 function Download-Package($url, $destFile) {
@@ -236,6 +246,63 @@ function Replace-AppContent($extractedRoot, $appDir) {
             }
         } while (-not $ok -and $attempts -lt $maxAttempts)
         if (-not $ok) { Safe-WriteHost ("No se pudo copiar '{0}' tras {1} intentos." -f $it.Name,$maxAttempts) "Red" }
+    }
+}
+
+# Detectar si este script se está ejecutando desde el launcher o necesita proceso independiente
+$needsDetachedProcess = $false
+try {
+    # Método 1: Verificar proceso padre
+    $parentProcess = Get-WmiObject Win32_Process -Filter "ProcessId=$PID" | ForEach-Object { Get-Process -Id $_.ParentProcessId -ErrorAction SilentlyContinue }
+    if ($parentProcess -and ($parentProcess.ProcessName -match "launcher|electron|pixelplay")) {
+        $needsDetachedProcess = $true
+        Safe-WriteHost "Detectado proceso padre: $($parentProcess.ProcessName) (PID: $($parentProcess.Id))" "DarkGray"
+    }
+    
+    # Método 2: Verificar si hay procesos de PixelPlay ejecutándose y no estamos en modo detached
+    if (-not $needsDetachedProcess) {
+        $launcherProcesses = Get-Process -Name "*launcher*", "*electron*", "*pixelplay*" -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $PID }
+        if ($launcherProcesses.Count -gt 0 -and -not $env:PIXELPLAY_DETACHED_UPDATE) {
+            $needsDetachedProcess = $true
+            Safe-WriteHost "Detectados procesos de PixelPlay ejecutándose. Usando proceso independiente para evitar conflictos." "DarkGray"
+        }
+    }
+} catch {}
+
+# Si necesita proceso independiente, relanzarse
+if ($needsDetachedProcess -and -not $env:PIXELPLAY_DETACHED_UPDATE) {
+    Safe-WriteHost "Relanzando como proceso independiente para evitar conflictos con el launcher..." "Yellow"
+    
+    # Preparar argumentos para el nuevo proceso
+    $scriptPath = $MyInvocation.MyCommand.Path
+    $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $scriptPath)
+    
+    # Pasar parámetros originales al nuevo proceso
+    if ($PackageUrl) { $arguments += @('-PackageUrl', $PackageUrl) }
+    if ($Sha256) { $arguments += @('-Sha256', $Sha256) }
+    if ($SkipKill) { $arguments += '-SkipKill' }
+    if ($NoViewer) { $arguments += '-NoViewer' }
+    
+    # Crear variable de entorno para evitar bucle infinito
+    $env:PIXELPLAY_DETACHED_UPDATE = '1'
+    
+    try {
+        # Lanzar proceso independiente
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = 'powershell.exe'
+        $psi.Arguments = $arguments -join ' '
+        $psi.UseShellExecute = $true
+        $psi.CreateNoWindow = $false
+        $psi.WindowStyle = 'Normal'
+        
+        $newProcess = [System.Diagnostics.Process]::Start($psi)
+        Safe-WriteHost "Proceso independiente iniciado (PID: $($newProcess.Id)). Saliendo del proceso actual..." "Green"
+        
+        # Salir inmediatamente del proceso actual
+        exit 0
+    } catch {
+        Safe-WriteHost "Error al lanzar proceso independiente: $($_.Exception.Message)" "Red"
+        Safe-WriteHost "Continuando con ejecución normal..." "Yellow"
     }
 }
 
