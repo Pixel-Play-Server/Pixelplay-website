@@ -17,9 +17,23 @@ $DefaultSha256 = "CE824B6D4F3B01BBC15DEFDCA839607F127495399C2C031690BD54C446793A
 $DefaultPackageUrl = "https://pub-dda9306a363141bc9aece427638fbb4a.r2.dev/pixelplay-app-20250825180136.zip"
 
 function Write-Section($text) {
-    Write-Host "`n=====================================" -ForegroundColor Cyan
-    Write-Host " $text" -ForegroundColor Yellow
-    Write-Host "=====================================`n" -ForegroundColor Cyan
+    try {
+        Write-Host "`n=====================================" -ForegroundColor Cyan
+        Write-Host " $text" -ForegroundColor Yellow
+        Write-Host "=====================================`n" -ForegroundColor Cyan
+    } catch {
+        Write-Output "`n====================================="
+        Write-Output " $text"
+        Write-Output "=====================================`n"
+    }
+}
+
+function Safe-WriteHost($message, $color = "White") {
+    try {
+        Write-Host $message -ForegroundColor $color
+    } catch {
+        Write-Output $message
+    }
 }
 
 function Ensure-Tls12 {
@@ -106,13 +120,13 @@ function Start-Viewer($downloadsDir, $logPath) {
             $cmdArgs = ('/c start "PixelPlay Updater" "{0}" -NoProfile -NoLogo -ExecutionPolicy Bypass -File "{1}" -LogPath "{2}" -Title "PixelPlay Updater"' -f $pwsh, $viewer, $logPath)
             Start-Process -FilePath 'cmd.exe' -ArgumentList $cmdArgs -WorkingDirectory $downloadsDir -WindowStyle Hidden | Out-Null
         } catch {
-            Write-Host ("[VISOR] No se pudo iniciar el visor: {0}" -f $_.Exception.Message) -ForegroundColor DarkYellow
+            Safe-WriteHost ("[VISOR] No se pudo iniciar el visor: {0}" -f $_.Exception.Message) "DarkYellow"
         }
     }
 }
 
 function Kill-Launcher {
-    Write-Host "Cerrando procesos de PixelPlay..." -ForegroundColor White
+    Safe-WriteHost "Cerrando procesos de PixelPlay..." "White"
     $names = @('pixelplay launcher','Pixelplay Launcher','PixelplayLauncher','electron','electron.exe','node','node.exe','npm','npm.exe','conhost','conhost.exe')
     foreach ($n in $names) {
         Get-Process -Name $n -ErrorAction SilentlyContinue | ForEach-Object {
@@ -126,7 +140,7 @@ function Kill-Launcher {
 }
 
 function Download-Package($url, $destFile) {
-    Write-Host "Descargando paquete desde:" $url -ForegroundColor White
+    Safe-WriteHost "Descargando paquete desde: $url" "White"
     Ensure-Tls12
     
     $wc = New-Object System.Net.WebClient
@@ -134,20 +148,20 @@ function Download-Package($url, $destFile) {
     $wc.add_DownloadProgressChanged({ param($s,$e)
         if ($e.TotalBytesToReceive -gt 0) {
             $pct = [int]$e.ProgressPercentage
-            if ($pct -ne $progress) { $progress = $pct; Write-Progress -Activity "Descargando actualización" -Status "$pct%" -PercentComplete $pct; Write-Host ("[PROGRESS_DOWNLOAD] {0}" -f $pct) }
+            if ($pct -ne $progress) { $progress = $pct; Write-Progress -Activity "Descargando actualizacion" -Status "$pct%" -PercentComplete $pct; Safe-WriteHost ("[PROGRESS_DOWNLOAD] {0}" -f $pct) "White" }
         }
     })
-    $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualización" -Completed; Write-Host "[PROGRESS_DOWNLOAD] 100" })
+    $wc.add_DownloadFileCompleted({ Write-Progress -Activity "Descargando actualizacion" -Completed; Safe-WriteHost "[PROGRESS_DOWNLOAD] 100" "White" })
     $wc.DownloadFileAsync([uri]$url, $destFile)
     while ($wc.IsBusy) { Start-Sleep -Milliseconds 200 }
 }
 
 function Verify-Checksum($file, $expectedSha256) {
     if (-not $expectedSha256) { return $true }
-    Write-Host "Verificando checksum SHA256..." -ForegroundColor White
+    Safe-WriteHost "Verificando checksum SHA256..." "White"
     $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $file
-    if ($hash.Hash.ToLower() -ne $expectedSha256.ToLower()) { throw "Checksum inválido. Esperado: $expectedSha256, Obtenido: $($hash.Hash)" }
-    Write-Host "Checksum OK" -ForegroundColor Green
+    if ($hash.Hash.ToLower() -ne $expectedSha256.ToLower()) { throw "Checksum invalido. Esperado: $expectedSha256, Obtenido: $($hash.Hash)" }
+    Safe-WriteHost "Checksum OK" "Green"
     $true
 }
 
@@ -172,11 +186,11 @@ function Get-UpdateInfo {
         [string]$InfoUrl = "https://pixelplay.gg/powerupdate.json"
     )
     try {
-        Write-Host "Obteniendo información de actualización desde:" $InfoUrl -ForegroundColor White
+        Safe-WriteHost "Obteniendo informacion de actualizacion desde: $InfoUrl" "White"
         Ensure-Tls12
         $data = Invoke-RestMethod -Uri $InfoUrl -UseBasicParsing
     } catch {
-        Write-Host "No se pudo obtener powerupdate.json: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        Safe-WriteHost "No se pudo obtener powerupdate.json: $($_.Exception.Message)" "DarkYellow"
         return $null
     }
 
@@ -192,21 +206,21 @@ function Get-UpdateInfo {
     if (-not $pkgUrl) { try { $pkgUrl = $data.current_script[0].zipUrl } catch {} }
 
     if ($pkgUrl) {
-        Write-Host "Paquete detectado:" $pkgUrl -ForegroundColor DarkGray
-        if ($pkgSha) { Write-Host "SHA256 detectado en metadata." -ForegroundColor DarkGray }
+        Safe-WriteHost "Paquete detectado: $pkgUrl" "DarkGray"
+        if ($pkgSha) { Safe-WriteHost "SHA256 detectado en metadata." "DarkGray" }
         return [pscustomobject]@{ Url = $pkgUrl; Sha256 = $pkgSha }
     }
 
-    Write-Host "No se encontró URL de paquete en powerupdate.json" -ForegroundColor DarkYellow
+    Safe-WriteHost "No se encontro URL de paquete en powerupdate.json" "DarkYellow"
     return $null
 }
 
 function Replace-AppContent($extractedRoot, $appDir) {
-    Write-Host "Copiando nueva versión (superposición, sin borrar existentes)..." -ForegroundColor White
+    Safe-WriteHost "Copiando nueva version (superposicion, sin borrar existentes)..." "White"
     $items = Get-ChildItem -LiteralPath $extractedRoot -Force
     foreach ($it in $items) {
         if ($it.Name -ieq 'downloads') { continue }
-        if ($it.Name -ieq 'node_modules') { Write-Host "Saltando 'node_modules' para evitar bloqueos (se mantiene el actual)." -ForegroundColor DarkGray; continue }
+        if ($it.Name -ieq 'node_modules') { Safe-WriteHost "Saltando 'node_modules' para evitar bloqueos (se mantiene el actual)." "DarkGray"; continue }
         $dest = Join-Path $appDir $it.Name
         $attempts = 0
         $maxAttempts = 5
@@ -217,11 +231,11 @@ function Replace-AppContent($extractedRoot, $appDir) {
             } catch {
                 $ok = $false
                 $attempts++
-                Write-Host ("Reintentando copiar '{0}' por bloqueo (intento {1}/{2})" -f $it.Name,$attempts,$maxAttempts) -ForegroundColor DarkYellow
+                Safe-WriteHost ("Reintentando copiar '{0}' por bloqueo (intento {1}/{2})" -f $it.Name,$attempts,$maxAttempts) "DarkYellow"
                 Start-Sleep -Milliseconds 500
             }
         } while (-not $ok -and $attempts -lt $maxAttempts)
-        if (-not $ok) { Write-Host ("No se pudo copiar '{0}' tras {1} intentos." -f $it.Name,$maxAttempts) -ForegroundColor Red }
+        if (-not $ok) { Safe-WriteHost ("No se pudo copiar '{0}' tras {1} intentos." -f $it.Name,$maxAttempts) "Red" }
     }
 }
 
@@ -234,9 +248,9 @@ try {
     $appDir = $paths.AppDir
     $exePath = $paths.ExePath
 
-    Write-Host "Directorio de app:" $appDir -ForegroundColor DarkGray
-    Write-Host "Descargas:" $downloadsDir -ForegroundColor DarkGray
-    Write-Host "Executable:" $exePath -ForegroundColor DarkGray
+    Safe-WriteHost "Directorio de app: $appDir" "DarkGray"
+    Safe-WriteHost "Descargas: $downloadsDir" "DarkGray"  
+    Safe-WriteHost "Executable: $exePath" "DarkGray"
 
     # Preparar rutas temporales y logging
     $timestamp = Get-Date -Format 'yyyyMMddHHmmss'
@@ -249,20 +263,20 @@ try {
     if (-not ($NoViewer -or $envNoViewer)) {
         Start-Viewer -downloadsDir $downloadsDir -logPath $logPath
     } else {
-        Write-Host '[VISOR] Deshabilitado por parámetro o variable de entorno.' -ForegroundColor DarkYellow
+        Safe-WriteHost '[VISOR] Deshabilitado por parametro o variable de entorno.' "DarkYellow"
     }
     try { Start-Transcript -LiteralPath $logPath -Force | Out-Null } catch {}
     $script:LogPath = $logPath
 
     # Si no se pasó PackageUrl, NO autodetectar desde powerupdate.json; usar URL embebida/env
     if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
-        Write-Host 'No se proporcionó -PackageUrl, usando la URL por defecto embebida (o variables de entorno si existen)...' -ForegroundColor DarkYellow
+        Safe-WriteHost 'No se proporciono -PackageUrl, usando la URL por defecto embebida (o variables de entorno si existen)...' "DarkYellow"
     }
 
     # Fallback: usar SIEMPRE la URL embebida del bucket cuando no se pasa -PackageUrl
     if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
         $PackageUrl = $DefaultPackageUrl
-        Write-Host "Usando paquete por defecto (bucket):" $PackageUrl -ForegroundColor White
+        Safe-WriteHost "Usando paquete por defecto (bucket): $PackageUrl" "White"
     }
 
     if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
@@ -286,7 +300,7 @@ try {
     if (-not (Test-IsZip -file $zipPath)) {
         throw 'El archivo descargado no es un ZIP válido. Aborting extracción.'
     }
-    Write-Host "Extrayendo paquete..." -ForegroundColor White
+    Safe-WriteHost "Extrayendo paquete..." "White"
     Expand-Archive -LiteralPath $zipPath -DestinationPath $extractDir -Force
 
     # Detectar carpeta raíz extraída (si el zip tiene carpeta contenedora)
@@ -302,18 +316,23 @@ try {
     Remove-Item -LiteralPath $extractDir -Recurse -Force -ErrorAction SilentlyContinue
 
     Write-Section 'ACTUALIZACIÓN COMPLETADA'
-    Write-Host 'Relanzando PixelPlay...' -ForegroundColor White
+    Safe-WriteHost 'Relanzando PixelPlay...' "White"
     if (Test-Path -LiteralPath $exePath) {
         Start-Process -FilePath $exePath -WorkingDirectory (Split-Path -Parent $exePath)
-        Write-Host 'PixelPlay lanzado.' -ForegroundColor Green
+        Safe-WriteHost 'PixelPlay lanzado.' "Green"
     } else {
-        Write-Host 'No se encontro el ejecutable en la ruta esperada:' -ForegroundColor Red
-        Write-Host $exePath -ForegroundColor DarkRed
+        Safe-WriteHost 'No se encontro el ejecutable en la ruta esperada:' "Red"
+        Safe-WriteHost $exePath "DarkRed"
     }
     try { Stop-Transcript | Out-Null } catch {}
     exit 0
 } catch {
-    Write-Host "Error durante la actualizacion: $($_.Exception.Message)" -ForegroundColor Red
+    try {
+        Write-Output "Error durante la actualizacion: $($_.Exception.Message)"
+    } catch {
+        # Fallback si incluso Write-Output falla
+        [Console]::WriteLine("Error durante la actualizacion: $($_.Exception.Message)")
+    }
     try { Stop-Transcript | Out-Null } catch {}
     exit 1
 }
