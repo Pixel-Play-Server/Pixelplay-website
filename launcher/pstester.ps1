@@ -11,8 +11,8 @@ $DefaultSha256 = "CE824B6D4F3B01BBC15DEFDCA839607F127495399C2C031690BD54C446793A
 # Nota: No asignamos $Sha256 automáticamente para evitar falsos negativos
 # con paquetes nuevos. Si se desea forzar, pase -Sha256 explícitamente.
 
-# URL de paquete por defecto (fallback), alojado en Google Drive
-$DefaultPackageUrl = "https://drive.google.com/uc?id=13TTpOILM84CMn5_LZd6r3zZA-bNKcC_C"
+# URL de paquete por defecto (fallback), alojado en Cloudflare R2
+$DefaultPackageUrl = "https://pub-dda9306a363141bc9aece427638fbb4a.r2.dev/pixelplay-app-20250825180136.zip"
 
 function Write-Section($text) {
     Write-Host "`n=====================================" -ForegroundColor Cyan
@@ -90,13 +90,16 @@ function Start-Viewer($downloadsDir, $logPath) {
 
 function Kill-Launcher {
     Write-Host "Cerrando procesos de PixelPlay..." -ForegroundColor White
-    $names = @('pixelplay launcher','Pixelplay Launcher','PixelplayLauncher')
+    $names = @('pixelplay launcher','Pixelplay Launcher','PixelplayLauncher','electron','electron.exe','node','node.exe','npm','npm.exe','conhost','conhost.exe')
     foreach ($n in $names) {
         Get-Process -Name $n -ErrorAction SilentlyContinue | ForEach-Object {
             try { Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue } catch {}
         }
     }
-    Start-Sleep -Milliseconds 800
+    try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM electron.exe /T" -WindowStyle Hidden | Out-Null } catch {}
+    try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM pixelplay*.exe /T" -WindowStyle Hidden | Out-Null } catch {}
+    try { Start-Process -FilePath cmd.exe -ArgumentList "/c taskkill /F /IM node.exe /T" -WindowStyle Hidden | Out-Null } catch {}
+    Start-Sleep -Milliseconds 1200
 }
 
 function Download-Package($url, $destFile) {
@@ -326,19 +329,26 @@ function Get-UpdateInfo {
 }
 
 function Replace-AppContent($extractedRoot, $appDir) {
-    Write-Host "Preparando reemplazo de archivos..." -ForegroundColor White
-    # Preservar carpeta downloads
-    Get-ChildItem -LiteralPath $appDir -Force | Where-Object { $_.Name -ne 'downloads' } | ForEach-Object {
-        try { Remove-Item -LiteralPath $_.FullName -Recurse -Force -ErrorAction Stop } catch {}
-    }
-
-    Write-Host "Copiando nueva versión..." -ForegroundColor White
-    # Copiar todo excepto la carpeta downloads del paquete
+    Write-Host "Copiando nueva versión (superposición, sin borrar existentes)..." -ForegroundColor White
     $items = Get-ChildItem -LiteralPath $extractedRoot -Force
     foreach ($it in $items) {
         if ($it.Name -ieq 'downloads') { continue }
+        if ($it.Name -ieq 'node_modules') { Write-Host "Saltando 'node_modules' para evitar bloqueos (se mantiene el actual)." -ForegroundColor DarkGray; continue }
         $dest = Join-Path $appDir $it.Name
-        Copy-Item -LiteralPath $it.FullName -Destination $dest -Recurse -Force
+        $attempts = 0
+        $maxAttempts = 5
+        do {
+            try {
+                Copy-Item -LiteralPath $it.FullName -Destination $dest -Recurse -Force -ErrorAction Stop
+                $ok = $true
+            } catch {
+                $ok = $false
+                $attempts++
+                Write-Host ("Reintentando copiar '{0}' por bloqueo (intento {1}/{2})" -f $it.Name,$attempts,$maxAttempts) -ForegroundColor DarkYellow
+                Start-Sleep -Milliseconds 500
+            }
+        } while (-not $ok -and $attempts -lt $maxAttempts)
+        if (-not $ok) { Write-Host ("No se pudo copiar '{0}' tras {1} intentos." -f $it.Name,$maxAttempts) -ForegroundColor Red }
     }
 }
 
