@@ -34,6 +34,13 @@ function Safe-WriteHost($message, $color = "White") {
     } catch {
         Write-Output $message
     }
+    
+    # En proceso independiente, también escribir al log manual
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1' -and $script:LogPath) {
+        try {
+            "$(Get-Date -Format 'HH:mm:ss'): $message" | Add-Content -LiteralPath $script:LogPath -Encoding UTF8
+        } catch {}
+    }
 }
 
 function Ensure-Tls12 {
@@ -371,18 +378,29 @@ try {
         Safe-WriteHost "Archivo de log para proceso independiente: $logPath" "DarkGray"
     }
     
-    # Inicializar logging con manejo de errores robusto
-    try {
-        Start-Transcript -LiteralPath $logPath -Force | Out-Null
-        Safe-WriteHost "Transcripción iniciada en: $logPath" "DarkGray"
-    } catch {
-        Safe-WriteHost "Error iniciando transcripción: $($_.Exception.Message)" "Red"
-        # Crear archivo de log manualmente si Start-Transcript falla
+    # Inicializar logging - DESHABILITAR transcripción en proceso independiente para evitar errores 0xE9
+    if ($env:PIXELPLAY_DETACHED_UPDATE -eq '1') {
+        Safe-WriteHost "Transcripción DESHABILITADA en proceso independiente para evitar errores de consola." "Yellow"
+        # Crear log manual simple
         try {
-            "Log iniciado: $(Get-Date)" | Out-File -FilePath $logPath -Encoding UTF8
+            "=== LOG PROCESO INDEPENDIENTE ===`nInicio: $(Get-Date)`nPID: $PID`n" | Out-File -FilePath $logPath -Encoding UTF8
             Safe-WriteHost "Log manual creado: $logPath" "DarkGray"
         } catch {
-            Safe-WriteHost "Error crítico: No se puede crear archivo de log" "Red"
+            Safe-WriteHost "Error creando log manual: $($_.Exception.Message)" "Red"
+        }
+    } else {
+        # Solo usar transcripción en proceso principal
+        try {
+            Start-Transcript -LiteralPath $logPath -Force | Out-Null
+            Safe-WriteHost "Transcripción iniciada en: $logPath" "DarkGray"
+        } catch {
+            Safe-WriteHost "Error iniciando transcripción: $($_.Exception.Message)" "Red"
+            try {
+                "Log iniciado: $(Get-Date)" | Out-File -FilePath $logPath -Encoding UTF8
+                Safe-WriteHost "Log manual creado: $logPath" "DarkGray"
+            } catch {
+                Safe-WriteHost "Error crítico: No se puede crear archivo de log" "Red"
+            }
         }
     }
     
@@ -464,7 +482,10 @@ try {
         Safe-WriteHost 'No se encontro el ejecutable en la ruta esperada:' "Red"
         Safe-WriteHost $exePath "DarkRed"
     }
-    try { Stop-Transcript | Out-Null } catch {}
+    # Solo detener transcripción si se estaba usando
+    if ($env:PIXELPLAY_DETACHED_UPDATE -ne '1') {
+        try { Stop-Transcript | Out-Null } catch {}
+    }
     exit 0
 } catch {
     $errorMsg = "Error durante la actualizacion: $($_.Exception.Message)"
@@ -509,6 +530,9 @@ $stackTrace
         }
     }
     
-    try { Stop-Transcript | Out-Null } catch {}
+    # Solo detener transcripción si se estaba usando
+    if ($env:PIXELPLAY_DETACHED_UPDATE -ne '1') {
+        try { Stop-Transcript | Out-Null } catch {}
+    }
     exit 1
 }
