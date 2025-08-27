@@ -404,14 +404,9 @@ try {
     try { Start-Transcript -LiteralPath $logPath -Force | Out-Null } catch {}
     $script:LogPath = $logPath
 
-    # Si no se pasó PackageUrl, intentar autodetectar desde powerupdate.json
+    # Si no se pasó PackageUrl, NO autodetectar desde powerupdate.json; usar URL embebida/env
     if ([string]::IsNullOrWhiteSpace($PackageUrl)) {
-        Write-Host 'No se proporcionó -PackageUrl, intentando autodetectar...' -ForegroundColor DarkYellow
-        $info = Get-UpdateInfo
-        if ($info -and $info.Url) {
-            $PackageUrl = $info.Url
-            if ([string]::IsNullOrWhiteSpace($Sha256) -and $info.Sha256) { $Sha256 = $info.Sha256 }
-        }
+        Write-Host 'No se proporcionó -PackageUrl, usando la URL por defecto embebida (o variables de entorno si existen)...' -ForegroundColor DarkYellow
     }
 
     # Fallback adicional: variable de entorno y valor por defecto
