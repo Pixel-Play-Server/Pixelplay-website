@@ -262,7 +262,36 @@ function Get-UpdateInfo {
 }
 
 function Replace-AppContent($extractedRoot, $appDir) {
-    Safe-WriteHost "Copiando nueva version (superposicion, sin borrar existentes)..." "White"
+    Safe-WriteHost "Eliminando contenido anterior (excepto carpeta downloads)..." "White"
+
+    # Eliminar todo el contenido de app excepto la carpeta downloads
+    $itemsToDelete = Get-ChildItem -LiteralPath $appDir -Force | Where-Object { $_.Name -ine 'downloads' }
+    foreach ($item in $itemsToDelete) {
+        $attempts = 0
+        $maxAttempts = 3
+        $ok = $false
+        do {
+            try {
+                if ($item.PSIsContainer) {
+                    Remove-Item -LiteralPath $item.FullName -Recurse -Force -ErrorAction Stop
+                } else {
+                    Remove-Item -LiteralPath $item.FullName -Force -ErrorAction Stop
+                }
+                $ok = $true
+                Safe-WriteHost ("Eliminado: {0}" -f $item.Name) "DarkGray"
+            } catch {
+                $ok = $false
+                $attempts++
+                Safe-WriteHost ("Reintentando eliminar '{0}' por bloqueo (intento {1}/{2})" -f $item.Name,$attempts,$maxAttempts) "DarkYellow"
+                Start-Sleep -Milliseconds 500
+            }
+        } while (-not $ok -and $attempts -lt $maxAttempts)
+        if (-not $ok) {
+            Safe-WriteHost ("No se pudo eliminar '{0}' tras {1} intentos." -f $item.Name,$maxAttempts) "Red"
+        }
+    }
+
+    Safe-WriteHost "Copiando nueva version..." "White"
     $items = Get-ChildItem -LiteralPath $extractedRoot -Force
     foreach ($it in $items) {
         if ($it.Name -ieq 'downloads') { continue }
