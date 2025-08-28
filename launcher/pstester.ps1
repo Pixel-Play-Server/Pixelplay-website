@@ -14,7 +14,7 @@ $DefaultSha256 = "CE824B6D4F3B01BBC15DEFDCA839607F127495399C2C031690BD54C446793A
 # con paquetes nuevos. Si se desea forzar, pase -Sha256 explícitamente.
 
 # URL de paquete por defecto (fallback), alojado en Cloudflare R2
-$DefaultPackageUrl = "https://pub-dda9306a363141bc9aece427638fbb4a.r2.dev/pixelplay-app-20250825180136.zip"
+$DefaultPackageUrl = "https://pub-dda9306a363141bc9aece427638fbb4a.r2.dev/pixelplay-app-20250827184720.zip"
 
 function Write-Section($text) {
     try {
