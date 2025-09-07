@@ -1,0 +1,276 @@
+/* Base de estilos para overlays Pixelplay */
+:root {
+    --bg-color: #101c14;
+    --surface-color: rgba(18, 32, 24, 0.80);
+    --glass-surface: rgba(18, 32, 24, 0.55);
+    --primary-color: #2ecc71;
+    --primary-color-light: #4be08c;
+    --text-color: #e1f7e6;
+    --text-color-secondary: #a8c8b3;
+    --stroke-color: rgba(46, 204, 113, 0.22);
+    --highlight-color: rgba(46, 204, 113, 0.10);
+    --border-radius: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background: transparent;
+    color: var(--text-color);
+    font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial, sans-serif;
+    overflow: hidden;
+}
+
+#overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Módulos comunes */
+.topbar {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: var(--border-radius);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+.brand .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--primary-color);
+    box-shadow: 0 0 12px var(--primary-color);
+}
+
+.status {
+    color: var(--text-color-secondary);
+    font-weight: 500;
+}
+
+.lower-third {
+    position: absolute;
+    left: 24px;
+    bottom: 40px;
+    max-width: 52%;
+    padding: 14px 18px;
+    border-radius: var(--border-radius);
+}
+
+.lower-third .title {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.lower-third .subtitle {
+    margin-top: 6px;
+    font-size: 16px;
+    color: var(--text-color-secondary);
+}
+
+.lower-third .socials {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--primary-color-light);
+}
+
+.webcam-frame {
+    position: absolute;
+    right: 24px;
+    bottom: 40px;
+    width: min(36vw, 640px);
+    height: calc(min(36vw, 640px) * 9 / 16);
+    border-radius: calc(var(--border-radius) + 6px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.webcam-frame .label {
+    margin: 10px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 8px;
+    letter-spacing: 0.6px;
+}
+
+.chat {
+    position: absolute;
+    right: 24px;
+    top: 90px;
+    width: min(28vw, 420px);
+    height: 50vh;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat .header {
+    padding: 10px 14px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+}
+
+.chat .body {
+    flex: 1;
+    padding: 12px 14px;
+    color: var(--text-color-secondary);
+}
+
+.ticker {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 18px;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+.ticker .scroll {
+    white-space: nowrap;
+    display: inline-block;
+    will-change: transform;
+    animation: ticker-move 30s linear infinite;
+}
+
+@keyframes ticker-move {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Estilos por tema */
+/* Minimal */
+body.theme-minimal .topbar,
+body.theme-minimal .lower-third,
+body.theme-minimal .chat,
+body.theme-minimal .webcam-frame,
+body.theme-minimal .ticker {
+    background: rgba(16, 28, 20, 0.55);
+    border: 1px solid var(--stroke-color);
+    backdrop-filter: blur(10px);
+}
+
+body.theme-minimal .lower-third .title {
+    color: var(--text-color);
+}
+
+body.theme-minimal .webcam-frame {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+body.theme-minimal .webcam-frame .label,
+body.theme-minimal .chat .header {
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-color-light));
+    color: #0a120d;
+}
+
+/* Neon */
+body.theme-neon .topbar,
+body.theme-neon .lower-third,
+body.theme-neon .chat,
+body.theme-neon .webcam-frame,
+body.theme-neon .ticker {
+    background: rgba(8, 14, 10, 0.5);
+    border: 1px solid rgba(46, 204, 113, 0.45);
+    box-shadow: 0 0 12px rgba(46, 204, 113, 0.45), 0 0 32px rgba(39, 82, 193, 0.25) inset;
+}
+
+body.theme-neon .lower-third .title,
+body.theme-neon .brand,
+body.theme-neon .ticker {
+    text-shadow: 0 0 10px rgba(46, 204, 113, 0.7), 0 0 20px rgba(39, 82, 193, 0.4);
+}
+
+/* CRT */
+body.theme-crt {
+    filter: saturate(0.9) contrast(1.05);
+}
+
+body.theme-crt::after {
+    content: '';
+    position: fixed;
+    left: 0; top: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.15)),
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.25) 0px, rgba(0,0,0,0.25) 1px, transparent 1px, transparent 3px);
+}
+
+body.theme-crt .topbar,
+body.theme-crt .lower-third,
+body.theme-crt .chat,
+body.theme-crt .webcam-frame,
+body.theme-crt .ticker {
+    background: rgba(5, 10, 7, 0.6);
+    border: 1px solid rgba(61, 255, 143, 0.3);
+}
+
+body.theme-crt .lower-third .title {
+    color: #9fffbf;
+}
+
+/* Glass */
+body.theme-glass .topbar,
+body.theme-glass .lower-third,
+body.theme-glass .chat,
+body.theme-glass .webcam-frame,
+body.theme-glass .ticker {
+    background: var(--glass-surface);
+    border: 1px solid var(--stroke-color);
+    backdrop-filter: blur(20px) saturate(120%);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+}
+
+/* Pixel */
+body.theme-pixel {
+    image-rendering: pixelated;
+}
+
+body.theme-pixel .topbar,
+body.theme-pixel .lower-third,
+body.theme-pixel .chat,
+body.theme-pixel .webcam-frame,
+body.theme-pixel .ticker {
+    background: rgba(12, 20, 14, 0.8);
+    border: 4px solid #1b5e2b;
+    box-shadow: 0 0 0 4px #0a120d inset, 0 0 0 1px rgba(46,204,113,0.5), 0 6px 0 0 #0a120d;
+    border-radius: 0;
+}
+
+body.theme-pixel .lower-third .title {
+    font-family: 'Press Start 2P', monospace;
+    text-transform: uppercase;
+    font-size: 18px;
+}
+
+/* Utilidades */
+.hidden { display: none !important; }
+
+

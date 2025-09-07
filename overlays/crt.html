@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pixelplay Overlay · CRT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./overlays.css" />
+    <style> body { background: transparent; } </style>
+</head>
+<body class="theme-crt">
+    <div id="overlay">
+        <div id="topbar" class="topbar">
+            <div class="brand"><span class="dot"></span><span id="brandText">PIXELPLAY</span></div>
+            <div id="statusText" class="status">EN VIVO</div>
+        </div>
+
+        <div id="lowerThird" class="lower-third">
+            <div id="ltTitle" class="title">Tu Nombre</div>
+            <div id="ltSubtitle" class="subtitle">Descripción o rol</div>
+            <div id="ltSocials" class="socials">@pixelplay • pixelplay.gg</div>
+        </div>
+
+        <div id="chat" class="chat hidden">
+            <div class="header" id="chatHeaderText">CHAT</div>
+            <div class="body">Mensajes aparecerán aquí.</div>
+        </div>
+
+        <div id="webcam" class="webcam-frame">
+            <div id="webcamLabel" class="label">WEBCAM</div>
+        </div>
+
+        <div id="ticker" class="ticker hidden">
+            <div id="tickerScroll" class="scroll">Síguenos: pixelplay.gg | Twitter: @pixelplay</div>
+        </div>
+    </div>
+
+    <script src="./overlays.js"></script>
+  </body>
+</html>
+
+
