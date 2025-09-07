@@ -34,20 +34,20 @@
         applyTheme(get('theme', 'minimal'));
 
         // Textos
-        setText('brandText', get('brand', 'PIXELPLAY'));
+        setText('brandText', get('brand', 'Joacoorandom'));
         setText('statusText', get('status', 'EN VIVO'));
-        setText('ltTitle', get('title', 'Tu Nombre'));
-        setText('ltSubtitle', get('subtitle', 'Descripción o rol'));
-        setText('ltSocials', get('socials', '@pixelplay • pixelplay.gg'));
+        setText('ltTitle', get('title', ''));
+        setText('ltSubtitle', get('subtitle', ''));
+        setText('ltSocials', get('socials', ''));
         setText('chatHeaderText', get('chat_title', 'CHAT'));
         setText('webcamLabel', get('cam_label', 'WEBCAM'));
         setText('tickerScroll', get('ticker', 'Síguenos: pixelplay.gg | Twitter: @pixelplay'));
 
         // Visibilidad
         toggle('topbar', getBool('show_topbar', true));
-        toggle('lowerThird', getBool('show_lower_third', true));
+        toggle('lowerThird', getBool('show_lower_third', false));
         toggle('chat', getBool('show_chat', false));
-        toggle('webcam', getBool('show_cam', true));
+        toggle('webcam', getBool('show_cam', false));
         toggle('ticker', getBool('show_ticker', false));
 
         // Tamaños y posiciones opcionales
