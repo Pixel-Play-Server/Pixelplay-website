@@ -1,0 +1,106 @@
+/* Escenas estáticas animadas - Pixelplay */
+:root {
+    --bg-color: #101c14;
+    --surface-color: rgba(18, 32, 24, 0.80);
+    --glass-surface: rgba(18, 32, 24, 0.55);
+    --primary-color: #2ecc71;
+    --primary-color-light: #4be08c;
+    --text-color: #e1f7e6;
+    --text-color-secondary: #a8c8b3;
+    --stroke-color: rgba(46, 204, 113, 0.22);
+    --border-radius: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; }
+body {
+    background: transparent;
+    color: var(--text-color);
+    font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial, sans-serif;
+    overflow: hidden;
+}
+
+.bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+}
+
+.bg::before {
+    content: '';
+    position: absolute; inset: -20%;
+    background:
+        radial-gradient(circle at 15% 25%, var(--primary-color-light) 0%, transparent 30%),
+        radial-gradient(circle at 85% 75%, #2752c1 0%, transparent 30%);
+    filter: blur(120px);
+    opacity: 0.35;
+    animation: glow-move 18s ease-in-out infinite;
+}
+
+@keyframes glow-move {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.15) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+.scanlines::after {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode: multiply; opacity: 0.6;
+}
+
+.stage {
+    position: relative; z-index: 1;
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px;
+}
+
+.card {
+    background: rgba(16, 28, 20, 0.55);
+    border: 1px solid var(--stroke-color);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: var(--border-radius);
+    padding: clamp(24px, 4vw, 48px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    width: min(100%, 1000px);
+    text-align: center;
+}
+
+.brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-weight: 800; letter-spacing: -0.2px; margin-bottom: 10px;
+}
+.brand .dot { width: 10px; height: 10px; border-radius: 999px; background: var(--primary-color); box-shadow: 0 0 12px var(--primary-color); }
+
+.headline { font-size: clamp(36px, 6vw, 72px); font-weight: 800; line-height: 1.05; }
+.subline { margin-top: 12px; font-size: clamp(16px, 2.2vw, 22px); color: var(--text-color-secondary); }
+.timer { margin-top: 18px; font-size: clamp(32px, 4vw, 56px); font-weight: 800; color: var(--primary-color-light); }
+.accent { margin-top: 22px; color: var(--primary-color-light); font-weight: 700; letter-spacing: 0.4px; }
+
+.divider { height: 1px; background: var(--stroke-color); margin: 22px 0; }
+
+.games {
+    margin-top: 10px; min-height: 1.6em;
+}
+.rotator { font-size: clamp(28px, 4.5vw, 48px); font-weight: 800; }
+
+.fade { animation: fade 0.6s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Temas */
+body.theme-neon .card { background: rgba(8,14,10,0.5); border-color: rgba(46,204,113,0.45); box-shadow: 0 0 12px rgba(46,204,113,0.45), 0 0 32px rgba(39,82,193,0.25) inset; }
+body.theme-crt .scanlines::after { opacity: 0.9; }
+body.theme-glass .card { background: var(--glass-surface); }
+body.theme-pixel .card { border-radius: 0; border-width: 4px; border-color: #1b5e2b; box-shadow: 0 0 0 4px #0a120d inset, 0 0 0 1px rgba(46,204,113,0.5), 0 6px 0 0 #0a120d; }
+
+.ticker {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 2;
+    padding: 10px 18px; font-size: 14px; background: rgba(16, 28, 20, 0.55); border-top: 1px solid var(--stroke-color);
+}
+.ticker .scroll { white-space: nowrap; display: inline-block; animation: ticker 30s linear infinite; }
+@keyframes ticker { 0% { transform: translateX(100%);} 100% { transform: translateX(-100%);} }
+
+.hidden { display: none !important; }
+
+
