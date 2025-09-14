@@ -281,7 +281,7 @@
             workers: 3,
             quality: 8,
             background: bgColor,
-            workerScript: 'https://unpkg.com/gif.js.optimized/dist/gif.worker.js',
+            workerScript: 'vendor/gif.worker.js',
             width: off.width,
             height: off.height,
             dither: 'FloydSteinberg-serpentine'
