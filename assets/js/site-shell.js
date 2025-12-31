@@ -1,5 +1,102 @@
 /* global window, document */
 
+const PP_THEME_KEY = "pp-theme"; // "light" | "dark" | (unset => system)
+let ppThemeMediaQuery = null;
+
+function ppGetStoredTheme() {
+  try {
+    const v = window.localStorage.getItem(PP_THEME_KEY);
+    return v === "light" || v === "dark" ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+function ppSetStoredTheme(value) {
+  try {
+    if (value === "light" || value === "dark") {
+      window.localStorage.setItem(PP_THEME_KEY, value);
+    } else {
+      window.localStorage.removeItem(PP_THEME_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}
+
+function ppSystemPrefersDark() {
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function ppComputeIsDark() {
+  const stored = ppGetStoredTheme();
+  if (stored === "dark") return true;
+  if (stored === "light") return false;
+  return ppSystemPrefersDark();
+}
+
+function ppApplyTheme() {
+  const isDark = ppComputeIsDark();
+  document.documentElement.classList.toggle("dark", isDark);
+  ppUpdateThemeToggleUI();
+}
+
+function ppUpdateThemeToggleUI() {
+  const btn = document.getElementById("pp-theme-toggle");
+  if (!btn) return;
+
+  const isDark = document.documentElement.classList.contains("dark");
+  btn.setAttribute("aria-pressed", isDark ? "true" : "false");
+  btn.setAttribute("title", isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro");
+
+  btn.querySelectorAll("[data-pp-theme-icon]").forEach((el) => {
+    const which = el.getAttribute("data-pp-theme-icon");
+    const shouldShow = (which === "moon" && isDark) || (which === "sun" && !isDark);
+    el.classList.toggle("hidden", !shouldShow);
+  });
+}
+
+function ppInitTheme() {
+  // Aplicar tema inicial (por defecto: sistema; si el usuario eligió manualmente, respetar).
+  ppApplyTheme();
+
+  // Si no hay preferencia guardada, reaccionar a cambios del sistema.
+  if (window.matchMedia) {
+    ppThemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      if (!ppGetStoredTheme()) ppApplyTheme();
+    };
+    if (ppThemeMediaQuery.addEventListener) {
+      ppThemeMediaQuery.addEventListener("change", onChange);
+    } else if (ppThemeMediaQuery.addListener) {
+      // Safari viejo
+      ppThemeMediaQuery.addListener(onChange);
+    }
+  }
+}
+
+function ppSetupThemeToggle() {
+  const btn = document.getElementById("pp-theme-toggle");
+  if (!btn) return;
+  if (btn.dataset.ppBound === "true") return;
+  btn.dataset.ppBound = "true";
+
+  btn.addEventListener("click", (e) => {
+    // Shift/Alt click: volver a “Sistema”
+    if (e.shiftKey || e.altKey) {
+      ppSetStoredTheme(null);
+      ppApplyTheme();
+      return;
+    }
+
+    const isDark = document.documentElement.classList.contains("dark");
+    ppSetStoredTheme(isDark ? "light" : "dark");
+    ppApplyTheme();
+  });
+
+  ppUpdateThemeToggleUI();
+}
+
 function getCurrentPage() {
   const el = document.querySelector("[data-pp-page]");
   return el ? String(el.getAttribute("data-pp-page") || "") : "";
@@ -46,12 +143,27 @@ function renderNav() {
             </a>
           </div>
 
-          <div class="-mr-2 flex md:hidden">
-            <button id="pp-mobile-menu-toggle" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#4ade80]" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="pp-mobile-menu">
-              <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                <path d="M4 6.5h16a1 1 0 0 0 0-2H4a1 1 0 1 0 0 2zm16 4.5H4a1 1 0 1 0 0 2h16a1 1 0 0 0 0-2zm0 6.5H4a1 1 0 1 0 0 2h16a1 1 0 0 0 0-2z"/>
-              </svg>
+          <div class="flex items-center gap-2">
+            <button id="pp-theme-toggle" class="inline-flex items-center justify-center size-10 rounded-lg border border-gray-200 dark:border-white/10 bg-white/70 dark:bg-black/40 text-gray-800 dark:text-gray-100 hover:bg-white dark:hover:bg-black/60 transition-colors" type="button" aria-label="Cambiar tema" aria-pressed="false">
+              <span data-pp-theme-icon="sun">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm0-16a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zm0 18a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1zM4 11a1 1 0 1 1 0 2H3a1 1 0 1 1 0-2h1zm18 0a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2h1zM5.636 4.222a1 1 0 0 1 1.414 0l.707.707a1 1 0 1 1-1.414 1.414l-.707-.707a1 1 0 0 1 0-1.414zm12.02 12.02a1 1 0 0 1 1.414 0l.707.707a1 1 0 1 1-1.414 1.414l-.707-.707a1 1 0 0 1 0-1.414zM19.07 4.222a1 1 0 0 1 0 1.414l-.707.707a1 1 0 1 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 0zM7.05 16.242a1 1 0 0 1 0 1.414l-.707.707a1 1 0 1 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 0z"/>
+                </svg>
+              </span>
+              <span data-pp-theme-icon="moon" class="hidden">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3a.9.9 0 0 0-1.1 1.1A7 7 0 1 0 19.9 15.6a.9.9 0 0 0 1.1-1.1z"/>
+                </svg>
+              </span>
             </button>
+
+            <div class="-mr-2 flex md:hidden">
+              <button id="pp-mobile-menu-toggle" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#4ade80]" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="pp-mobile-menu">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                  <path d="M4 6.5h16a1 1 0 0 0 0-2H4a1 1 0 1 0 0 2zm16 4.5H4a1 1 0 1 0 0 2h16a1 1 0 0 0 0-2zm0 6.5H4a1 1 0 1 0 0 2h16a1 1 0 0 0 0-2z"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -71,6 +183,7 @@ function renderNav() {
 
   // Agregar event listener para el toggle del menú móvil después de renderizar
   setupMobileMenuToggle();
+  ppSetupThemeToggle();
 }
 
 function renderFooter() {
@@ -176,6 +289,7 @@ function setupViewportOptimizations() {
 }
 
 function init() {
+  ppInitTheme();
   hideLegacyChrome();
   renderNav();
   renderFooter();
