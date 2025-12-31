@@ -27,6 +27,8 @@ async function fetchJson(url, timeoutMs) {
       signal: controller.signal,
       cache: "no-store",
       headers: { Accept: "application/json" },
+      // Mejorar rendimiento en conexiones lentas
+      ...(navigator.connection?.saveData && { priority: "low" }),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();

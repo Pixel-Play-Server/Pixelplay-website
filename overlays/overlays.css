@@ -273,4 +273,120 @@ body.theme-pixel .lower-third .title {
 /* Utilidades */
 .hidden { display: none !important; }
 
+/* Mejoras para dispositivos móviles */
+@media (max-width: 768px) {
+    :root {
+        --border-radius: 8px;
+    }
+
+    html, body {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    .topbar {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .brand .dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .lower-third {
+        left: 12px;
+        bottom: 20px;
+        max-width: 85%;
+        padding: 10px 14px;
+    }
+
+    .lower-third .title {
+        font-size: 20px;
+        line-height: 1.2;
+    }
+
+    .lower-third .subtitle {
+        font-size: 13px;
+    }
+
+    .lower-third .socials {
+        font-size: 12px;
+        margin-top: 6px;
+    }
+
+    .webcam-frame {
+        width: 100px;
+        height: 100px;
+        bottom: 20px;
+        right: 12px;
+    }
+
+    .chat {
+        max-width: 90%;
+        max-height: 40%;
+    }
+
+    .ticker {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: none;
+        border-radius: 0;
+        padding: 8px 12px;
+    }
+
+    /* Temas móviles */
+    body.theme-pixel .lower-third .title {
+        font-size: 14px;
+        line-height: 1.2;
+    }
+
+    /* Prevenir comportamiento de pinch-zoom innecesario */
+    body {
+        touch-action: manipulation;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Mejorar legibilidad en pantallas pequeñas */
+    body.theme-minimal .lower-third .title,
+    body.theme-neon .lower-third .title,
+    body.theme-crt .lower-third .title,
+    body.theme-glass .lower-third .title,
+    body.theme-pixel .lower-third .title {
+        word-break: break-word;
+    }
+}
+
+@media (max-width: 480px) {
+    .topbar {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .lower-third {
+        max-width: 90%;
+        bottom: 12px;
+        left: 8px;
+    }
+
+    .lower-third .title {
+        font-size: 18px;
+    }
+
+    .webcam-frame {
+        width: 80px;
+        height: 80px;
+        bottom: 12px;
+        right: 8px;
+    }
+}
+
 

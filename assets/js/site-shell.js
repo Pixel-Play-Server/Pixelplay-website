@@ -47,14 +47,28 @@ function renderNav() {
           </div>
 
           <div class="-mr-2 flex md:hidden">
-            <button class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none" type="button" aria-label="Menú">
+            <button id="pp-mobile-menu-toggle" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#4ade80]" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="pp-mobile-menu">
               <span class="material-icons-outlined">menu</span>
             </button>
           </div>
         </div>
       </div>
+
+      <!-- Menú móvil -->
+      <div id="pp-mobile-menu" class="hidden md:hidden bg-white/90 dark:bg-black/90 border-b border-gray-200 dark:border-white/10" role="navigation" aria-label="Menú de navegación móvil">
+        <div class="px-2 pt-2 pb-3 space-y-1 max-w-7xl mx-auto">
+          <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium ${page === "home" ? "text-[#4ade80] bg-gray-700/20" : "text-gray-600 dark:text-gray-400 hover:text-[#4ade80] hover:bg-gray-700/20"} transition-colors">Inicio</a>
+          <a href="blog.html" class="block px-3 py-2 rounded-md text-base font-medium ${page === "blog" ? "text-[#4ade80] bg-gray-700/20" : "text-gray-600 dark:text-gray-400 hover:text-[#4ade80] hover:bg-gray-700/20"} transition-colors">Blog</a>
+          <a href="wiki.html" class="block px-3 py-2 rounded-md text-base font-medium ${page === "wiki" ? "text-[#4ade80] bg-gray-700/20" : "text-gray-600 dark:text-gray-400 hover:text-[#4ade80] hover:bg-gray-700/20"} transition-colors">Wiki</a>
+          <a href="soporte.html" class="block px-3 py-2 rounded-md text-base font-medium ${page === "soporte" ? "text-[#4ade80] bg-gray-700/20" : "text-gray-600 dark:text-gray-400 hover:text-[#4ade80] hover:bg-gray-700/20"} transition-colors">Soporte</a>
+          <a href="index.html" class="block px-3 py-2 mt-2 bg-[#4ade80] hover:bg-[#22c55e] text-black font-bold rounded-lg transition-all text-center">Jugar ahora</a>
+        </div>
+      </div>
     </nav>
   `;
+
+  // Agregar event listener para el toggle del menú móvil después de renderizar
+  setupMobileMenuToggle();
 }
 
 function renderFooter() {
@@ -79,16 +93,90 @@ function renderFooter() {
   `;
 }
 
+function setupMobileMenuToggle() {
+  const toggle = document.getElementById("pp-mobile-menu-toggle");
+  const menu = document.getElementById("pp-mobile-menu");
+  
+  if (!toggle || !menu) return;
+
+  // Toggle del menú
+  toggle.addEventListener("click", () => {
+    const isHidden = menu.classList.contains("hidden");
+    if (isHidden) {
+      menu.classList.remove("hidden");
+      toggle.setAttribute("aria-expanded", "true");
+    } else {
+      menu.classList.add("hidden");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // Cerrar menú cuando se hace click en un link
+  menu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      menu.classList.add("hidden");
+      toggle.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  // Cerrar menú con tecla Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !menu.classList.contains("hidden")) {
+      menu.classList.add("hidden");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // Cerrar menú cuando se cambia el tamaño de la ventana (si vuelve a md+)
+  window.addEventListener("resize", () => {
+    if (window.innerWidth >= 768 && !menu.classList.contains("hidden")) {
+      menu.classList.add("hidden");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+
 function hideLegacyChrome() {
   document.querySelectorAll("[data-pp-legacy-nav],[data-pp-legacy-footer]").forEach((el) => {
     el.style.display = "none";
   });
 }
 
+function setupTouchOptimizations() {
+  // Mejorar touch events en botones y links
+  const interactiveElements = document.querySelectorAll("a, button, [role='button']");
+  interactiveElements.forEach((el) => {
+    // Agregar feedback visual mejorado en dispositivos táctiles
+    el.addEventListener("touchstart", () => {
+      el.style.opacity = "0.8";
+    }, { passive: true });
+
+    el.addEventListener("touchend", () => {
+      el.style.opacity = "1";
+    }, { passive: true });
+  });
+}
+
+function setupViewportOptimizations() {
+  // Mejorar comportamiento en viewport pequeños
+  const metaViewport = document.querySelector('meta[name="viewport"]');
+  if (metaViewport && !metaViewport.getAttribute("content").includes("viewport-fit")) {
+    metaViewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover");
+  }
+
+  // Asegurar que el html no tenga scroll horizontal innecesario
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "auto";
+  document.body.style.overscrollBehavior = "contain";
+}
+
 function init() {
   hideLegacyChrome();
   renderNav();
   renderFooter();
+  setupMobileMenuToggle();
+  setupTouchOptimizations();
+  setupViewportOptimizations();
 }
 
 if (document.readyState === "loading") {

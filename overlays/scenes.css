@@ -98,6 +98,121 @@ body.theme-pixel .card { border-radius: 0; border-width: 4px; border-color: #1b5
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 2;
     padding: 10px 18px; font-size: 14px; background: rgba(16, 28, 20, 0.55); border-top: 1px solid var(--stroke-color);
 }
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 768px) {
+    :root {
+        --border-radius: 12px;
+    }
+
+    html, body {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    .stage {
+        padding: 20px;
+    }
+
+    .card {
+        padding: clamp(16px, 3vw, 32px);
+        border-radius: var(--border-radius);
+    }
+
+    .headline {
+        font-size: clamp(28px, 5vw, 48px);
+        line-height: 1.1;
+    }
+
+    .subline {
+        font-size: clamp(13px, 1.8vw, 18px);
+        margin-top: 8px;
+    }
+
+    .timer {
+        font-size: clamp(24px, 3.5vw, 42px);
+        margin-top: 14px;
+    }
+
+    .accent {
+        font-size: clamp(12px, 1.5vw, 16px);
+        margin-top: 14px;
+    }
+
+    .rotator {
+        font-size: clamp(18px, 3.5vw, 36px);
+    }
+
+    .ticker {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    /* Prevenir comportamiento pinch-zoom */
+    body {
+        touch-action: manipulation;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+    }
+
+    /* Optimizar animaciones para móvil */
+    @keyframes glow-move {
+        0% { transform: scale(1) rotate(0deg); }
+        50% { transform: scale(1.1) rotate(180deg); }
+        100% { transform: scale(1) rotate(360deg); }
+    }
+
+    body.theme-pixel .card {
+        border-width: 3px;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .stage {
+        padding: 12px;
+    }
+
+    .card {
+        padding: clamp(12px, 2.5vw, 24px);
+    }
+
+    .brand {
+        margin-bottom: 8px;
+    }
+
+    .brand .dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .headline {
+        font-size: clamp(20px, 4.5vw, 36px);
+    }
+
+    .divider {
+        margin: 16px 0;
+    }
+
+    .timer {
+        font-size: clamp(20px, 3vw, 36px);
+    }
+}
+
+/* Prevenir rebote en iOS */
+@supports (-webkit-touch-callout: none) {
+    html, body {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+    }
+}
 .ticker .scroll { white-space: nowrap; display: inline-block; animation: ticker 30s linear infinite; }
 @keyframes ticker { 0% { transform: translateX(100%);} 100% { transform: translateX(-100%);} }
 

@@ -180,12 +180,49 @@ function enableSearch(posts) {
   input.addEventListener("input", doFilter);
 }
 
+function setupMobileOptimizations() {
+  // Mejorar interactividad en móviles
+  const articles = document.querySelectorAll("article");
+  
+  articles.forEach((article) => {
+    // Agregar feedback táctil visual
+    article.addEventListener("touchstart", () => {
+      article.style.transform = "scale(0.98)";
+      article.style.opacity = "0.9";
+    }, { passive: true });
+
+    article.addEventListener("touchend", () => {
+      article.style.transform = "scale(1)";
+      article.style.opacity = "1";
+    }, { passive: true });
+
+    // Evitar que el hover de desktop interfiera con móvil
+    if (!window.matchMedia("(hover: hover)").matches) {
+      article.style.cursor = "pointer";
+    }
+  });
+
+  // Optimizar búsqueda para móvil
+  const searchInput = document.querySelector("input[type='search'], input[placeholder*='Buscar']");
+  if (searchInput) {
+    searchInput.addEventListener("focus", () => {
+      // Hacer scroll suave al input en móvil
+      if (window.innerWidth < 768) {
+        setTimeout(() => {
+          searchInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
+      }
+    });
+  }
+}
+
 async function init() {
   try {
     const posts = await loadNews();
     renderHome(posts);
     renderBlog(posts);
     enableSearch(posts);
+    setupMobileOptimizations();
   } catch (e) {
     // Si falla la carga, no rompemos la página.
     // eslint-disable-next-line no-console

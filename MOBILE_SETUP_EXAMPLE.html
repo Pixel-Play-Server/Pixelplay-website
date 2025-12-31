@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejemplo de Implementación - PixelPlay Mobile Optimizations</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <!-- ✨ NUEVO: Optimizaciones móviles globales -->
+  <link rel="stylesheet" href="assets/css/mobile-optimizations.css" />
+  
+  <style>
+    body {
+      font-family: 'Noto Sans', system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+  <!-- Contenedor principal del shell nav -->
+  <div id="pp-shell-nav"></div>
+  
+  <div class="flex min-h-screen w-full flex-col">
+    <!-- Contenido principal -->
+    <main class="flex-1 flex flex-col">
+      <section class="py-12 px-4 md:px-6">
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-4xl md:text-5xl font-bold mb-6">Guía de Implementación Móvil</h1>
+          
+          <div class="prose dark:prose-invert max-w-none">
+            <h2>Paso 1: Agregar CSS de Optimizaciones</h2>
+            <pre><code>&lt;!-- En el &lt;head&gt; de tu HTML --&gt;
+&lt;link rel="stylesheet" href="assets/css/mobile-optimizations.css" /&gt;</code></pre>
+
+            <h2>Paso 2: Agregar JS de Optimizaciones</h2>
+            <pre><code>&lt;!-- Antes del &lt;/body&gt; cierre de etiqueta --&gt;
+&lt;script src="assets/js/mobile-optimizations.js"&gt;&lt;/script&gt;</code></pre>
+
+            <h2>Paso 3: Verificar Meta Viewport</h2>
+            <pre><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;</code></pre>
+
+            <h2>Paso 4: Agregar div para Shell Nav</h2>
+            <pre><code>&lt;div id="pp-shell-nav"&gt;&lt;/div&gt;</code></pre>
+
+            <h2>Ejemplo Completo</h2>
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;title&gt;Mi Página - PixelPlay&lt;/title&gt;
+  
+  &lt;!-- Estilos --&gt;
+  &lt;link rel="stylesheet" href="assets/css/mobile-optimizations.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Navegación dinámica --&gt;
+  &lt;div id="pp-shell-nav"&gt;&lt;/div&gt;
+  
+  &lt;!-- Contenido principal --&gt;
+  &lt;main&gt;
+    &lt;h1&gt;Mi Contenido&lt;/h1&gt;
+    &lt;p&gt;Lorem ipsum dolor sit amet...&lt;/p&gt;
+  &lt;/main&gt;
+  
+  &lt;!-- Footer dinámico --&gt;
+  &lt;div id="pp-shell-footer"&gt;&lt;/div&gt;
+  
+  &lt;!-- Scripts --&gt;
+  &lt;script src="assets/js/site-shell.js"&gt;&lt;/script&gt;
+  &lt;script src="assets/js/mobile-optimizations.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <h2>¿Cómo Probar?</h2>
+            <ol>
+              <li>Abre el navegador (Chrome, Firefox, Safari)</li>
+              <li>Presiona F12 para abrir DevTools</li>
+              <li>Click en el icono de teléfono (Toggle Device Toolbar)</li>
+              <li>Prueba diferentes dispositivos:
+                <ul>
+                  <li>iPhone 12 (390x844)</li>
+                  <li>Samsung Galaxy S20 (360x800)</li>
+                  <li>iPad (768x1024)</li>
+                </ul>
+              </li>
+              <li>Verifica que:
+                <ul>
+                  <li>El menú se abre y cierra</li>
+                  <li>Los botones son grandes y clickeables</li>
+                  <li>No hay scroll horizontal</li>
+                  <li>El texto es legible</li>
+                  <li>Las imágenes se cargan</li>
+                </ul>
+              </li>
+            </ol>
+
+            <h2>Características Incluidas</h2>
+            <ul>
+              <li>✅ Menú móvil automático</li>
+              <li>✅ Botones accesibles (44px mínimo)</li>
+              <li>✅ Tipografía responsiva</li>
+              <li>✅ Lazy loading de imágenes</li>
+              <li>✅ Optimización de rendimiento</li>
+              <li>✅ Soporte para iOS (notches)</li>
+              <li>✅ Manejo de teclado virtual</li>
+              <li>✅ Dark mode optimizado</li>
+            </ul>
+
+            <h2>Navegadores Soportados</h2>
+            <ul>
+              <li>Chrome 90+</li>
+              <li>Firefox 88+</li>
+              <li>Safari 14+</li>
+              <li>Samsung Internet 14+</li>
+              <li>Opera 76+</li>
+            </ul>
+
+            <h2>¿Qué Sucede Automáticamente?</h2>
+            <ul>
+              <li>site-shell.js: Menú móvil, navegación, eventos táctiles</li>
+              <li>news.js: Feedback visual en artículos, optimización de búsqueda</li>
+              <li>post.js: Lazy loading, tablas responsivas, imágenes optimizadas</li>
+              <li>mobile-optimizations.js: Detección de dispositivo, rendimiento global</li>
+              <li>mobile-optimizations.css: Estilos responsivos globales</li>
+            </ul>
+
+            <h2>Solución de Problemas</h2>
+            <h3>El menú no aparece</h3>
+            <ul>
+              <li>Verifica que `id="pp-shell-nav"` exista en tu HTML</li>
+              <li>Abre la consola (F12 &gt; Console) y busca errores</li>
+              <li>Asegúrate de que site-shell.js se carga después del HTML</li>
+            </ul>
+
+            <h3>El CSS no se aplica</h3>
+            <ul>
+              <li>Verifica que el path sea correcto: `assets/css/mobile-optimizations.css`</li>
+              <li>Abre DevTools &gt; Network &gt; y busca el archivo</li>
+              <li>Si no se carga, verifica los permisos del archivo</li>
+            </ul>
+
+            <h3>Las imágenes se ven pequeñas</h3>
+            <ul>
+              <li>Asegúrate de que el CSS `mobile-optimizations.css` se cargue</li>
+              <li>Verifica que las imágenes tengan `style="max-width: 100%"`</li>
+              <li>Usa el atributo `loading="lazy"` para mejor rendimiento</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+    
+    <!-- Footer dinámico -->
+    <div id="pp-shell-footer"></div>
+  </div>
+
+  <!-- Scripts principales -->
+  <script src="assets/js/site-shell.js"></script>
+  
+  <!-- ✨ NUEVO: Optimizaciones móviles globales (DEBE IR AL FINAL) -->
+  <script src="assets/js/mobile-optimizations.js"></script>
+</body>
+</html>
