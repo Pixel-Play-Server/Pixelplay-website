@@ -1,0 +1,14 @@
+{
+  "id": "0006",
+  "tag": "Comunidad",
+  "title": "Bienvenido a la comunidad",
+  "date": "2025-03-01",
+  "dateLabel": "01 Marzo 2025",
+  "readTime": "1 min lectura",
+  "author": "Pixel Play Network",
+  "image": "",
+  "excerpt": "Este es el comienzo de una gran aventura. Aprende las reglas básicas y cómo empezar en PixelPlay.",
+  "contentHtml": "\n<p>¡Bienvenido! Este es el comienzo de una gran aventura en PixelPlay.</p>\n\n<h2>Antes de empezar</h2>\n<ul>\n  <li>Lee las reglas.</li>\n  <li>Únete a Discord.</li>\n  <li>Prueba <code>/vote</code> para recompensas diarias.</li>\n</ul>\n\n<p>Si necesitas ayuda, visita <a href=\"soporte.html\">Soporte</a>.</p>\n"
+}
+
+

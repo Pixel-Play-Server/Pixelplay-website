@@ -1,0 +1,14 @@
+{
+  "id": "0004",
+  "tag": "Técnico",
+  "title": "Nuevo cliente disponible",
+  "date": "2025-04-30",
+  "dateLabel": "30 Abril 2025",
+  "readTime": "2 min lectura",
+  "author": "Dev Team",
+  "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDqCEAoDKzjSipDhTtpyeGCxcM4oh41KFuJDZ2fYdSLIof2aa51mEs8Nrqyhe6AN1SA76l1B0clLK_bdE2ELSu-F80Iugl-nO3UDUSCFMlK58H-wFbPoRbKKvInSmn6K6ock5PtKZ6CGsMHBIC3VwY9yVamV1PYRdWwSFzsslILqRDVcyyKdV0ESx16-r-PLBxJDCU5NT1BVAnxJUWuAtNtjQ1xyB-pBST04mPGYiyDXEwtlNwol_kSvjPYGpflS191_BD4PkLtmmc",
+  "excerpt": "Lanzamiento oficial del PixelPlay Launcher con interfaz renovada y mejor rendimiento.",
+  "contentHtml": "\n<p>Lanzamos un nuevo cliente con interfaz renovada y mejoras de rendimiento.</p>\n\n<h2>Mejoras principales</h2>\n<ul>\n  <li>Tiempos de carga reducidos.</li>\n  <li>Mejor compatibilidad con mods.</li>\n  <li>Actualizaciones más simples.</li>\n</ul>\n\n<p>Si algo falla, abrí un ticket en <a href=\"soporte.html\">Soporte</a>.</p>\n"
+}
+
+

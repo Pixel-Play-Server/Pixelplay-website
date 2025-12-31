@@ -1,0 +1,14 @@
+{
+  "id": "0005",
+  "tag": "Mods",
+  "title": "Actualización de Mods",
+  "date": "2025-03-15",
+  "dateLabel": "15 Marzo 2025",
+  "readTime": "4 min lectura",
+  "author": "Modding",
+  "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDzWkhUg2keudWG3idKiLJa59_IV-CVYaFgkpKTtYOLl4Gl3XdDv3PTqXpwEQwR6OH2_NzxjncKOjA_d1F4RPOXNWSmxjh-pRwSV5Bb03dDqj2s0FKJBNyIUoHJBKk0TiX_qAWtQSYF2ydSCWVjY2gTDBicKooM0SCv2C_O6wWak2nXVIpNs647mZmmejMUuGuVnBM9f0VncIhwdOb17LIv0y_PIJf4r6b79NXcgoR7nEqXzfYPQpA3V0HYDOkv3xbNDXzYcUHdTys",
+  "excerpt": "Actualización importante de mods y plugins para mejorar la jugabilidad y estabilidad del servidor.",
+  "contentHtml": "\n<p>Hicimos una actualización importante de mods y plugins para mejorar estabilidad y jugabilidad.</p>\n\n<h2>Cambios</h2>\n<ul>\n  <li>Compatibilidad con versiones nuevas.</li>\n  <li>Fixes críticos de rendimiento.</li>\n  <li>Mejoras de estabilidad.</li>\n</ul>\n\n<p>Si encontrás bugs, reportalos desde <a href=\"soporte.html\">Soporte</a>.</p>\n"
+}
+
+

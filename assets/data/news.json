@@ -1,0 +1,78 @@
+{
+  "posts": [
+    {
+      "id": "servidor-publico-2025-09-03",
+      "tag": "Destacado",
+      "title": "¡Servidor publico! 🎉",
+      "date": "2025-09-03",
+      "dateLabel": "3 Septiembre 2025",
+      "readTime": "5 min lectura",
+      "excerpt": "Estamos emocionados de abrir el servidor para cualquier usuario. Después de meses de desarrollo y pruebas beta cerradas, PixelPlay está listo para recibir a aventureros de todo el mundo.",
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDmZrEIYoCqDLq34Xg5frlXXzlVNkgzM5syIv65IUriHptAP1uLwelbQ3nh4LDQUD5nW3hixCIYO0XednHHc6RuzJQOPzDjlExa3MMB-NQX_8lXu_1KQWElYTo-_vVHoC1f5cFIoReAzQy8l1lhHgHcluKSXQ6o0WKyCzkPgTFxhtsgHyT06uuGxHLPuIHj00wXOCOebjw2E8LI4tytxkFXZ7atmX1SjP5ruMQRV9T57a-GsLJzqlkYIeKM2TROMtJALcoQS3ipk1s",
+      "author": "Admin Team",
+      "url": "blog.html"
+    },
+    {
+      "id": "registro-abierto-2025-06-14",
+      "tag": "Actualización",
+      "title": "¡Registro abierto! 🎉",
+      "date": "2025-06-14",
+      "dateLabel": "14 Junio 2025",
+      "readTime": "3 min lectura",
+      "excerpt": "Estamos emocionados de abrir el registro para nuevos jugadores. ¡Únete ahora y forma parte de nuestra comunidad! Asegura tu nombre de usuario y obtén recompensas exclusivas de pre-lanzamiento.",
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCo57s_BpGFIxX6tvEbiES972afTXYjTbSt66r938tS_Jz0zKoGFLo0he-8YIlue88-MiZkm0V4rCo62eGfInZxopIbhBhtVhoEr-9qw4UxnqH1E8Rp6NvTm74Kb7LqgF2c47LsMOtVnD6KXql1WhENcUoQvGLPLy0DCzsm3PGzLC-Ryg76FlhICAjW9sQGbCQ7T3qN0jN0gA3nreDyuyzZWnsstUz1pOw4G5oxyCyVp7AqeK4ewUvfvrkzXbnzddSeXKC6oxDyevI",
+      "author": "Admin Team",
+      "url": "blog.html"
+    },
+    {
+      "id": "playevent-2025-06-07",
+      "tag": "Evento",
+      "title": "Playevent en marcha! 🎉",
+      "date": "2025-06-07",
+      "dateLabel": "07 Junio 2025",
+      "readTime": "5 min lectura",
+      "excerpt": "Participa en minijuegos exclusivos y gana monedas del servidor. Presentamos nuevas funciones para mejorar la experiencia de Minecraft.",
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAh_BoyufhSetijYUhbBKMp3stkrZGgHU21q_SUEY1UYJT91YZkhi_jb7kbjW_DgDW5l7iL1gtbyFZIG6vXaAz2Gbu0w6TunfghCUBythJmljzaP9rlt71SQz6U_cFtkCmJB9IWRz2zJ1L5qJxLXE7vRS8MOGWDAi5urfhNdIv2jJDGj1LF6xEXzLgV6-kcYQNOEvriQ25X47SXyWDIru8wNuLLB3zMsCwHhUCOdJyIm0pyaJ-R5gxhCKHiJar5b2-pfBp68WFpYmM",
+      "author": "Eventos",
+      "url": "blog.html"
+    },
+    {
+      "id": "nuevo-cliente-2025-04-30",
+      "tag": "Técnico",
+      "title": "Nuevo cliente disponible",
+      "date": "2025-04-30",
+      "dateLabel": "30 Abril 2025",
+      "readTime": "2 min lectura",
+      "excerpt": "Lanzamiento oficial del PixelPlay Launcher con interfaz renovada y mejor rendimiento. Descárgalo para disfrutar de tiempos de carga reducidos y mods opcionales.",
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDqCEAoDKzjSipDhTtpyeGCxcM4oh41KFuJDZ2fYdSLIof2aa51mEs8Nrqyhe6AN1SA76l1B0clLK_bdE2ELSu-F80Iugl-nO3UDUSCFMlK58H-wFbPoRbKKvInSmn6K6ock5PtKZ6CGsMHBIC3VwY9yVamV1PYRdWwSFzsslILqRDVcyyKdV0ESx16-r-PLBxJDCU5NT1BVAnxJUWuAtNtjQ1xyB-pBST04mPGYiyDXEwtlNwol_kSvjPYGpflS191_BD4PkLtmmc",
+      "author": "Dev Team",
+      "url": "blog.html"
+    },
+    {
+      "id": "mods-2025-03-15",
+      "tag": "Mods",
+      "title": "Actualización de Mods",
+      "date": "2025-03-15",
+      "dateLabel": "15 Marzo 2025",
+      "readTime": "4 min lectura",
+      "excerpt": "Actualización importante de mods y plugins para mejorar la jugabilidad y estabilidad del servidor. Añadimos compatibilidad con 1.21.2 y solucionamos bugs críticos.",
+      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDzWkhUg2keudWG3idKiLJa59_IV-CVYaFgkpKTtYOLl4Gl3XdDv3PTqXpwEQwR6OH2_NzxjncKOjA_d1F4RPOXNWSmxjh-pRwSV5Bb03dDqj2s0FKJBNyIUoHJBKk0TiX_qAWtQSYF2ydSCWVjY2gTDBicKooM0SCv2C_O6wWak2nXVIpNs647mZmmejMUuGuVnBM9f0VncIhwdOb17LIv0y_PIJf4r6b79NXcgoR7nEqXzfYPQpA3V0HYDOkv3xbNDXzYcUHdTys",
+      "author": "Modding",
+      "url": "blog.html"
+    },
+    {
+      "id": "bienvenido-2025-03-01",
+      "tag": "Comunidad",
+      "title": "Bienvenido a la comunidad",
+      "date": "2025-03-01",
+      "dateLabel": "01 Marzo 2025",
+      "readTime": "1 min lectura",
+      "excerpt": "Este es el comienzo de una gran aventura. Aprende las reglas básicas y cómo empezar en PixelPlay.",
+      "image": "",
+      "author": "Admin Team",
+      "url": "blog.html"
+    }
+  ]
+}
+
+
