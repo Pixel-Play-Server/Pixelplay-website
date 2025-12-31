@@ -48,7 +48,9 @@ function renderNav() {
 
           <div class="-mr-2 flex md:hidden">
             <button id="pp-mobile-menu-toggle" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#4ade80]" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="pp-mobile-menu">
-              <span class="material-icons-outlined">menu</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M4 6.5h16a1 1 0 0 0 0-2H4a1 1 0 1 0 0 2zm16 4.5H4a1 1 0 1 0 0 2h16a1 1 0 0 0 0-2zm0 6.5H4a1 1 0 1 0 0 2h16a1 1 0 0 0 0-2z"/>
+              </svg>
             </button>
           </div>
         </div>
@@ -98,6 +100,9 @@ function setupMobileMenuToggle() {
   const menu = document.getElementById("pp-mobile-menu");
   
   if (!toggle || !menu) return;
+  // Evitar registrar listeners múltiples (esto hacía que en mobile el click “abra y cierre” en el mismo tap).
+  if (toggle.dataset.ppBound === "true") return;
+  toggle.dataset.ppBound = "true";
 
   // Toggle del menú
   toggle.addEventListener("click", () => {
@@ -164,17 +169,16 @@ function setupViewportOptimizations() {
     metaViewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover");
   }
 
-  // Asegurar que el html no tenga scroll horizontal innecesario
-  document.documentElement.style.overflow = "hidden";
-  document.body.style.overflow = "auto";
-  document.body.style.overscrollBehavior = "contain";
+  // Evitar scroll horizontal sin romper el scroll vertical (en mobile esto bloqueaba el “deslizar”).
+  document.documentElement.style.overflowX = "hidden";
+  document.body.style.overflowX = "hidden";
+  document.body.style.overscrollBehaviorY = "contain";
 }
 
 function init() {
   hideLegacyChrome();
   renderNav();
   renderFooter();
-  setupMobileMenuToggle();
   setupTouchOptimizations();
   setupViewportOptimizations();
 }
