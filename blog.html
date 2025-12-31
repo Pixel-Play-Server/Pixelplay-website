@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Noticias y Actualizaciones - PixelPlay</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "media", // Set to media to adapt to system preference automatically
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4ade80",
+              "primary-dark": "#22c55e",
+              "background-light": "#ffffff", // Pure white for light mode
+              "background-dark": "#000000", // Pure black for dark mode
+              "surface-dark": "#121212", // Dark surface for cards in dark mode
+              "surface-light": "#ffffff",
+              "accent-green": "#2ecc71",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              'xl': "1rem",
+              '2xl': "1.5rem",
+            },
+            backgroundImage: {
+                // Adjusted gradient to fade to transparent green to look good on both white and black backgrounds
+                'green-glow': 'radial-gradient(circle at center, rgba(74, 222, 128, 0.15) 0%, rgba(74, 222, 128, 0) 70%)',
+            }
+          },
+        },
+      };
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4ade80; 
+        }
+    </style>
+</head>
+<body data-pp-page="blog" class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+<div id="pp-shell-nav"></div>
+<nav data-pp-legacy-nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-black/80 border-b border-gray-200 dark:border-white/10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-20">
+<div class="flex items-center gap-2">
+<span class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        Pixel<span class="text-primary">Play</span>
+</span>
+</div>
+<div class="hidden md:block">
+<div class="ml-10 flex items-baseline space-x-8">
+<a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="index.html">Inicio</a>
+<a class="text-primary font-bold px-3 py-2 rounded-md text-sm transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-primary after:rounded-full" href="blog.html">Noticias</a>
+<a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="tienda.html">Tienda</a>
+<a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="wiki.html">Wiki</a>
+<a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="soporte.html">Soporte</a>
+</div>
+</div>
+<div class="hidden md:block">
+<a class="bg-primary hover:bg-primary-dark text-black font-bold py-2 px-5 rounded-lg transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(74,222,128,0.3)]" href="index.html">
+                        Jugar Ahora
+                    </a>
+</div>
+<div class="-mr-2 flex md:hidden">
+<button class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none" type="button">
+<span class="material-icons-outlined">menu</span>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<header class="relative pt-20 pb-12 overflow-hidden">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl bg-green-glow pointer-events-none opacity-60"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+<h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+                Noticias y <span class="text-primary">Actualizaciones</span>
+</h1>
+<p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Mantente al día con las últimas novedades, parches, eventos y cambios en el mundo de PixelPlay.
+            </p>
+<div class="mt-8 max-w-md mx-auto relative">
+<input class="w-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 rounded-full py-3 pl-12 pr-4 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-lg" id="pp-news-search" placeholder="Buscar noticias..." type="text"/>
+<span class="material-icons-outlined absolute left-4 top-3.5 text-gray-400">search</span>
+</div>
+</div>
+</header>
+<main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+<section class="mb-16" id="pp-blog-featured">
+<div class="group relative bg-white dark:bg-surface-dark rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-xl transition-all duration-300 hover:shadow-primary/10 hover:border-primary/30">
+<div class="grid md:grid-cols-2 gap-0">
+<div class="h-64 md:h-full bg-gray-900 relative overflow-hidden">
+<img alt="Minecraft Landscape Abstract" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmZrEIYoCqDLq34Xg5frlXXzlVNkgzM5syIv65IUriHptAP1uLwelbQ3nh4LDQUD5nW3hixCIYO0XednHHc6RuzJQOPzDjlExa3MMB-NQX_8lXu_1KQWElYTo-_vVHoC1f5cFIoReAzQy8l1lhHgHcluKSXQ6o0WKyCzkPgTFxhtsgHyT06uuGxHLPuIHj00wXOCOebjw2E8LI4tytxkFXZ7atmX1SjP5ruMQRV9T57a-GsLJzqlkYIeKM2TROMtJALcoQS3ipk1s"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark/90 to-transparent md:bg-gradient-to-r"></div>
+<div class="absolute top-4 left-4">
+<span class="bg-primary text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Destacado</span>
+</div>
+</div>
+<div class="p-8 md:p-12 flex flex-col justify-center">
+<div class="flex items-center gap-2 text-primary text-sm font-semibold mb-3">
+<span class="material-icons-outlined text-base">calendar_today</span>
+<time>3 Septiembre 2025</time>
+</div>
+<h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-primary transition-colors">
+                            ¡Servidor publico! 🎉
+                        </h2>
+<p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                            Estamos emocionados de abrir el servidor para cualquier usuario. Después de meses de desarrollo y pruebas beta cerradas, PixelPlay está listo para recibir a aventureros de todo el mundo. ¡Descubre nuevas biomas, economía equilibrada y más!
+                        </p>
+<a class="inline-flex items-center text-primary font-bold hover:text-primary-dark transition-colors gap-1 group/link" href="#">
+                            Leer artículo completo 
+                            <span class="material-icons-outlined text-lg transition-transform group-hover/link:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" id="pp-blog-news-grid">
+<article class="flex flex-col bg-white dark:bg-surface-dark rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+<div class="h-48 overflow-hidden relative">
+<div class="absolute top-3 right-3 z-10">
+<span class="bg-black/60 backdrop-blur text-gray-100 text-xs font-medium px-2.5 py-1 rounded border border-white/10">Actualización</span>
+</div>
+<img alt="Abstract Blocks Pattern" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCo57s_BpGFIxX6tvEbiES972afTXYjTbSt66r938tS_Jz0zKoGFLo0he-8YIlue88-MiZkm0V4rCo62eGfInZxopIbhBhtVhoEr-9qw4UxnqH1E8Rp6NvTm74Kb7LqgF2c47LsMOtVnD6KXql1WhENcUoQvGLPLy0DCzsm3PGzLC-Ryg76FlhICAjW9sQGbCQ7T3qN0jN0gA3nreDyuyzZWnsstUz1pOw4G5oxyCyVp7AqeK4ewUvfvrkzXbnzddSeXKC6oxDyevI"/>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<span class="text-primary text-sm font-medium">14 Junio 2025</span>
+<span class="text-gray-400 text-xs flex items-center gap-1"><span class="material-icons-outlined text-sm">schedule</span> 3 min lectura</span>
+</div>
+<h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">
+                        ¡Registro abierto! 🎉
+                    </h3>
+<p class="text-gray-600 dark:text-gray-400 text-sm mb-4 flex-grow line-clamp-3">
+                        Estamos emocionados de abrir el registro para nuevos jugadores. ¡Únete ahora y forma parte de nuestra comunidad! Asegura tu nombre de usuario y obtén recompensas exclusivas de pre-lanzamiento.
+                    </p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center text-xs text-white font-bold">A</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Admin Team</span>
+</div>
+<a class="text-primary hover:text-gray-900 dark:hover:text-white transition-colors p-1 rounded-full hover:bg-primary/20" href="#">
+<span class="material-icons-outlined">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<article class="flex flex-col bg-white dark:bg-surface-dark rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+<div class="h-48 overflow-hidden relative">
+<div class="absolute top-3 right-3 z-10">
+<span class="bg-black/60 backdrop-blur text-gray-100 text-xs font-medium px-2.5 py-1 rounded border border-white/10">Evento</span>
+</div>
+<img alt="Gaming Setup Event" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAh_BoyufhSetijYUhbBKMp3stkrZGgHU21q_SUEY1UYJT91YZkhi_jb7kbjW_DgDW5l7iL1gtbyFZIG6vXaAz2Gbu0w6TunfghCUBythJmljzaP9rlt71SQz6U_cFtkCmJB9IWRz2zJ1L5qJxLXE7vRS8MOGWDAi5urfhNdIv2jJDGj1LF6xEXzLgV6-kcYQNOEvriQ25X47SXyWDIru8wNuLLB3zMsCwHhUCOdJyIm0pyaJ-R5gxhCKHiJar5b2-pfBp68WFpYmM"/>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<span class="text-primary text-sm font-medium">07 Junio 2025</span>
+<span class="text-gray-400 text-xs flex items-center gap-1"><span class="material-icons-outlined text-sm">schedule</span> 5 min lectura</span>
+</div>
+<h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">
+                        Playevent en marcha! 🎉
+                    </h3>
+<p class="text-gray-600 dark:text-gray-400 text-sm mb-4 flex-grow line-clamp-3">
+                        Estamos emocionados de presentar nuestras nuevas funciones en el cliente para mejorar la experiencia de Minecraft. Participa en minijuegos exclusivos y gana monedas del servidor.
+                    </p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white font-bold">E</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Eventos</span>
+</div>
+<a class="text-primary hover:text-gray-900 dark:hover:text-white transition-colors p-1 rounded-full hover:bg-primary/20" href="#">
+<span class="material-icons-outlined">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<article class="flex flex-col bg-white dark:bg-surface-dark rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+<div class="h-48 overflow-hidden relative">
+<div class="absolute top-3 right-3 z-10">
+<span class="bg-black/60 backdrop-blur text-gray-100 text-xs font-medium px-2.5 py-1 rounded border border-white/10">Técnico</span>
+</div>
+<img alt="Circuit Board Tech" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqCEAoDKzjSipDhTtpyeGCxcM4oh41KFuJDZ2fYdSLIof2aa51mEs8Nrqyhe6AN1SA76l1B0clLK_bdE2ELSu-F80Iugl-nO3UDUSCFMlK58H-wFbPoRbKKvInSmn6K6ock5PtKZ6CGsMHBIC3VwY9yVamV1PYRdWwSFzsslILqRDVcyyKdV0ESx16-r-PLBxJDCU5NT1BVAnxJUWuAtNtjQ1xyB-pBST04mPGYiyDXEwtlNwol_kSvjPYGpflS191_BD4PkLtmmc"/>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<span class="text-primary text-sm font-medium">30 Abril 2025</span>
+<span class="text-gray-400 text-xs flex items-center gap-1"><span class="material-icons-outlined text-sm">schedule</span> 2 min lectura</span>
+</div>
+<h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">
+                        Nuevo cliente disponible
+                    </h3>
+<p class="text-gray-600 dark:text-gray-400 text-sm mb-4 flex-grow line-clamp-3">
+                        Lanzamiento oficial del PixelPlay Launcher con interfaz renovada y mejor rendimiento. Descárgalo ahora para disfrutar de tiempos de carga reducidos y mods preinstalados opcionales.
+                    </p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-xs text-white font-bold">D</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Dev Team</span>
+</div>
+<a class="text-primary hover:text-gray-900 dark:hover:text-white transition-colors p-1 rounded-full hover:bg-primary/20" href="#">
+<span class="material-icons-outlined">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<article class="flex flex-col bg-white dark:bg-surface-dark rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+<div class="h-48 overflow-hidden relative">
+<div class="absolute top-3 right-3 z-10">
+<span class="bg-black/60 backdrop-blur text-gray-100 text-xs font-medium px-2.5 py-1 rounded border border-white/10">Mods</span>
+</div>
+<img alt="Abstract Green Tech" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzWkhUg2keudWG3idKiLJa59_IV-CVYaFgkpKTtYOLl4Gl3XdDv3PTqXpwEQwR6OH2_NzxjncKOjA_d1F4RPOXNWSmxjh-pRwSV5Bb03dDqj2s0FKJBNyIUoHJBKk0TiX_qAWtQSYF2ydSCWVjY2gTDBicKooM0SCv2C_O6wWak2nXVIpNs647mZmmejMUuGuVnBM9f0VncIhwdOb17LIv0y_PIJf4r6b79NXcgoR7nEqXzfYPQpA3V0HYDOkv3xbNDXzYcUHdTys"/>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<span class="text-primary text-sm font-medium">15 Marzo 2025</span>
+<span class="text-gray-400 text-xs flex items-center gap-1"><span class="material-icons-outlined text-sm">schedule</span> 4 min lectura</span>
+</div>
+<h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">
+                        Actualización de Mods
+                    </h3>
+<p class="text-gray-600 dark:text-gray-400 text-sm mb-4 flex-grow line-clamp-3">
+                        Actualización importante de mods y plugins para mejorar la jugabilidad y estabilidad del servidor. Hemos añadido compatibilidad con la versión 1.21.2 y solucionado bugs críticos en el sistema de comercio.
+                    </p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-xs text-white font-bold">M</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Modding</span>
+</div>
+<a class="text-primary hover:text-gray-900 dark:hover:text-white transition-colors p-1 rounded-full hover:bg-primary/20" href="#">
+<span class="material-icons-outlined">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<article class="flex flex-col bg-white dark:bg-surface-dark rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+<div class="h-48 overflow-hidden relative bg-gray-900 flex items-center justify-center">
+<span class="material-icons-outlined text-6xl text-gray-700 group-hover:text-primary transition-colors duration-500">article</span>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<span class="text-primary text-sm font-medium">01 Marzo 2025</span>
+<span class="text-gray-400 text-xs flex items-center gap-1"><span class="material-icons-outlined text-sm">schedule</span> 1 min lectura</span>
+</div>
+<h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">
+                        Bienvenido a la comunidad
+                    </h3>
+<p class="text-gray-600 dark:text-gray-400 text-sm mb-4 flex-grow line-clamp-3">
+                        Este es el comienzo de una gran aventura. Aprende las reglas básicas y cómo empezar en PixelPlay.
+                    </p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center text-xs text-white font-bold">A</div>
+<span class="text-xs text-gray-500 dark:text-gray-400">Admin Team</span>
+</div>
+<a class="text-primary hover:text-gray-900 dark:hover:text-white transition-colors p-1 rounded-full hover:bg-primary/20" href="#">
+<span class="material-icons-outlined">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+</div>
+<div class="flex justify-center mb-8">
+<nav class="flex items-center gap-1 bg-white dark:bg-surface-dark p-2 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
+<a class="p-2 text-gray-500 hover:text-primary transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-white/5" href="#">
+<span class="material-icons-outlined">chevron_left</span>
+</a>
+<a class="px-4 py-2 text-black bg-primary font-bold rounded-md shadow-sm" href="#">1</a>
+<a class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-gray-100 dark:hover:bg-white/5 rounded-md transition-colors" href="#">2</a>
+<a class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-gray-100 dark:hover:bg-white/5 rounded-md transition-colors" href="#">3</a>
+<span class="px-2 text-gray-400">...</span>
+<a class="p-2 text-gray-500 hover:text-primary transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-white/5" href="#">
+<span class="material-icons-outlined">chevron_right</span>
+</a>
+</nav>
+</div>
+</main>
+<footer data-pp-legacy-footer class="bg-white dark:bg-background-dark border-t border-gray-200 dark:border-white/10 pt-16 pb-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+<div class="col-span-1 md:col-span-1">
+<div class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
+                        Pixel<span class="text-primary">Play</span>
+</div>
+<p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
+                        Servidor de Minecraft 1.21.1 con características únicas, plugins optimizados y una comunidad increíble.
+                    </p>
+<div class="flex space-x-4">
+<a class="text-gray-400 hover:text-primary transition-colors" href="#"><span class="material-icons-outlined">facebook</span></a>
+<a class="text-gray-400 hover:text-primary transition-colors" href="#"><span class="material-icons-outlined">smart_display</span></a>
+<a class="text-gray-400 hover:text-primary transition-colors" href="#"><span class="material-icons-outlined">chat</span></a>
+</div>
+</div>
+<div>
+<h4 class="text-gray-900 dark:text-white font-bold mb-4 uppercase text-sm tracking-wider">Servidor</h4>
+<ul class="space-y-2">
+<li><a class="text-gray-600 dark:text-gray-400 hover:text-primary text-sm transition-colors" href="#">Sobre Nosotros</a></li>
+<li><a class="text-gray-600 dark:text-gray-400 hover:text-primary text-sm transition-colors" href="#">Reglas</a></li>
+<li><a class="text-gray-600 dark:text-gray-400 hover:text-primary text-sm transition-colors" href="#">Votaciones</a></li>
+<li><a class="text-gray-600 dark:text-gray-400 hover:text-primary text-sm transition-colors" href="#">Estado del Servidor</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-gray-900 dark:text-white font-bold mb-4 uppercase text-sm tracking-wider">Enlaces</h4>
+<ul class="space-y-2">
+<li><a class="text-gray-600 dark:text-gray-400 hover:text-primary text-sm transition-colors" href="#">Tienda</a></li>
+<li><a class="text-gray-600 dark:text-gray-400 hover:text-primary text-sm transition-colors" href="#">Discord</a></li>
+<li><a class="text-gray-600 dark:text-gray-400 hover:text-primary text-sm transition-colors" href="#">Reportar Bug</a></li>
+<li><a class="text-gray-600 dark:text-gray-400 hover:text-primary text-sm transition-colors" href="#">Apelaciones</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-gray-900 dark:text-white font-bold mb-4 uppercase text-sm tracking-wider">IP del Servidor</h4>
+<div class="bg-gray-100 dark:bg-surface-dark p-4 rounded-lg border border-gray-200 dark:border-white/10 flex flex-col gap-2">
+<span class="text-xs text-gray-500 uppercase font-bold">Java Edition 1.21.1</span>
+<div class="flex items-center justify-between bg-white dark:bg-black/20 p-2 rounded border border-gray-200 dark:border-white/5 cursor-pointer hover:border-primary/50 transition-colors group/ip" onclick="navigator.clipboard.writeText('play.pixelplay.gg')">
+<code class="text-primary font-mono text-sm">play.pixelplay.gg</code>
+<span class="material-icons-outlined text-gray-500 text-sm group-hover/ip:text-white transition-colors">content_copy</span>
+</div>
+<span class="text-xs text-green-500 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> 24/7 Online</span>
+</div>
+</div>
+</div>
+<div class="border-t border-gray-200 dark:border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+<p class="mb-2 md:mb-0 text-center md:text-left">
+                    © 2025 PixelPlay. No estamos afiliados con Mojang Studios o Microsoft.
+                    <br class="hidden md:inline"/>Minecraft es una marca registrada de Mojang Studios.
+                </p>
+<div class="flex space-x-6">
+<a class="hover:text-primary transition-colors" href="#">Términos y Condiciones</a>
+<a class="hover:text-primary transition-colors" href="#">Política de Privacidad</a>
+<a class="hover:text-primary transition-colors" href="#">Contacto: support@pixelplay.gg</a>
+</div>
+</div>
+</div>
+</footer>
+
+<div id="pp-shell-footer"></div>
+<script defer src="assets/js/news.js"></script>
+<script defer src="assets/js/site-shell.js"></script>
+</body></html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tienda PixelPlay</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "media",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #d4d4d8; 
+            border-radius: 4px;
+        }
+        @media (prefers-color-scheme: dark) {
+            ::-webkit-scrollbar-thumb {
+                background-color: #3f3f46; 
+            }
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #13ec5b; 
+        }
+    </style>
+</head>
+<body data-pp-page="tienda" class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-display min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
+<div id="pp-shell-nav"></div>
+<header data-pp-legacy-nav class="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md px-6 py-4 lg:px-10 transition-colors duration-300">
+<div class="mx-auto max-w-7xl flex items-center justify-between gap-8">
+<div class="flex items-center gap-4">
+<div class="size-10 bg-primary rounded-xl flex items-center justify-center text-zinc-950 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-3xl">videogame_asset</span>
+</div>
+<h2 class="text-zinc-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Tienda PixelPlay</h2>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold leading-normal" href="index.html">Inicio</a>
+<a class="text-primary text-sm font-bold leading-normal" href="tienda.html">Tienda</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold leading-normal" href="blog.html">Foro</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold leading-normal" href="vota.html">Votar</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold leading-normal" href="soporte.html">Soporte</a>
+</nav>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<label class="hidden lg:flex flex-col min-w-40 h-10 w-full max-w-xs group">
+<div class="flex w-full flex-1 items-stretch rounded-full bg-zinc-100 dark:bg-zinc-900 border border-transparent group-focus-within:border-primary transition-colors">
+<div class="text-zinc-500 dark:text-zinc-500 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-full text-zinc-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-zinc-500 px-3 text-sm font-normal leading-normal" placeholder="Buscar producto..."/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="hidden sm:flex cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primary text-zinc-950 hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-950 transition-colors text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_15px_rgba(19,236,91,0.3)]">
+<span class="truncate mr-2">Carrito</span>
+<span class="bg-black/10 dark:bg-black/20 px-2 py-0.5 rounded-md text-xs">$17.00</span>
+</button>
+<button class="flex sm:hidden size-10 items-center justify-center rounded-full bg-primary text-zinc-950 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+<button class="flex size-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 transition-colors">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 mx-auto w-full max-w-7xl pt-6 pb-12 px-4 lg:px-8 gap-8">
+<aside class="hidden lg:flex flex-col w-64 shrink-0 gap-6">
+<div class="p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 shadow-sm">
+<div class="relative size-12 rounded-full overflow-hidden border-2 border-primary">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Minecraft steve face avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDLkyESvg_naiBffFDJbjD-Cv4KPWHdEFC-4KjZavsevdp7Svm8U-WARLQjYmC3F6qwBqUzNO7m7hWVT4R08pzJs-1IP124VVDDJa7Ma7KZu_ZoM18-j7yFCTZAybd10NMFjokwyH5fUFoTIUakaB30jWBpWKBENSYP5NdwSuEsIyMeGOZOYv76dMNTDYH_0SaZ9H5GqC20abJhM1XJx5Jdx-W6AxWJLr1QxjNikG95H_giEqJY8RuuDDhOAubgT-lOw7nF3DAYAdg");'></div>
+</div>
+<div>
+<h3 class="text-zinc-900 dark:text-white font-bold text-sm">PixelPlay Network</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="flex size-2 rounded-full bg-primary animate-pulse"></span>
+<p class="text-zinc-500 dark:text-zinc-500 text-xs">1,250 En línea</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2 p-2">
+<div class="flex items-center justify-between px-3 py-2 mb-2">
+<h2 class="text-zinc-400 dark:text-zinc-600 text-xs font-bold uppercase tracking-wider">Categorías</h2>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-primary text-zinc-950 font-bold shadow-lg shadow-primary/20 transition-all hover:scale-105" href="#">
+<span class="material-symbols-outlined">star</span>
+<span>Destacados</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">shield</span>
+<span class="font-medium">Rangos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">key</span>
+<span class="font-medium">Llaves</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">checkroom</span>
+<span class="font-medium">Cosméticos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">lock_open</span>
+<span class="font-medium">Desbaneos</span>
+</a>
+</div>
+<div class="mt-auto p-6 rounded-3xl bg-zinc-900 dark:bg-zinc-900 border border-zinc-800 dark:border-zinc-800 text-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-950 opacity-100"></div>
+<div class="relative z-10">
+<div class="size-12 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-3 text-white group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">headset_mic</span>
+</div>
+<h4 class="text-white font-bold mb-1">¿Necesitas ayuda?</h4>
+<p class="text-zinc-400 text-xs mb-4">Contacta a nuestro soporte si tienes problemas.</p>
+<a class="w-full py-2 rounded-full border border-zinc-700 text-white text-xs font-bold hover:bg-zinc-800 transition-colors inline-flex items-center justify-center" href="https://discord.pixelplay.gg" target="_blank" rel="noreferrer">Abrir ticket</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col gap-8 min-w-0">
+<div class="@container w-full">
+<div class="relative w-full rounded-[2.5rem] overflow-hidden min-h-[380px] flex flex-col justify-end p-8 md:p-12 bg-cover bg-center group shadow-xl shadow-zinc-900/10 dark:shadow-black/30" data-alt="Minecraft landscape with shaders at sunset" style='background-image: linear-gradient(to top, rgba(9,9,11,0.95) 0%, rgba(9,9,11,0.4) 50%, rgba(0,0,0,0) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuA-czSsGlwhjcW1_YpwAEQ815D7BdWOKO-4kZQ9O6fIHoTiR4-8pRYuDaOx2emUi9NMx6llmP0ErG9Bjy4hCP7Q5gom-G57lSVWPsljp1ikEZHI4m-CxRxGiMDo59hU1A3Gg8z8UEttslNPcZZjsb8bekX1FU63hjPUVzUnyU44YtxCDwuHyAcJCTtYD6ADikzAOvN81NIueQVTlTPrQ1Nor_eotQYaJNB2MNCSAEh5WbKU8KCq9LkI0OJEA59FUiq8SITtF0PaDEE");'>
+<div class="relative z-10 flex flex-col gap-4 max-w-2xl items-start">
+<span class="bg-primary/20 text-primary border border-primary/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        Oferta Limitada
+                    </span>
+<h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight drop-shadow-lg">
+                        MEJORA TU AVENTURA
+                    </h1>
+<p class="text-zinc-200 text-lg md:text-xl font-medium max-w-lg drop-shadow-md">
+                        Obtén rangos exclusivos, llaves de cajas místicas y cosméticos únicos para destacar en el servidor.
+                    </p>
+<div class="flex gap-3 mt-2">
+<button class="h-12 px-8 bg-primary hover:bg-[#0fd650] text-zinc-950 rounded-full font-bold text-base transition-transform hover:scale-105 shadow-[0_0_20px_rgba(19,236,91,0.4)]">
+                            Ver Ofertas
+                        </button>
+<button class="h-12 px-6 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/10 rounded-full font-bold text-base transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined">info</span>
+                            Más Info
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+<h2 class="text-2xl font-bold text-zinc-900 dark:text-white">Rangos Disponibles</h2>
+<div class="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-x-auto max-w-full no-scrollbar border border-zinc-200 dark:border-zinc-800">
+<button class="flex px-5 py-2 rounded-full bg-primary text-zinc-950 text-sm font-bold shadow-sm whitespace-nowrap">
+                    Global
+                </button>
+<button class="flex px-5 py-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-sm font-medium transition-colors whitespace-nowrap">
+                    Survival
+                </button>
+<button class="flex px-5 py-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-sm font-medium transition-colors whitespace-nowrap">
+                    SkyBlock
+                </button>
+<button class="flex px-5 py-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-sm font-medium transition-colors whitespace-nowrap">
+                    Factions
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<div class="group relative flex flex-col bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 transition-all hover:border-primary/50 hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_30px_rgba(19,236,91,0.1)] hover:-translate-y-1">
+<div class="absolute top-6 right-6 z-10">
+<span class="bg-primary text-zinc-950 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-sm">Más Popular</span>
+</div>
+<div class="mb-6 flex items-center justify-center h-48 bg-zinc-50 dark:bg-zinc-800/50 rounded-[1.5rem] mt-2 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-800 transition-colors">
+<div class="size-32 bg-[url('https://cdn-icons-png.flaticon.com/512/2583/2583276.png')] bg-contain bg-no-repeat bg-center drop-shadow-xl transition-transform group-hover:scale-110 duration-300" data-alt="Gold Shield Icon"></div>
+</div>
+<div class="flex flex-col gap-2 mb-4">
+<h3 class="text-zinc-900 dark:text-white text-2xl font-black uppercase">Rango VIP</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-primary text-3xl font-black tracking-tight">$5.00</span>
+<span class="text-zinc-500 dark:text-zinc-500 text-sm font-medium">/ permanente</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 mb-8 flex-1">
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Chat Color &amp; Prefijo
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Kit VIP Semanal
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Acceso a /hat y /workbench
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        1 Hogar adicional
+                    </div>
+</div>
+<button class="w-full h-12 bg-zinc-900 dark:bg-zinc-800 hover:bg-primary hover:text-zinc-950 dark:hover:bg-primary dark:hover:text-zinc-950 text-white font-bold rounded-full transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+                    Añadir al Carrito
+                </button>
+</div>
+<div class="group relative flex flex-col bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 transition-all hover:border-primary/50 hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_30px_rgba(19,236,91,0.1)] hover:-translate-y-1">
+<div class="absolute top-6 right-6 z-10">
+<span class="bg-zinc-900 dark:bg-zinc-700 text-white border border-zinc-700 dark:border-zinc-600 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide">Mejor Valor</span>
+</div>
+<div class="mb-6 flex items-center justify-center h-48 bg-zinc-50 dark:bg-zinc-800/50 rounded-[1.5rem] mt-2 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-800 transition-colors">
+<div class="size-32 bg-[url('https://cdn-icons-png.flaticon.com/512/2583/2583434.png')] bg-contain bg-no-repeat bg-center drop-shadow-xl transition-transform group-hover:scale-110 duration-300" data-alt="Diamond Sword Icon"></div>
+</div>
+<div class="flex flex-col gap-2 mb-4">
+<h3 class="text-zinc-900 dark:text-white text-2xl font-black uppercase">Rango MVP</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-primary text-3xl font-black tracking-tight">$15.00</span>
+<span class="text-zinc-500 dark:text-zinc-500 text-sm font-medium">/ permanente</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 mb-8 flex-1">
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Todo lo del VIP
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Vuelo en Lobbies (Fly)
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Kit MVP Diario
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        3 Homes adicionales
+                    </div>
+</div>
+<button class="w-full h-12 bg-zinc-900 dark:bg-zinc-800 hover:bg-primary hover:text-zinc-950 dark:hover:bg-primary dark:hover:text-zinc-950 text-white font-bold rounded-full transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+                    Añadir al Carrito
+                </button>
+</div>
+<div class="group relative flex flex-col bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 transition-all hover:border-primary/50 hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_30px_rgba(19,236,91,0.1)] hover:-translate-y-1">
+<div class="absolute top-6 right-6 z-10">
+<span class="bg-yellow-500 text-zinc-950 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-sm">Exclusivo</span>
+</div>
+<div class="mb-6 flex items-center justify-center h-48 bg-zinc-50 dark:bg-zinc-800/50 rounded-[1.5rem] mt-2 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-800 transition-colors">
+<div class="size-32 bg-[url('https://cdn-icons-png.flaticon.com/512/2583/2583319.png')] bg-contain bg-no-repeat bg-center drop-shadow-xl transition-transform group-hover:scale-110 duration-300" data-alt="Netherite Chestplate Icon"></div>
+</div>
+<div class="flex flex-col gap-2 mb-4">
+<h3 class="text-zinc-900 dark:text-white text-2xl font-black uppercase">Rango ELITE</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-primary text-3xl font-black tracking-tight">$30.00</span>
+<span class="text-zinc-500 dark:text-zinc-500 text-sm font-medium">/ permanente</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 mb-8 flex-1">
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Todo lo del MVP
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Acceso Beta a modalidades
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        Kit ELITE OP
+                    </div>
+<div class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        5 Homes &amp; Join Priority
+                    </div>
+</div>
+<button class="w-full h-12 bg-zinc-900 dark:bg-zinc-800 hover:bg-primary hover:text-zinc-950 dark:hover:bg-primary dark:hover:text-zinc-950 text-white font-bold rounded-full transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+                    Añadir al Carrito
+                </button>
+</div>
+</div>
+<div class="mt-8 rounded-[2rem] bg-zinc-900 text-white p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+<div class="flex items-center gap-6 relative z-10">
+<div class="size-20 rounded-2xl bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700">
+<span class="material-symbols-outlined text-primary text-4xl">inventory_2</span>
+</div>
+<div>
+<h3 class="text-white text-xl font-bold mb-1">¿Buscas Llaves o Monedas?</h3>
+<p class="text-zinc-400 text-sm">Tenemos paquetes especiales de llaves para crates y monedas del servidor.</p>
+</div>
+</div>
+<button class="relative z-10 whitespace-nowrap px-8 py-3 rounded-full border border-primary text-primary hover:bg-primary hover:text-zinc-950 font-bold transition-all">
+                Ver Otros Items
+            </button>
+</div>
+</main>
+</div>
+<footer data-pp-legacy-footer class="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-12 px-6">
+<div class="mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 text-zinc-900 dark:text-white">
+<span class="material-symbols-outlined text-primary">videogame_asset</span>
+<span class="text-lg font-bold">Tienda PixelPlay</span>
+</div>
+<p class="text-zinc-500 dark:text-zinc-500 text-sm">© 2023 PixelPlay Network. No estamos afiliados con Mojang AB.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm font-medium transition-colors" href="#">Términos y Condiciones</a>
+<a class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm font-medium transition-colors" href="#">Política de Privacidad</a>
+<a class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm font-medium transition-colors" href="#">Contacto</a>
+</div>
+<div class="flex gap-4">
+<a class="size-10 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-zinc-600 dark:text-white hover:bg-primary hover:text-zinc-950 dark:hover:bg-primary dark:hover:text-zinc-950 transition-colors" href="#">
+<svg aria-hidden="true" class="size-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg>
+</a>
+<a class="size-10 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-zinc-600 dark:text-white hover:bg-primary hover:text-zinc-950 dark:hover:bg-primary dark:hover:text-zinc-950 transition-colors" href="#">
+<svg aria-hidden="true" class="size-5" fill="currentColor" viewBox="0 0 24 24"><path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path></svg>
+</a>
+</div>
+</div>
+</footer>
+
+<div id="pp-shell-footer"></div>
+<script defer src="assets/js/site-shell.js"></script>
+</body></html>

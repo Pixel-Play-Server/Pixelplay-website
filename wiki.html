@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wiki - PixelPlay</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "media",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "primary-dark": "#0ea542",
+                        "dark-bg": "#111813",
+                        "dark-surface": "#1c271f",
+                        "dark-border": "#28392e",
+                        "dark-text": "#9db9a6",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "mono": ["Courier New", "monospace"], 
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>@media (prefers-color-scheme: dark) {
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #111813; 
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #28392e; 
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #13ec5b; 
+            }
+        }@media (prefers-color-scheme: light) {
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #f1f5f9; 
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #cbd5e1; 
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #13ec5b; 
+            }
+        }
+        .prose code {
+            background-color: #f1f5f9;color: #16a34a;padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+        @media (prefers-color-scheme: dark) {
+            .prose code {
+                background-color: #28392e;
+                color: #13ec5b;
+            }
+        }
+    </style>
+</head>
+<body data-pp-page="wiki" class="bg-white dark:bg-dark-bg text-slate-900 dark:text-white font-display overflow-x-hidden antialiased transition-colors duration-300">
+<div id="pp-shell-nav"></div>
+<div data-pp-legacy-nav class="fixed top-0 z-50 w-full border-b border-slate-200 dark:border-dark-border bg-white/90 dark:bg-dark-bg/95 backdrop-blur-md transition-colors duration-300">
+<header class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<span class="material-symbols-outlined !text-3xl">sports_esports</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">PixelPlay</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-slate-500 hover:text-slate-900 dark:text-dark-text dark:hover:text-white text-sm font-medium transition-colors" href="index.html">Inicio</a>
+<a class="text-slate-900 dark:text-white text-sm font-bold border-b-2 border-primary pb-0.5" href="wiki.html">Wiki</a>
+<a class="text-slate-500 hover:text-slate-900 dark:text-dark-text dark:hover:text-white text-sm font-medium transition-colors" href="tienda.html">Tienda</a>
+<a class="text-slate-500 hover:text-slate-900 dark:text-dark-text dark:hover:text-white text-sm font-medium transition-colors" href="blog.html">Noticias</a>
+<a class="text-slate-500 hover:text-slate-900 dark:text-dark-text dark:hover:text-white text-sm font-medium transition-colors" href="vota.html">Votar</a>
+<a class="text-slate-500 hover:text-slate-900 dark:text-dark-text dark:hover:text-white text-sm font-medium transition-colors" href="soporte.html">Soporte</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden sm:flex text-slate-500 hover:text-slate-900 dark:text-dark-text dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<a class="flex items-center justify-center gap-2 overflow-hidden rounded-full h-10 px-5 bg-primary hover:bg-primary/90 text-white dark:text-dark-bg text-sm font-bold transition-all shadow-[0_0_15px_rgba(19,236,91,0.3)]" href="index.html">
+<span class="material-symbols-outlined !text-lg">content_copy</span>
+<span class="truncate">Copiar IP</span>
+</a>
+<button class="lg:hidden text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+</div>
+<div class="pt-20 min-h-screen flex flex-col">
+<div class="w-full bg-slate-50 dark:bg-dark-surface border-b border-slate-200 dark:border-dark-border transition-colors duration-300">
+<div class="max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center justify-center text-center relative overflow-hidden">
+<div class="absolute inset-0 opacity-5 dark:opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+<h1 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 relative z-10 transition-colors duration-300">
+                    PixelPlay <span class="text-primary">Wiki</span>
+</h1>
+<p class="text-slate-600 dark:text-dark-text text-lg max-w-2xl mb-8 relative z-10 transition-colors duration-300">
+                    Todo lo que necesitas saber: reglas, comandos, plugins y guías.
+                </p>
+<div class="w-full max-w-2xl relative z-10">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 dark:text-dark-text group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 bg-white dark:bg-dark-bg border-2 border-slate-200 dark:border-dark-border rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-dark-text focus:border-primary focus:ring-0 focus:outline-none transition-colors shadow-lg shadow-slate-200/50 dark:shadow-none" placeholder="Buscar guías, comandos o ítems..." type="text"/>
+<div class="absolute inset-y-0 right-2 flex items-center">
+<kbd class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-slate-500 dark:text-dark-text bg-slate-100 dark:bg-dark-border rounded border border-slate-200 dark:border-dark-border">⌘ K</kbd>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-1 max-w-7xl mx-auto w-full px-6 py-8 gap-10">
+<aside class="hidden lg:block w-64 shrink-0 sticky top-28 h-[calc(100vh-8rem)] overflow-y-auto pr-4 scrollbar-hide">
+<nav class="flex flex-col gap-8">
+<div>
+<h3 class="text-xs font-bold text-slate-500 dark:text-dark-text uppercase tracking-wider mb-3 pl-3">Wiki</h3>
+<ul class="flex flex-col gap-1">
+<li><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg bg-slate-100 dark:bg-dark-surface text-slate-900 dark:text-white border-l-2 border-primary" href="#inicio"><span class="material-symbols-outlined !text-lg text-primary">menu_book</span> Inicio</a></li>
+<li><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-dark-text hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-dark-surface transition-colors" href="#modalidades"><span class="material-symbols-outlined !text-lg">grid_view</span> Modalidades</a></li>
+<li><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-dark-text hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-dark-surface transition-colors" href="#reglas-clientes"><span class="material-symbols-outlined !text-lg">gavel</span> Reglas y clientes</a></li>
+<li><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-dark-text hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-dark-surface transition-colors" href="#tutorial-skyblock"><span class="material-symbols-outlined !text-lg">school</span> Tutorial (Skyblock)</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-xs font-bold text-slate-500 dark:text-dark-text uppercase tracking-wider mb-3 pl-3">Modalidades</h3>
+<ul class="flex flex-col gap-1">
+<li><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-dark-text hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-dark-surface transition-colors" href="#anarquico"><span class="material-symbols-outlined !text-lg">public</span> Anárquico</a></li>
+<li><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-dark-text hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-dark-surface transition-colors" href="#vanilla"><span class="material-symbols-outlined !text-lg">grass</span> Vanilla</a></li>
+<li><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-dark-text hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-dark-surface transition-colors" href="#survival-plugins"><span class="material-symbols-outlined !text-lg">handyman</span> Survival con plugins</a></li>
+<li><a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-dark-text hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-dark-surface transition-colors" href="#skyblock"><span class="material-symbols-outlined !text-lg">cloud</span> Skyblock (beta abierta)</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<main class="flex-1 min-w-0">
+<nav aria-label="Breadcrumb" class="flex mb-6">
+<ol class="inline-flex items-center space-x-1 md:space-x-3">
+<li class="inline-flex items-center">
+<a class="text-slate-500 hover:text-slate-900 dark:text-dark-text dark:hover:text-white text-sm font-medium transition-colors" href="#">Wiki</a>
+</li>
+<li>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-slate-400 dark:text-dark-text text-sm">chevron_right</span>
+<a class="ml-1 text-slate-500 hover:text-slate-900 dark:text-dark-text dark:hover:text-white text-sm font-medium transition-colors md:ml-2" href="#">Primeros pasos</a>
+</div>
+</li>
+<li aria-current="page">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-slate-400 dark:text-dark-text text-sm">chevron_right</span>
+<span class="ml-1 text-slate-900 dark:text-white text-sm font-medium md:ml-2">Bienvenido a PixelPlay</span>
+</div>
+</li>
+</ol>
+</nav>
+<div class="mb-8 border-b border-slate-200 dark:border-dark-border pb-8 transition-colors duration-300" id="inicio">
+<h1 class="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Wiki de PixelPlay</h1>
+<div class="flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-dark-text">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined !text-base">schedule</span>
+                            Última actualización: 2025
+                        </div>
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-bold border border-primary/20">Oficial</span>
+</div>
+</div>
+<div class="prose prose-slate dark:prose-invert prose-lg max-w-none text-slate-600 dark:text-dark-text transition-colors duration-300">
+<p>
+PixelPlay tiene varias modalidades con reglas y comandos distintos. Esta wiki explica <strong>qué se puede hacer en cada modo</strong>, <strong>qué comandos existen</strong> y las <strong>reglas importantes</strong>.
+</p>
+
+<div class="my-6 p-4 rounded-xl bg-slate-50 dark:bg-dark-surface border border-slate-200 dark:border-dark-border flex gap-4">
+  <span class="material-symbols-outlined text-primary shrink-0">construction</span>
+  <div>
+    <h4 class="text-slate-900 dark:text-white font-bold text-sm mb-1">Documentación en progreso</h4>
+    <p class="text-sm">Iremos agregando más documentación del servidor poco a poco. Si quieres ayudar con la documentación, abre un ticket y cuéntanos qué te gustaría aportar.</p>
+    <p class="text-sm mt-2">
+      <a class="text-primary font-bold hover:underline" href="soporte.html">Abrir Soporte</a>
+      <span class="text-slate-400 dark:text-dark-text">·</span>
+      <a class="text-primary font-bold hover:underline" href="https://discord.pixelplay.gg" target="_blank" rel="noreferrer">Discord</a>
+    </p>
+  </div>
+</div>
+
+<div class="my-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 flex gap-4">
+  <span class="material-symbols-outlined text-blue-500 dark:text-blue-400 shrink-0">info</span>
+  <div>
+    <h4 class="text-blue-700 dark:text-blue-400 font-bold text-sm mb-1">Importante</h4>
+    <p class="text-sm text-blue-600 dark:text-blue-200/80">No necesitas instalar nada para jugar PixelPlay. Si viste eso en una publicación antigua, era en el pasado.</p>
+  </div>
+</div>
+
+<h2 id="modalidades">Modalidades</h2>
+<p>Elegí la modalidad que querés jugar:</p>
+<ul>
+  <li><a href="#anarquico">Anárquico</a> (vanilla general, sin comandos)</li>
+  <li><a href="#vanilla">Vanilla</a> (vanilla con reglas)</li>
+  <li><a href="#survival-plugins">Survival con plugins</a> (economía y comandos básicos)</li>
+  <li><a href="#skyblock">Skyblock</a> (beta abierta + tutorial obligatorio)</li>
+</ul>
+
+<h3 id="anarquico">Anárquico</h3>
+<ul>
+  <li><strong>Estilo</strong>: vanilla general.</li>
+  <li><strong>Comandos</strong>: <strong>ninguno</strong> (no hay /home, /spawn, /tpa, etc.).</li>
+  <li><strong>Objetivo</strong>: jugar lo más “puro” posible.</li>
+</ul>
+
+<h3 id="vanilla">Vanilla</h3>
+<ul>
+  <li><strong>Estilo</strong>: vanilla.</li>
+  <li><strong>Comandos</strong>: lo más mínimo posible.</li>
+  <li><strong>Reglas</strong>: se encuentran en Discord o en <a href="https://pixelplay.gg/rules/" target="_blank" rel="noreferrer">pixelplay.gg/rules/</a>.</li>
+</ul>
+
+<h3 id="survival-plugins">Survival con plugins</h3>
+<p>Survival con economía y algunos comandos útiles.</p>
+<ul>
+  <li><strong>Tienda</strong>: <code>/shop</code></li>
+  <li><strong>Kits</strong>: <code>/kits</code></li>
+  <li><strong>RTP</strong>: <code>/rtp</code></li>
+  <li><strong>Warps</strong>: por el momento <strong>no hay</strong>.</li>
+  <li><strong>Otros</strong>: comandos básicos según el servidor.</li>
+</ul>
+
+<h3 id="skyblock">Skyblock (beta abierta)</h3>
+<ul>
+  <li><strong>Estado</strong>: beta abierta.</li>
+  <li><strong>Comandos</strong>: <code>/warp</code>, <code>/kits</code> y el resto lo explica el <strong>tutorial obligatorio</strong>.</li>
+  <li><strong>Tutorial</strong>: si el tutorial te envía a las <strong>dungeons</strong>, ese es el <strong>final temporal</strong> del tutorial (hasta que mejoremos las dungeons).</li>
+</ul>
+
+<h2 id="tutorial-skyblock">Tutorial obligatorio (Skyblock)</h2>
+<p>El tutorial es obligatorio para aprender lo básico y evitar confusiones. Por ahora, el “final” del tutorial es la parte de dungeons.</p>
+
+<h2 id="reglas-clientes">Reglas y clientes permitidos</h2>
+<p><strong>Está prohibido unirse a PixelPlay usando clientes modificados</strong>. Esto implica <strong>baneo permanente</strong>.</p>
+<ul>
+  <li><strong>Fabric</strong>: estrictamente prohibido.</li>
+  <li><strong>Clientes modificados</strong>: prohibidos (baneo permanente).</li>
+  <li><strong>Excepciones</strong>: clientes como <strong>Lunar Client</strong> están permitidos.</li>
+</ul>
+<p>Para reglas completas, revisá Discord o <a href="https://pixelplay.gg/rules/" target="_blank" rel="noreferrer">pixelplay.gg/rules/</a>.</p>
+</div>
+<div class="mt-12 pt-8 border-t border-slate-200 dark:border-dark-border flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors duration-300">
+<p class="text-slate-500 dark:text-dark-text text-sm">¿Te sirvió esta wiki?</p>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-dark-surface border border-slate-200 dark:border-dark-border hover:border-primary/50 hover:text-slate-900 dark:hover:text-white transition-colors text-sm text-slate-500 dark:text-dark-text shadow-sm dark:shadow-none">
+<span class="material-symbols-outlined !text-lg">thumb_up</span> Sí
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-dark-surface border border-slate-200 dark:border-dark-border hover:border-red-500/50 hover:text-slate-900 dark:hover:text-white transition-colors text-sm text-slate-500 dark:text-dark-text shadow-sm dark:shadow-none">
+<span class="material-symbols-outlined !text-lg">thumb_down</span> No
+                        </button>
+</div>
+</div>
+</main>
+<aside class="hidden xl:block w-64 shrink-0 sticky top-28 h-[calc(100vh-8rem)]">
+<h4 class="text-xs font-bold text-slate-500 dark:text-dark-text uppercase tracking-wider mb-4 border-b border-slate-200 dark:border-dark-border pb-2">En esta página</h4>
+<ul class="space-y-3 text-sm border-l border-slate-200 dark:border-dark-border">
+<li><a class="block pl-4 border-l-2 border-primary text-primary font-medium" href="#inicio">Inicio</a></li>
+<li><a class="block pl-4 border-l-2 border-transparent text-slate-500 dark:text-dark-text hover:text-slate-900 dark:hover:text-white transition-colors" href="#modalidades">Modalidades</a></li>
+<li><a class="block pl-4 border-l-2 border-transparent text-slate-500 dark:text-dark-text hover:text-slate-900 dark:hover:text-white transition-colors" href="#tutorial-skyblock">Tutorial (Skyblock)</a></li>
+<li><a class="block pl-4 border-l-2 border-transparent text-slate-500 dark:text-dark-text hover:text-slate-900 dark:hover:text-white transition-colors" href="#reglas-clientes">Reglas y clientes</a></li>
+</ul>
+<div class="mt-8 p-4 bg-white dark:bg-dark-surface rounded-xl border border-slate-200 dark:border-dark-border shadow-sm dark:shadow-none">
+<div class="flex items-center gap-3 mb-3">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark dark:text-primary">
+<span class="material-symbols-outlined">forum</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm">¿Necesitas ayuda?</p>
+<p class="text-slate-500 dark:text-dark-text text-xs">Únete a nuestro Discord</p>
+</div>
+</div>
+<a class="w-full py-2 rounded-lg bg-[#5865F2] hover:bg-[#4752C4] text-white text-sm font-bold transition-colors inline-flex items-center justify-center" href="https://discord.pixelplay.gg" target="_blank" rel="noreferrer">
+                        Unirme al Discord
+                    </a>
+</div>
+</aside>
+</div>
+<footer data-pp-legacy-footer class="mt-auto border-t border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-surface py-12 transition-colors duration-300">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-start gap-8">
+<div class="flex flex-col gap-4 max-w-xs">
+<div class="flex items-center gap-3 text-slate-900 dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined !text-2xl">sports_esports</span>
+</div>
+<h2 class="text-lg font-bold">PixelPlay</h2>
+</div>
+<p class="text-slate-500 dark:text-dark-text text-sm leading-relaxed">
+                            La experiencia definitiva de Minecraft survival. Únete a miles de jugadores en un mundo lleno de aventura.
+                        </p>
+<p class="text-slate-500 dark:text-dark-text text-xs">IP: <span class="text-slate-900 dark:text-white font-mono bg-slate-200 dark:bg-dark-border px-1.5 py-0.5 rounded">play.pixelplay.net</span></p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-12">
+<div class="flex flex-col gap-3">
+<h4 class="text-slate-900 dark:text-white font-bold text-sm">Recursos</h4>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="wiki.html">Inicio de la Wiki</a>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Reglas del servidor</a>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Ban Appeal</a>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Estado</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="text-slate-900 dark:text-white font-bold text-sm">Comunidad</h4>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Forums</a>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Discord</a>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Equipo de staff</a>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="vota.html">Votar</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="text-slate-900 dark:text-white font-bold text-sm">Tienda</h4>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Ranks</a>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Crate Keys</a>
+<a class="text-slate-500 dark:text-dark-text hover:text-primary dark:hover:text-primary text-sm transition-colors" href="#">Unbans</a>
+</div>
+</div>
+</div>
+<div class="mt-12 pt-8 border-t border-slate-200 dark:border-dark-border flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500 dark:text-dark-text">
+<p>© 2025 PixelPlay Network. No afiliado con Mojang AB.</p>
+<div class="flex gap-6">
+<a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Términos</a>
+<a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Privacidad</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div id="pp-shell-footer"></div>
+<script defer src="assets/js/site-shell.js"></script>
+<script defer src="assets/js/wiki-scrollspy.js"></script>
+<script defer src="assets/js/wiki-search.js"></script>
+
+</body></html>

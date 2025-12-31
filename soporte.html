@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soporte - PixelPlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "media",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#13ec5b",
+              "background-light": "#ffffff",
+              "background-dark": "#0a0a0a",
+              "surface-light": "#f3f4f6",
+              "surface-dark": "#171717",
+              "border-light": "#e5e7eb",
+              "border-dark": "#262626",
+            },
+            fontFamily: {
+              display: ["Spline Sans", "sans-serif"],
+              body: ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body data-pp-page="soporte" class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased selection:bg-primary selection:text-black min-h-screen">
+    <div id="pp-shell-nav"></div>
+    <div class="flex min-h-screen w-full flex-col">
+      <header
+        data-pp-legacy-nav
+        class="sticky top-0 z-50 flex items-center justify-between border-b border-border-light dark:border-border-dark bg-white/90 dark:bg-background-dark/90 backdrop-blur-md px-6 py-3 lg:px-10 transition-colors duration-300"
+      >
+        <div class="flex items-center gap-4 text-slate-900 dark:text-white">
+          <div
+            class="flex items-center justify-center size-10 rounded-lg bg-gradient-to-br from-primary to-green-600 text-white shadow-lg shadow-primary/20"
+          >
+            <span class="material-symbols-outlined text-[24px]">videogame_asset</span>
+          </div>
+          <h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">
+            PixelPlay
+          </h2>
+        </div>
+
+        <nav class="hidden lg:flex items-center gap-8">
+          <a
+            class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium leading-normal"
+            href="index.html"
+            >Inicio</a
+          >
+          <a
+            class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium leading-normal"
+            href="blog.html"
+            >Noticias</a
+          >
+          <a
+            class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium leading-normal"
+            href="tienda.html"
+            >Tienda</a
+          >
+          <a
+            class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium leading-normal"
+            href="wiki.html"
+            >Wiki</a
+          >
+          <a
+            class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium leading-normal"
+            href="vota.html"
+            >Votar</a
+          >
+          <a
+            class="text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold leading-normal"
+            href="soporte.html"
+            >Soporte</a
+          >
+        </nav>
+
+        <div class="flex items-center gap-4">
+          <a
+            class="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-green-600 transition-all text-black text-sm font-bold shadow-lg shadow-primary/25"
+            href="index.html"
+            >Jugar ahora</a
+          >
+          <button class="lg:hidden text-slate-900 dark:text-white" type="button" aria-label="Abrir menú">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="flex-1">
+        <section class="px-4 md:px-10 lg:px-40 pt-10 pb-16">
+          <div class="mx-auto max-w-[1000px]">
+            <div
+              class="rounded-2xl border border-border-light dark:border-border-dark bg-white/95 dark:bg-surface-dark/95 backdrop-blur-xl p-6 md:p-10 shadow-2xl shadow-slate-200/50 dark:shadow-black/50 transition-colors duration-300 overflow-hidden relative"
+            >
+              <div class="absolute inset-0 pointer-events-none opacity-50 dark:opacity-30 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent"></div>
+              <div class="relative">
+                <div class="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 mb-6">
+                  <span class="flex size-2 rounded-full bg-primary animate-pulse"></span>
+                  <span class="text-xs font-bold uppercase tracking-wide text-primary">Soporte oficial</span>
+                </div>
+
+                <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                  ¿Necesitas ayuda?
+                </h1>
+                <p class="text-slate-600 dark:text-slate-300 text-base md:text-lg font-medium max-w-2xl mb-8">
+                  Abre un ticket en nuestro Discord y te atenderemos lo antes posible. También puedes encontrar soluciones rápidas más abajo.
+                </p>
+
+                <div class="mt-6">
+                  <label class="block text-sm font-bold text-slate-900 dark:text-white mb-2" for="pp-support-search">
+                    Buscar ayuda
+                  </label>
+                  <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                    <input
+                      id="pp-support-search"
+                      type="text"
+                      placeholder="Ej: conexión, sanción, pagos, reglas…"
+                      class="w-full h-12 rounded-xl bg-surface-light dark:bg-black/20 border-2 border-border-light dark:border-border-dark pl-12 pr-4 text-slate-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                    />
+                  </div>
+                  <div id="pp-support-results" class="hidden mt-4 grid gap-3"></div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                  <a
+                    class="flex items-center justify-center gap-2 rounded-xl h-12 px-8 bg-primary hover:bg-green-600 text-black text-base font-bold transition-colors shadow-xl shadow-primary/20"
+                    href="https://discord.pixelplay.gg"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">support_agent</span>
+                    Abrir ticket en Discord
+                  </a>
+
+                  <a
+                    class="flex items-center justify-center gap-2 rounded-xl h-12 px-8 bg-white/60 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/30 text-slate-900 dark:text-white backdrop-blur-md border border-slate-200 dark:border-white/10 text-base font-bold transition-colors"
+                    href="https://discord.pixelplay.gg"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">chat</span>
+                    Unirme al Discord
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+              <div class="rounded-2xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark p-6" id="pp-support-connection">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="size-10 rounded-full bg-primary/15 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">link</span>
+                  </div>
+                  <h2 class="text-lg font-bold text-slate-900 dark:text-white">Conexión</h2>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400">
+                  Problemas para entrar, errores de autenticación, o “timed out”.
+                </p>
+              </div>
+
+              <div class="rounded-2xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark p-6" id="pp-support-payments">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="size-10 rounded-full bg-primary/15 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">shopping_bag</span>
+                  </div>
+                  <h2 class="text-lg font-bold text-slate-900 dark:text-white">Pagos y recompensas</h2>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400">
+                  Cobros duplicados, entregas pendientes, rangos, llaves o recompensas no acreditadas.
+                </p>
+              </div>
+
+              <div class="rounded-2xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark p-6" id="pp-support-punishments">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="size-10 rounded-full bg-primary/15 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">gavel</span>
+                  </div>
+                  <h2 class="text-lg font-bold text-slate-900 dark:text-white">Sanciones</h2>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400">
+                  Apelaciones, reportes, o consultas sobre reglas.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-10 rounded-2xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark p-6 md:p-8">
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Antes de abrir ticket</h3>
+              <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                <li class="flex gap-3">
+                  <span class="material-symbols-outlined text-primary">check_circle</span>
+                  <span>Cuéntanos tu <strong class="text-slate-900 dark:text-white">usuario</strong> y <strong class="text-slate-900 dark:text-white">modalidad</strong>.</span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="material-symbols-outlined text-primary">check_circle</span>
+                  <span>Si es un error, adjuntá una <strong class="text-slate-900 dark:text-white">captura</strong> o el mensaje exacto.</span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="material-symbols-outlined text-primary">check_circle</span>
+                  <span>Si es por pagos/recompensas, incluí la <strong class="text-slate-900 dark:text-white">fecha</strong> y el <strong class="text-slate-900 dark:text-white">monto</strong>.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer
+        data-pp-legacy-footer
+        class="border-t border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark py-10 px-4 md:px-10 lg:px-40 transition-colors duration-300"
+      >
+        <div class="mx-auto max-w-[1000px] flex flex-col md:flex-row justify-between items-center gap-6">
+          <div class="text-center md:text-left">
+            <div class="flex items-center justify-center md:justify-start gap-2 text-slate-900 dark:text-white">
+              <span class="material-symbols-outlined">videogame_asset</span>
+              <h3 class="text-lg font-bold">PixelPlay</h3>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-600 mt-2">
+              © 2025 PixelPlay Network. No afiliado con Mojang AB.
+            </p>
+          </div>
+          <div class="flex gap-4">
+            <a
+              class="rounded-full border border-border-light dark:border-border-dark px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-colors"
+              href="https://discord.pixelplay.gg"
+              target="_blank"
+              rel="noreferrer"
+              >Discord</a
+            >
+            <a
+              class="rounded-full border border-border-light dark:border-border-dark px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-colors"
+              href="blog.html"
+              >Noticias</a
+            >
+          </div>
+        </div>
+      </footer>
+      <div id="pp-shell-footer"></div>
+      <script defer src="assets/js/site-shell.js"></script>
+      <script defer src="assets/js/support-search.js"></script>
+    </div>
+  </body>
+</html>
+
+

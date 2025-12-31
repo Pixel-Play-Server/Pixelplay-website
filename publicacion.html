@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Publicación - PixelPlay</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "media",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4ade80",
+              "primary-dark": "#22c55e",
+              "background-light": "#ffffff",
+              "background-dark": "#000000",
+              "surface-dark": "#121212",
+              "surface-light": "#ffffff",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              xl: "1rem",
+              "2xl": "1.5rem",
+            },
+            backgroundImage: {
+              "green-glow":
+                "radial-gradient(circle at center, rgba(74, 222, 128, 0.15) 0%, rgba(74, 222, 128, 0) 70%)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body data-pp-page="publicacion" class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+    <div id="pp-shell-nav"></div>
+    <nav data-pp-legacy-nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-black/80 border-b border-gray-200 dark:border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              Pixel<span class="text-primary">Play</span>
+            </span>
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-baseline space-x-8">
+              <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="index.html">Inicio</a>
+              <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="blog.html">Blog</a>
+              <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="tienda.html">Tienda</a>
+              <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="wiki.html">Wiki</a>
+              <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors" href="soporte.html">Soporte</a>
+            </div>
+          </div>
+          <div class="hidden md:block">
+            <a class="bg-primary hover:bg-primary-dark text-black font-bold py-2 px-5 rounded-lg transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(74,222,128,0.3)]" href="index.html">
+              Jugar Ahora
+            </a>
+          </div>
+          <div class="-mr-2 flex md:hidden">
+            <button class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none" type="button">
+              <span class="material-icons-outlined">menu</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <header class="relative pt-10 pb-6 overflow-hidden">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl bg-green-glow pointer-events-none opacity-60"></div>
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="inline-flex items-center gap-2 text-primary text-sm font-semibold mb-3">
+          <span class="bg-primary text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide" id="pp-post-tag">Publicación</span>
+        </div>
+
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-3" id="pp-post-title">Cargando…</h1>
+        <p class="text-sm text-gray-600 dark:text-gray-300" id="pp-post-meta"></p>
+        <div class="mt-5 text-gray-600 dark:text-gray-300" id="pp-post-excerpt"></div>
+      </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <section class="rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-xl">
+        <div class="h-64 md:h-96 bg-gray-900 relative overflow-hidden">
+          <div id="pp-post-hero-image" class="absolute inset-0 bg-cover bg-center opacity-90"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-surface-dark/90 to-transparent"></div>
+        </div>
+        <article class="prose prose-slate dark:prose-invert prose-lg max-w-none p-6 md:p-10" id="pp-post-content">
+          <p>Cargando contenido…</p>
+        </article>
+      </section>
+
+      <div class="mt-8 flex justify-between items-center">
+        <a class="text-primary font-bold hover:text-primary-dark transition-colors" href="blog.html">← Volver al Blog</a>
+        <a class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors" href="https://discord.pixelplay.gg" target="_blank" rel="noreferrer">
+          ¿Dudas? Abre un ticket en Discord
+        </a>
+      </div>
+    </main>
+
+    <footer data-pp-legacy-footer class="bg-white dark:bg-background-dark border-t border-gray-200 dark:border-white/10 pt-10 pb-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="border-t border-gray-200 dark:border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+          <p class="mb-2 md:mb-0 text-center md:text-left">© 2025 PixelPlay. No estamos afiliados con Mojang Studios o Microsoft.</p>
+          <div class="flex space-x-6">
+            <a class="hover:text-primary transition-colors" href="soporte.html">Soporte</a>
+            <a class="hover:text-primary transition-colors" href="blog.html">Blog</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div id="pp-shell-footer"></div>
+    <script defer src="assets/js/post.js"></script>
+    <script defer src="assets/js/site-shell.js"></script>
+  </body>
+</html>
+
+
