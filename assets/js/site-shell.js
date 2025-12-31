@@ -2,6 +2,41 @@
 
 const PP_THEME_KEY = "pp-theme"; // "light" | "dark" | (unset => system)
 let ppThemeMediaQuery = null;
+let ppThemeTransitionStyleInstalled = false;
+
+function ppEnsureThemeTransitionStyle() {
+  if (ppThemeTransitionStyleInstalled) return;
+  ppThemeTransitionStyleInstalled = true;
+
+  const style = document.createElement("style");
+  style.setAttribute("data-pp-theme-style", "true");
+  style.textContent = `
+    html.pp-theme-toggling, html.pp-theme-toggling * {
+      transition-property: background-color, color, border-color, text-decoration-color, fill, stroke !important;
+      transition-duration: 160ms !important;
+      transition-timing-function: ease-out !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html.pp-theme-toggling, html.pp-theme-toggling * {
+        transition-duration: 0ms !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function ppRunWithThemeTransition(fn) {
+  ppEnsureThemeTransitionStyle();
+  document.documentElement.classList.add("pp-theme-toggling");
+  try {
+    fn();
+  } finally {
+    // Quitar la clase luego de una transición corta (menos invasiva).
+    window.setTimeout(() => {
+      document.documentElement.classList.remove("pp-theme-toggling");
+    }, 180);
+  }
+}
 
 function ppGetStoredTheme() {
   try {
@@ -84,14 +119,18 @@ function ppSetupThemeToggle() {
   btn.addEventListener("click", (e) => {
     // Shift/Alt click: volver a “Sistema”
     if (e.shiftKey || e.altKey) {
-      ppSetStoredTheme(null);
-      ppApplyTheme();
+      ppRunWithThemeTransition(() => {
+        ppSetStoredTheme(null);
+        ppApplyTheme();
+      });
       return;
     }
 
     const isDark = document.documentElement.classList.contains("dark");
-    ppSetStoredTheme(isDark ? "light" : "dark");
-    ppApplyTheme();
+    ppRunWithThemeTransition(() => {
+      ppSetStoredTheme(isDark ? "light" : "dark");
+      ppApplyTheme();
+    });
   });
 
   ppUpdateThemeToggleUI();
