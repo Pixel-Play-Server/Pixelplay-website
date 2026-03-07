@@ -83,13 +83,13 @@
 <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-green-400 to-primary">Comienza Aquí</span>
 </h1>
 <p class="text-white/95 text-lg md:text-xl lg:text-2xl font-medium max-w-3xl mb-10 drop-shadow-lg">
-                    Únete a miles de jugadores en el servidor de Minecraft más épico. Construye, explora y conquista en un mundo sin límites.
+                    Únete a nuestra comunidad de Minecraft. Un servidor íntimo donde cada jugador importa.
                 </p>
 <div class="flex flex-col sm:flex-row gap-4 w-full justify-center mb-8">
-<a class="group flex items-center justify-center gap-2 rounded-xl h-14 px-10 bg-primary hover:bg-green-600 text-white text-lg font-bold transition-all shadow-[0_0_30px_rgba(34,197,94,0.4)] hover:shadow-[0_0_40px_rgba(34,197,94,0.6)] hover:-translate-y-0.5" href="#jugar">
+<button onclick="showServerIP()" class="group flex items-center justify-center gap-2 rounded-xl h-14 px-10 bg-primary hover:bg-green-600 text-white text-lg font-bold transition-all shadow-[0_0_30px_rgba(34,197,94,0.4)] hover:shadow-[0_0_40px_rgba(34,197,94,0.6)] hover:-translate-y-0.5 cursor-pointer">
 <span class="material-symbols-outlined text-[24px] group-hover:scale-110 transition-transform">sports_esports</span>
 <span>Jugar Ahora</span>
-</a>
+</button>
 <a class="group flex items-center justify-center gap-2 rounded-xl h-14 px-8 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 hover:border-white/40 text-lg font-bold transition-all" href="tienda.html">
 <span class="material-symbols-outlined text-[24px] group-hover:rotate-12 transition-transform">shopping_bag</span>
 <span>Ver Tienda</span>
@@ -98,7 +98,7 @@
 <div class="flex items-center gap-6 text-white/80 text-sm">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-primary">check_circle</span>
-<span>1,200+ Jugadores</span>
+<span>Comunidad Activa</span>
 </div>
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-primary">check_circle</span>
@@ -106,7 +106,7 @@
 </div>
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-primary">check_circle</span>
-<span>Java & Bedrock</span>
+<span>Java 1.20+</span>
 </div>
 </div>
 </div>
@@ -153,30 +153,30 @@
 <div class="text-center max-w-2xl mx-auto">
 <span class="text-primary text-sm font-bold uppercase tracking-wider">Modalidades</span>
 <h2 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-bold leading-tight mt-2 mb-4">Elige tu estilo de juego</h2>
-<p class="text-slate-600 dark:text-slate-400 text-lg">Múltiples mundos, infinitas posibilidades. Cada modalidad ofrece una experiencia única.</p>
+<p class="text-slate-600 dark:text-slate-400 text-lg">Modalidades diseñadas para una experiencia única con amigos.</p>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 <div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark p-6 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 overflow-hidden">
 <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
 <div class="relative z-10 mb-4">
 <div class="size-14 rounded-xl bg-gradient-to-br from-green-500 to-primary flex items-center justify-center text-white shadow-lg shadow-primary/30">
-<span class="material-symbols-outlined text-[32px]">forest</span>
+<span class="material-symbols-outlined text-[32px]">swords</span>
 </div>
 </div>
 <div class="relative z-10 flex-1">
-<h3 class="text-slate-900 dark:text-white text-xl font-bold mb-2">Survival</h3>
-<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">El clásico modo survival mejorado. Protege tus builds, comercia con otros jugadores y sobrevive.</p>
+<h3 class="text-slate-900 dark:text-white text-xl font-bold mb-2">Survival PvP</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Survival con PvP activo. Forma alianzas, protege tu base y compite por recursos. ¿Sobrevivirás?</p>
 </div>
 <div class="relative z-10 mt-4 pt-4 border-t border-border-light dark:border-border-dark">
 <div class="flex items-center justify-between">
-<span class="text-xs text-slate-500 dark:text-slate-500 font-medium">800+ activos</span>
-<span class="text-primary text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                                Jugar <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-</span>
+<span class="text-xs text-primary font-bold uppercase tracking-wider">Activo</span>
+<button onclick="showServerIP()" class="text-primary text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all cursor-pointer hover:underline">
+                                Conectar <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
 </div>
 </div>
 </div>
-<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark p-6 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 overflow-hidden">
+<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark p-6 transition-all hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 overflow-hidden">
 <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
 <div class="relative z-10 mb-4">
 <div class="size-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
@@ -185,54 +185,30 @@
 </div>
 <div class="relative z-10 flex-1">
 <h3 class="text-slate-900 dark:text-white text-xl font-bold mb-2">SkyBlock</h3>
-<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Comienza en una isla flotante y expande tu imperio. Economía, misiones y mucho más.</p>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Comienza en una isla flotante y expande tu imperio. Economía, misiones y progresión única.</p>
 </div>
 <div class="relative z-10 mt-4 pt-4 border-t border-border-light dark:border-border-dark">
 <div class="flex items-center justify-between">
-<span class="text-xs text-slate-500 dark:text-slate-500 font-medium">300+ activos</span>
-<span class="text-primary text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                                Jugar <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-</span>
+<span class="text-xs text-blue-500 font-bold uppercase tracking-wider">Próximamente</span>
+<span class="text-slate-400 text-sm font-medium">En desarrollo</span>
 </div>
 </div>
 </div>
-<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark p-6 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 overflow-hidden">
-<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500/20 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark p-6 transition-all hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1 overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/20 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
 <div class="relative z-10 mb-4">
-<div class="size-14 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-lg shadow-red-500/30">
-<span class="material-symbols-outlined text-[32px]">swords</span>
+<div class="size-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white shadow-lg shadow-orange-500/30">
+<span class="material-symbols-outlined text-[32px]">stadium</span>
 </div>
 </div>
 <div class="relative z-10 flex-1">
-<h3 class="text-slate-900 dark:text-white text-xl font-bold mb-2">Factions</h3>
-<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Crea tu facción, recluta miembros, conquista territorios y domina el servidor.</p>
+<h3 class="text-slate-900 dark:text-white text-xl font-bold mb-2">Minijuegos</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">BedWars, SkyWars, Paintball y más. Diversión rápida y competitiva para todos.</p>
 </div>
 <div class="relative z-10 mt-4 pt-4 border-t border-border-light dark:border-border-dark">
 <div class="flex items-center justify-between">
-<span class="text-xs text-slate-500 dark:text-slate-500 font-medium">150+ activos</span>
-<span class="text-primary text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                                Jugar <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark p-6 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 overflow-hidden">
-<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-transparent rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
-<div class="relative z-10 mb-4">
-<div class="size-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/30">
-<span class="material-symbols-outlined text-[32px]">construction</span>
-</div>
-</div>
-<div class="relative z-10 flex-1">
-<h3 class="text-slate-900 dark:text-white text-xl font-bold mb-2">Creativo</h3>
-<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Modo creativo con WorldEdit. Construye sin límites y muestra tus creaciones.</p>
-</div>
-<div class="relative z-10 mt-4 pt-4 border-t border-border-light dark:border-border-dark">
-<div class="flex items-center justify-between">
-<span class="text-xs text-slate-500 dark:text-slate-500 font-medium">100+ activos</span>
-<span class="text-primary text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                                Jugar <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-</span>
+<span class="text-xs text-orange-500 font-bold uppercase tracking-wider">Próximamente</span>
+<span class="text-slate-400 text-sm font-medium">En planificación</span>
 </div>
 </div>
 </div>
@@ -308,6 +284,71 @@
 </footer>
 </div>
 <div id="pp-shell-footer"></div>
+
+<div id="ip-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<div class="relative max-w-md w-full bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-border-dark shadow-2xl p-8 transform scale-95 opacity-0 transition-all duration-300" id="ip-modal-content">
+<button onclick="hideServerIP()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+<span class="material-symbols-outlined text-2xl">close</span>
+</button>
+<div class="text-center">
+<div class="size-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">dns</span>
+</div>
+<h3 class="text-slate-900 dark:text-white text-2xl font-bold mb-2">Conéctate al Servidor</h3>
+<p class="text-slate-600 dark:text-slate-400 mb-6">Usa esta IP para unirte a PixelPlay</p>
+<div class="bg-surface-light dark:bg-black rounded-xl p-4 border-2 border-primary/30 mb-4">
+<code class="text-slate-900 dark:text-white text-lg font-mono font-bold tracking-wide">mc.pixelplay.gg</code>
+</div>
+<button onclick="copyServerIP()" class="w-full h-12 bg-primary hover:bg-green-600 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">content_copy</span>
+<span id="copy-btn-text">Copiar IP</span>
+</button>
+<p class="text-xs text-slate-500 dark:text-slate-500 mt-4">Minecraft Java 1.20+</p>
+</div>
+</div>
+</div>
+
+<script>
+function showServerIP() {
+    const modal = document.getElementById('ip-modal');
+    const content = document.getElementById('ip-modal-content');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function hideServerIP() {
+    const modal = document.getElementById('ip-modal');
+    const content = document.getElementById('ip-modal-content');
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 300);
+}
+
+document.getElementById('ip-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideServerIP();
+    }
+});
+
+function copyServerIP() {
+    const ip = 'mc.pixelplay.gg';
+    navigator.clipboard.writeText(ip).then(() => {
+        const btnText = document.getElementById('copy-btn-text');
+        const originalText = btnText.textContent;
+        btnText.textContent = '¡Copiado!';
+        setTimeout(() => {
+            btnText.textContent = originalText;
+        }, 2000);
+    });
+}
+</script>
 
 <script defer src="assets/js/server-status.js"></script>
 <script defer src="assets/js/news.js"></script>
