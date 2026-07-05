@@ -1,0 +1,14 @@
+{
+  "id": "0001",
+  "tag": "Destacado",
+  "title": "¡Servidor publico! 🎉",
+  "date": "2025-09-03",
+  "dateLabel": "3 Septiembre 2025",
+  "readTime": "5 min lectura",
+  "author": "Admin Team",
+  "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDmZrEIYoCqDLq34Xg5frlXXzlVNkgzM5syIv65IUriHptAP1uLwelbQ3nh4LDQUD5nW3hixCIYO0XednHHc6RuzJQOPzDjlExa3MMB-NQX_8lXu_1KQWElYTo-_vVHoC1f5cFIoReAzQy8l1lhHgHcluKSXQ6o0WKyCzkPgTFxhtsgHyT06uuGxHLPuIHj00wXOCOebjw2E8LI4tytxkFXZ7atmX1SjP5ruMQRV9T57a-GsLJzqlkYIeKM2TROMtJALcoQS3ipk1s",
+  "excerpt": "Estamos emocionados de abrir el servidor para cualquier usuario. Después de meses de desarrollo y pruebas beta cerradas, PixelPlay está listo para recibir a aventureros de todo el mundo.",
+  "contentHtml": "\n<p>Después de meses de desarrollo y pruebas, <strong>PixelPlay abre sus puertas al público</strong>. Si estabas esperando entrar, este es el momento.</p>\n\n<h2>¿Qué incluye este lanzamiento?</h2>\n<ul>\n  <li><strong>Survival</strong> con economía balanceada.</li>\n  <li><strong>Eventos</strong> y recompensas por actividad.</li>\n  <li><strong>Rendimiento</strong> optimizado (plugins/config).</li>\n</ul>\n\n<h2>Cómo entrar</h2>\n<p>Copia la IP desde la página principal y conéctate desde Minecraft Java.</p>\n\n<div class=\"my-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 flex gap-4\">\n  <span class=\"material-symbols-outlined text-emerald-600 dark:text-emerald-400 shrink-0\">info</span>\n  <div>\n    <h4 class=\"text-emerald-700 dark:text-emerald-300 font-bold text-sm mb-1\">Consejo</h4>\n    <p class=\"text-sm text-emerald-700/80 dark:text-emerald-200/80\">Únete a nuestro Discord para enterarte de eventos y anuncios.</p>\n  </div>\n</div>\n\n<h2>¿Necesitas ayuda?</h2>\n<p>Si tienes problemas para entrar, visita <a href=\"soporte.html\">Soporte</a> o abre un ticket en Discord.</p>\n"
+}
+
+

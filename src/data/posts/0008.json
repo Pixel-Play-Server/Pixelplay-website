@@ -1,0 +1,12 @@
+{
+  "id": "0008",
+  "tag": "Destacado",
+  "title": "PixelPlay re abre — 9 febrero 2026",
+  "date": "2026-02-04",
+  "dateLabel": "4 Febrero 2026",
+  "readTime": "3 min lectura",
+  "author": "Pixel Play Network",
+  "image": "https://images.unsplash.com/photo-1594845222818-9097c52dabb5?w=800",
+  "excerpt": "¡Volvemos! PixelPlay reabre sus puertas el 9 de febrero de 2026. Prepara tu cliente, avisa a tus amigos y nos vemos en el servidor.",
+  "contentHtml": "\n<p>Después de un tiempo de pausa, <strong>PixelPlay vuelve a abrir</strong> el <strong>9 de febrero de 2026</strong>. Queremos que estés listo para el gran día.</p>\n\n<h2>¿Qué significa la re apertura?</h2>\n<ul>\n  <li><strong>Servidor Survival</strong> de nuevo en línea con la IP habitual.</li>\n  <li><strong>Comunidad activa</strong>: eventos y novedades como siempre.</li>\n  <li><strong>Mismo espíritu</strong>: reglas, economía y plugins actualizados.</li>\n</ul>\n\n<h2>Fecha y hora</h2>\n<p>La re apertura está fijada para el <strong>9 de febrero de 2026</strong>. En la página principal tienes un contador con los días restantes.</p>\n\n<div class=\"my-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 flex gap-4\">\n  <span class=\"material-symbols-outlined text-emerald-600 dark:text-emerald-400 shrink-0\">info</span>\n  <div>\n    <h4 class=\"text-emerald-700 dark:text-emerald-300 font-bold text-sm mb-1\">Conéctate</h4>\n    <p class=\"text-sm text-emerald-700/80 dark:text-emerald-200/80\">La IP del servidor sigue siendo <strong>mc.pixelplay.gg</strong>. Únete a Discord para avisos y soporte.</p>\n  </div>\n</div>\n\n<h2>Nos vemos dentro</h2>\n<p>Gracias por seguir formando parte de PixelPlay. El 9 de febrero reabrimos; hasta entonces, estate atento a las redes y al blog.</p>\n"
+}
