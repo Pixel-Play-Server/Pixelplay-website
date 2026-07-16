@@ -1,6 +1,19 @@
 {
   "posts": [
     {
+      "id": "0009",
+      "tag": "Anuncio",
+      "title": "Cierre temporal de PixelPlay",
+      "date": "2026-07-15",
+      "dateLabel": "15 Julio 2026",
+      "readTime": "3 min lectura",
+      "excerpt": "PixelPlay entra en un cierre temporal para renovar el servidor por completo. Seguimos activos en redes y aceptamos donaciones para mantener el proyecto.",
+      "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&q=80",
+      "author": "Pixel Play Network",
+      "url": "publicacion.html?id=0009",
+      "contentPath": "assets/data/posts/0009.json"
+    },
+    {
       "id": "0008",
       "tag": "Destacado",
       "title": "PixelPlay re abre — 9 febrero 2026",
