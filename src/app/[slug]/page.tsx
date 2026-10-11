@@ -70,7 +70,7 @@ export default async function AffiliatePage({ params }: Props) {
           <h2 className="section-title">Cómo funciona</h2>
           <ol className="affiliate-ol">
             <li>Copiá la IP y entrá al server (Java o Bedrock).</li>
-            <li>Escribí tu nick abajo y tocá reclamar.</li>
+            <li>Con ese mismo nick conectado, escribiló abajo y reclamá.</li>
             <li>Listo: Pixel+ por 1 día para vos y para {name}.</li>
           </ol>
         </div>

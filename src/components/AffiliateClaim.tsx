@@ -67,9 +67,9 @@ export function AffiliateClaim({ affiliateSlug, streamerName }: Props) {
         </button>
       </div>
       <p className="affiliate-claim-hint">
-        Entrás por el link de <strong>{streamerName}</strong> → vos y{" "}
-        <strong>{streamerName}</strong> reciben <strong>1 día de Pixel+</strong>.
-        Un nick = un reclamo.
+        Tenés que estar <strong>conectado al server</strong> con ese nick.
+        Si cumple, vos y <strong>{streamerName}</strong> reciben{" "}
+        <strong>1 día de Pixel+</strong>. Un nick = un reclamo.
       </p>
       {message ? (
         <p
