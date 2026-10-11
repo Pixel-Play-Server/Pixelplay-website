@@ -4,5 +4,29 @@
     "minecraft": "Alboadykto",
     "displayName": "Alboadykto",
     "active": true
+  },
+  {
+    "slug": "joacoorandom",
+    "minecraft": "Joacoorandom",
+    "displayName": "Joacoorandom",
+    "active": true
+  },
+  {
+    "slug": "newmantella9800",
+    "minecraft": "NewMantella9800",
+    "displayName": "NewMantella9800",
+    "active": true
+  },
+  {
+    "slug": "mrorbe",
+    "minecraft": "MrOrbe33",
+    "displayName": "MrOrbe",
+    "active": true
+  },
+  {
+    "slug": "mrorbe33",
+    "minecraft": "MrOrbe33",
+    "displayName": "MrOrbe",
+    "active": true
   }
 ]

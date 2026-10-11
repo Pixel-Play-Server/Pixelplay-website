@@ -7,6 +7,7 @@ const links = [
   { href: "/", label: "Inicio" },
   { href: "/blog", label: "Blog" },
   { href: "/afiliados", label: "Afiliados" },
+  { href: "/windows", label: "Windows" },
   { href: "/wiki", label: "Wiki" },
   { href: "/soporte", label: "Soporte" },
 ];
