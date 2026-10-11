@@ -839,3 +839,101 @@ html:has(.fake-modal:target) {
   padding-top: 0.65rem;
   border-top: 1px solid var(--border);
 }
+
+/* Afiliados stream */
+.affiliate-hero .affiliate-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-end;
+  margin: 1.25rem 0 1.5rem;
+}
+.affiliate-skin {
+  image-rendering: pixelated;
+  filter: drop-shadow(4px 4px 0 rgba(74, 222, 128, 0.25));
+}
+.affiliate-kicker {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+.affiliate-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  margin-bottom: 0.65rem;
+  line-height: 1.1;
+}
+.affiliate-title img {
+  image-rendering: pixelated;
+  border-radius: 2px;
+  border: 1px solid var(--border-green);
+}
+.affiliate-ol {
+  margin: 0 0 0 1.1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+.affiliate-ol li { margin-bottom: 0.4rem; }
+.affiliate-bedrock {
+  margin-top: 0.75rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.affiliate-claim-label {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.45rem;
+}
+.affiliate-claim-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.affiliate-claim-input {
+  flex: 1 1 10rem;
+  min-width: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  background: #080a08;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  border-radius: 2px;
+}
+.affiliate-claim-input:focus {
+  outline: none;
+  border-color: var(--border-green);
+}
+.affiliate-claim-hint {
+  margin-top: 0.65rem;
+  font-size: 0.68rem;
+  color: var(--dim);
+  line-height: 1.45;
+}
+.affiliate-claim-ok {
+  margin-top: 0.75rem;
+  color: var(--green);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.affiliate-claim-err {
+  margin-top: 0.75rem;
+  color: #f87171;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.affiliate-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.affiliate-steps { margin-top: 0.25rem; }
