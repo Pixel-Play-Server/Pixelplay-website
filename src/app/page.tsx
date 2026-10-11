@@ -11,7 +11,7 @@ export default function HomePage() {
       <section className="hero">
         <div className="badge">
           <span className="dot" />
-          Servidor online
+          Cierre temporal
         </div>
         <h1>
           MINECRAFT
@@ -19,7 +19,7 @@ export default function HomePage() {
           <em>SURVIVAL PVP</em>
         </h1>
         <p>
-          Survival PvP en Java y Bedrock. Copiá la IP y unite a la comunidad.
+          Estamos renovando PixelPlay. Leé el anuncio del blog y seguinos en Discord.
         </p>
 
         <ConnectSection />
